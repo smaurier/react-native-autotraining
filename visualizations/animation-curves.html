@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Courbes d'Animation React Native</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#1a1a2e;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;padding:20px}
+  h1{text-align:center;color:#4dabf7;margin-bottom:8px;font-size:1.6rem}
+  .subtitle{text-align:center;color:#8899aa;margin-bottom:20px;font-size:.9rem}
+  .container{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:300px 1fr;gap:20px}
+  .panel{background:#16213e;border-radius:12px;padding:20px;border:1px solid #253555}
+  .panel h2{color:#4dabf7;font-size:1.1rem;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid #253555}
+  label{display:block;color:#8899aa;font-size:.82rem;margin-bottom:4px;margin-top:12px}
+  select,input[type=range]{width:100%;margin-bottom:4px}
+  select{background:#1a1a2e;color:#e0e0e0;border:1px solid #253555;border-radius:6px;padding:8px;font-size:.9rem;cursor:pointer}
+  select:focus{outline:none;border-color:#4dabf7}
+  input[type=range]{-webkit-appearance:none;height:6px;background:#253555;border-radius:3px;outline:none;cursor:pointer}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;background:#4dabf7;border-radius:50%;cursor:pointer}
+  .slider-val{color:#4dabf7;font-size:.82rem;text-align:right;font-weight:600}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border:none;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s}
+  .btn-primary{background:#0d6efd;color:#fff}
+  .btn-primary:hover{background:#4dabf7}
+  .btn-secondary{background:#253555;color:#aabbcc}
+  .btn-secondary:hover{background:#2a4060}
+  .btn-secondary.active{background:#0d6efd;color:#fff}
+  .btn-group{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+  .canvas-area{position:relative}
+  canvas{display:block;width:100%;border-radius:8px;background:#0f1729}
+  .ball-track{position:relative;height:60px;background:#0f1729;border-radius:8px;margin-top:12px;overflow:hidden;border:1px solid #253555}
+  .ball{position:absolute;width:28px;height:28px;border-radius:50%;top:50%;transform:translateY(-50%);left:10px;transition:none}
+  .ball.a{background:linear-gradient(135deg,#4dabf7,#0d6efd)}
+  .ball.b{background:linear-gradient(135deg,#ff6b6b,#ee5a24)}
+  .track-label{position:absolute;top:4px;right:8px;font-size:.7rem;color:#556677}
+  .code-block{background:#0f1729;border-radius:8px;padding:14px;margin-top:16px;font-family:'Fira Code',monospace;font-size:.78rem;line-height:1.6;overflow-x:auto;border:1px solid #253555;white-space:pre;color:#abb2bf}
+  .code-block .kw{color:#c678dd}
+  .code-block .fn{color:#61afef}
+  .code-block .str{color:#98c379}
+  .code-block .num{color:#d19a66}
+  .code-block .cm{color:#5c6370;font-style:italic}
+  .compare-toggle{margin-top:16px}
+  .compare-controls{margin-top:12px;padding-top:12px;border-top:1px solid #253555}
+  .compare-controls h3{color:#ff6b6b;font-size:.95rem;margin-bottom:8px}
+  .legend{display:flex;gap:16px;margin-top:8px;font-size:.8rem}
+  .legend span{display:flex;align-items:center;gap:6px}
+  .legend .dot{width:10px;height:10px;border-radius:50%}
+  .dot-a{background:#4dabf7}
+  .dot-b{background:#ff6b6b}
+  .info-row{display:flex;justify-content:space-between;font-size:.8rem;color:#8899aa;margin-top:4px}
+</style>
+</head>
+<body>
+<h1>Courbes d'Animation React Native</h1>
+<p class="subtitle">Visualisez et comparez les courbes d'animation Animated API</p>
+
+<div class="container">
+  <div class="panel" id="controls">
+    <h2>Configuration</h2>
+
+    <label for="curveType">Type de courbe</label>
+    <select id="curveType">
+      <option value="linear">timing (linear)</option>
+      <option value="easeIn">timing (easeIn)</option>
+      <option value="easeOut">timing (easeOut)</option>
+      <option value="easeInOut" selected>timing (easeInOut)</option>
+      <option value="spring">spring</option>
+      <option value="decay">decay</option>
+    </select>
+
+    <div id="timingControls">
+      <label for="duration">Durée : <span id="durationVal" class="slider-val">500ms</span></label>
+      <input type="range" id="duration" min="100" max="2000" step="50" value="500">
+    </div>
+
+    <div id="springControls" style="display:none">
+      <label for="tension">Tension : <span id="tensionVal" class="slider-val">40</span></label>
+      <input type="range" id="tension" min="1" max="300" value="40">
+      <label for="friction">Friction : <span id="frictionVal" class="slider-val">7</span></label>
+      <input type="range" id="friction" min="1" max="40" value="7">
+    </div>
+
+    <div id="decayControls" style="display:none">
+      <label for="velocity">Vitesse initiale : <span id="velocityVal" class="slider-val">1.0</span></label>
+      <input type="range" id="velocity" min="0.1" max="5" step="0.1" value="1">
+      <label for="deceleration">Décélération : <span id="decelerationVal" class="slider-val">0.997</span></label>
+      <input type="range" id="deceleration" min="0.9" max="0.999" step="0.001" value="0.997">
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-primary" id="playBtn">&#9654; Jouer</button>
+    </div>
+
+    <div class="compare-toggle">
+      <button class="btn btn-secondary" id="compareToggle">Activer comparaison</button>
+    </div>
+
+    <div class="compare-controls" id="comparePanel" style="display:none">
+      <h3>Courbe B (comparaison)</h3>
+      <label for="curveTypeB">Type de courbe B</label>
+      <select id="curveTypeB">
+        <option value="linear">timing (linear)</option>
+        <option value="easeIn">timing (easeIn)</option>
+        <option value="easeOut">timing (easeOut)</option>
+        <option value="easeInOut">timing (easeInOut)</option>
+        <option value="spring" selected>spring</option>
+        <option value="decay">decay</option>
+      </select>
+      <div id="timingControlsB">
+        <label for="durationB">Durée B : <span id="durationValB" class="slider-val">500ms</span></label>
+        <input type="range" id="durationB" min="100" max="2000" step="50" value="500">
+      </div>
+      <div id="springControlsB" style="display:none">
+        <label for="tensionB">Tension B : <span id="tensionValB" class="slider-val">40</span></label>
+        <input type="range" id="tensionB" min="1" max="300" value="40">
+        <label for="frictionB">Friction B : <span id="frictionValB" class="slider-val">7</span></label>
+        <input type="range" id="frictionB" min="1" max="40" value="7">
+      </div>
+      <div id="decayControlsB" style="display:none">
+        <label for="velocityB">Vitesse B : <span id="velocityValB" class="slider-val">1.0</span></label>
+        <input type="range" id="velocityB" min="0.1" max="5" step="0.1" value="1">
+        <label for="decelerationB">Décélération B : <span id="decelerationValB" class="slider-val">0.997</span></label>
+        <input type="range" id="decelerationB" min="0.9" max="0.999" step="0.001" value="0.997">
+      </div>
+      <div class="legend">
+        <span><span class="dot dot-a"></span> Courbe A</span>
+        <span><span class="dot dot-b"></span> Courbe B</span>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="panel canvas-area">
+      <h2>Courbe d'animation</h2>
+      <canvas id="curveCanvas" width="800" height="400"></canvas>
+      <div class="info-row">
+        <span id="infoTime">Temps : 0ms</span>
+        <span id="infoValue">Valeur : 0.00</span>
+      </div>
+
+      <div class="ball-track" id="trackA">
+        <span class="track-label">Courbe A</span>
+        <div class="ball a" id="ballA"></div>
+      </div>
+      <div class="ball-track" id="trackB" style="display:none">
+        <span class="track-label">Courbe B</span>
+        <div class="ball b" id="ballB"></div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:16px">
+      <h2>Code React Native</h2>
+      <div class="code-block" id="codeOutput"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const canvas = $('curveCanvas');
+const ctx = canvas.getContext('2d');
+let compareMode = false;
+let animating = false;
+let animFrame = null;
+
+// Easing functions
+function linear(t) { return t; }
+function easeIn(t) { return t * t * t; }
+function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+function easeInOut(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2; }
+
+function springCurve(tension, friction, steps=200) {
+  const points = [];
+  let pos = 0, vel = 0;
+  const dt = 1/steps;
+  for (let i = 0; i <= steps; i++) {
+    const springF = -tension * (pos - 1);
+    const dampF = -friction * vel;
+    const accel = springF + dampF;
+    vel += accel * dt;
+    pos += vel * dt;
+    points.push(pos);
+  }
+  return points;
+}
+
+function decayCurve(velocity, deceleration, steps=200) {
+  const points = [];
+  let pos = 0, vel = velocity;
+  for (let i = 0; i <= steps; i++) {
+    pos += vel / steps;
+    vel *= deceleration;
+    points.push(Math.min(pos, 1));
+  }
+  // Normalize to 0-1
+  const max = Math.max(...points);
+  return max > 0 ? points.map(p => p / max) : points;
+}
+
+function getCurvePoints(type, params, steps=200) {
+  if (type === 'spring') return springCurve(params.tension, params.friction, steps);
+  if (type === 'decay') return decayCurve(params.velocity, params.deceleration, steps);
+  const fn = {linear, easeIn, easeOut, easeInOut}[type];
+  const pts = [];
+  for (let i = 0; i <= steps; i++) pts.push(fn(i/steps));
+  return pts;
+}
+
+function getParamsA() {
+  const type = $('curveType').value;
+  if (type === 'spring') return { tension: +$('tension').value, friction: +$('friction').value };
+  if (type === 'decay') return { velocity: +$('velocity').value, deceleration: +$('deceleration').value };
+  return { duration: +$('duration').value };
+}
+
+function getParamsB() {
+  const type = $('curveTypeB').value;
+  if (type === 'spring') return { tension: +$('tensionB').value, friction: +$('frictionB').value };
+  if (type === 'decay') return { velocity: +$('velocityB').value, deceleration: +$('decelerationB').value };
+  return { duration: +$('durationB').value };
+}
+
+function drawCurve() {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
+  const W = rect.width, H = rect.height;
+  const pad = { top: 20, right: 20, bottom: 40, left: 50 };
+  const gW = W - pad.left - pad.right;
+  const gH = H - pad.top - pad.bottom;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = '#253555';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 10; i++) {
+    const x = pad.left + (gW * i / 10);
+    const y = pad.top + (gH * i / 10);
+    ctx.beginPath(); ctx.moveTo(x, pad.top); ctx.lineTo(x, pad.top + gH); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + gW, y); ctx.stroke();
+  }
+
+  // Axes labels
+  ctx.fillStyle = '#556677';
+  ctx.font = '11px system-ui';
+  ctx.textAlign = 'center';
+  ctx.fillText('Temps (0 → 1)', pad.left + gW/2, H - 5);
+  ctx.save();
+  ctx.translate(14, pad.top + gH/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.fillText('Valeur (0 → 1)', 0, 0);
+  ctx.restore();
+
+  // Tick labels
+  ctx.fillStyle = '#445566';
+  ctx.font = '10px system-ui';
+  ctx.textAlign = 'center';
+  for (let i = 0; i <= 4; i++) {
+    ctx.fillText((i/4).toFixed(1), pad.left + gW*i/4, pad.top + gH + 16);
+  }
+  ctx.textAlign = 'right';
+  for (let i = 0; i <= 4; i++) {
+    ctx.fillText((1-i/4).toFixed(1), pad.left - 8, pad.top + gH*i/4 + 4);
+  }
+
+  // Reference line y=1
+  ctx.strokeStyle = '#334466';
+  ctx.setLineDash([4,4]);
+  ctx.beginPath();
+  ctx.moveTo(pad.left, pad.top);
+  ctx.lineTo(pad.left + gW, pad.top);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  function plotCurve(points, color) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    for (let i = 0; i < points.length; i++) {
+      const x = pad.left + (i / (points.length - 1)) * gW;
+      const y = pad.top + gH - points[i] * gH;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+
+  const ptsA = getCurvePoints($('curveType').value, getParamsA());
+  plotCurve(ptsA, '#4dabf7');
+
+  if (compareMode) {
+    const ptsB = getCurvePoints($('curveTypeB').value, getParamsB());
+    plotCurve(ptsB, '#ff6b6b');
+  }
+
+  return { pad, gW, gH, W, H };
+}
+
+// Animation
+function playAnimation() {
+  if (animating) { cancelAnimationFrame(animFrame); }
+  animating = true;
+  $('playBtn').textContent = '⏸ En cours...';
+
+  const typeA = $('curveType').value;
+  const paramsA = getParamsA();
+  const ptsA = getCurvePoints(typeA, paramsA, 300);
+  const durationA = typeA === 'spring' ? 1500 : typeA === 'decay' ? 2000 : paramsA.duration;
+
+  let ptsB, durationB;
+  if (compareMode) {
+    const typeB = $('curveTypeB').value;
+    const paramsB = getParamsB();
+    ptsB = getCurvePoints(typeB, paramsB, 300);
+    durationB = typeB === 'spring' ? 1500 : typeB === 'decay' ? 2000 : paramsB.duration;
+  }
+
+  const maxDur = compareMode ? Math.max(durationA, durationB || 0) : durationA;
+  const trackWidth = $('trackA').clientWidth - 38;
+  const start = performance.now();
+
+  function tick(now) {
+    const elapsed = now - start;
+    const tA = Math.min(elapsed / durationA, 1);
+    const idxA = Math.min(Math.floor(tA * (ptsA.length - 1)), ptsA.length - 1);
+    const valA = ptsA[idxA];
+    $('ballA').style.left = (10 + valA * trackWidth) + 'px';
+
+    if (compareMode && ptsB) {
+      const tB = Math.min(elapsed / durationB, 1);
+      const idxB = Math.min(Math.floor(tB * (ptsB.length - 1)), ptsB.length - 1);
+      const valB = ptsB[idxB];
+      $('ballB').style.left = (10 + valB * trackWidth) + 'px';
+    }
+
+    // Redraw canvas with progress indicator
+    const layout = drawCurve();
+    const progressA = Math.min(elapsed / durationA, 1);
+    const cxA = layout.pad.left + progressA * layout.gW;
+    const cyA = layout.pad.top + layout.gH - valA * layout.gH;
+    ctx.beginPath();
+    ctx.arc(cxA, cyA, 6, 0, Math.PI * 2);
+    ctx.fillStyle = '#4dabf7';
+    ctx.fill();
+
+    if (compareMode && ptsB) {
+      const progressB = Math.min(elapsed / durationB, 1);
+      const idxB2 = Math.min(Math.floor(progressB * (ptsB.length - 1)), ptsB.length - 1);
+      const cxB = layout.pad.left + progressB * layout.gW;
+      const cyB = layout.pad.top + layout.gH - ptsB[idxB2] * layout.gH;
+      ctx.beginPath();
+      ctx.arc(cxB, cyB, 6, 0, Math.PI * 2);
+      ctx.fillStyle = '#ff6b6b';
+      ctx.fill();
+    }
+
+    $('infoTime').textContent = 'Temps : ' + Math.round(elapsed) + 'ms';
+    $('infoValue').textContent = 'Valeur : ' + valA.toFixed(3);
+
+    if (elapsed < maxDur) {
+      animFrame = requestAnimationFrame(tick);
+    } else {
+      animating = false;
+      $('playBtn').textContent = '▶ Jouer';
+    }
+  }
+  animFrame = requestAnimationFrame(tick);
+}
+
+function updateControlVisibility(prefix) {
+  const type = $(prefix === '' ? 'curveType' : 'curveTypeB').value;
+  const suf = prefix === '' ? '' : 'B';
+  $('timingControls' + (suf ? 'B' : '')).style.display = (type !== 'spring' && type !== 'decay') ? '' : 'none';
+  $('springControls' + (suf ? 'B' : '')).style.display = type === 'spring' ? '' : 'none';
+  $('decayControls' + (suf ? 'B' : '')).style.display = type === 'decay' ? '' : 'none';
+}
+
+function generateCode() {
+  const type = $('curveType').value;
+  const p = getParamsA();
+  let code = '';
+  if (type === 'spring') {
+    code = `<span class="cm">// Animation spring</span>
+<span class="kw">import</span> { <span class="fn">Animated</span> } <span class="kw">from</span> <span class="str">'react-native'</span>;
+
+<span class="kw">const</span> anim = <span class="fn">Animated</span>.<span class="fn">spring</span>(animValue, {
+  <span class="fn">toValue</span>: <span class="num">1</span>,
+  <span class="fn">tension</span>: <span class="num">${p.tension}</span>,
+  <span class="fn">friction</span>: <span class="num">${p.friction}</span>,
+  <span class="fn">useNativeDriver</span>: <span class="num">true</span>,
+});
+
+anim.<span class="fn">start</span>();`;
+  } else if (type === 'decay') {
+    code = `<span class="cm">// Animation decay</span>
+<span class="kw">import</span> { <span class="fn">Animated</span> } <span class="kw">from</span> <span class="str">'react-native'</span>;
+
+<span class="kw">const</span> anim = <span class="fn">Animated</span>.<span class="fn">decay</span>(animValue, {
+  <span class="fn">velocity</span>: <span class="num">${p.velocity}</span>,
+  <span class="fn">deceleration</span>: <span class="num">${p.deceleration}</span>,
+  <span class="fn">useNativeDriver</span>: <span class="num">true</span>,
+});
+
+anim.<span class="fn">start</span>();`;
+  } else {
+    const easingMap = {
+      linear: 'Easing.linear',
+      easeIn: 'Easing.in(Easing.cubic)',
+      easeOut: 'Easing.out(Easing.cubic)',
+      easeInOut: 'Easing.inOut(Easing.cubic)'
+    };
+    code = `<span class="cm">// Animation timing (${type})</span>
+<span class="kw">import</span> { <span class="fn">Animated</span>, <span class="fn">Easing</span> } <span class="kw">from</span> <span class="str">'react-native'</span>;
+
+<span class="kw">const</span> anim = <span class="fn">Animated</span>.<span class="fn">timing</span>(animValue, {
+  <span class="fn">toValue</span>: <span class="num">1</span>,
+  <span class="fn">duration</span>: <span class="num">${p.duration}</span>,
+  <span class="fn">easing</span>: ${easingMap[type]},
+  <span class="fn">useNativeDriver</span>: <span class="num">true</span>,
+});
+
+anim.<span class="fn">start</span>();`;
+  }
+  $('codeOutput').innerHTML = code;
+}
+
+// Event listeners
+$('curveType').addEventListener('change', () => { updateControlVisibility(''); drawCurve(); generateCode(); });
+$('curveTypeB').addEventListener('change', () => { updateControlVisibility('B'); drawCurve(); });
+
+['duration','tension','friction','velocity','deceleration'].forEach(id => {
+  const el = $(id);
+  if (!el) return;
+  el.addEventListener('input', () => {
+    $(id + 'Val').textContent = id === 'duration' ? el.value + 'ms' : el.value;
+    drawCurve(); generateCode();
+  });
+});
+['durationB','tensionB','frictionB','velocityB','decelerationB'].forEach(id => {
+  const el = $(id);
+  if (!el) return;
+  el.addEventListener('input', () => {
+    $(id + 'Val').textContent = id === 'durationB' ? el.value + 'ms' : el.value;
+    drawCurve();
+  });
+});
+
+$('playBtn').addEventListener('click', playAnimation);
+
+$('compareToggle').addEventListener('click', () => {
+  compareMode = !compareMode;
+  $('compareToggle').textContent = compareMode ? 'Desactiver comparaison' : 'Activer comparaison';
+  $('compareToggle').classList.toggle('active', compareMode);
+  $('comparePanel').style.display = compareMode ? '' : 'none';
+  $('trackB').style.display = compareMode ? '' : 'none';
+  updateControlVisibility('B');
+  drawCurve();
+});
+
+// Canvas mouse tracking
+canvas.addEventListener('mousemove', (e) => {
+  if (animating) return;
+  const rect = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  const mx = e.clientX - rect.left;
+  const layout = drawCurve();
+  const t = Math.max(0, Math.min(1, (mx - layout.pad.left) / layout.gW));
+  const ptsA = getCurvePoints($('curveType').value, getParamsA());
+  const idx = Math.min(Math.floor(t * (ptsA.length - 1)), ptsA.length - 1);
+  const val = ptsA[idx];
+
+  // Draw crosshair
+  const cx = layout.pad.left + t * layout.gW;
+  const cy = layout.pad.top + layout.gH - val * layout.gH;
+  ctx.strokeStyle = '#4dabf744';
+  ctx.setLineDash([3,3]);
+  ctx.beginPath(); ctx.moveTo(cx, layout.pad.top); ctx.lineTo(cx, layout.pad.top + layout.gH); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(layout.pad.left, cy); ctx.lineTo(layout.pad.left + layout.gW, cy); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.beginPath(); ctx.arc(cx, cy, 5, 0, Math.PI*2); ctx.fillStyle='#4dabf7'; ctx.fill();
+
+  $('infoTime').textContent = 'Temps : ' + t.toFixed(3);
+  $('infoValue').textContent = 'Valeur : ' + val.toFixed(3);
+});
+
+// Init
+updateControlVisibility('');
+updateControlVisibility('B');
+drawCurve();
+generateCode();
+
+window.addEventListener('resize', drawCurve);
+</script>
+</body>
+</html>

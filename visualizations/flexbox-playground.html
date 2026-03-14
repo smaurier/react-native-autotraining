@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flexbox Playground — React Native</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh; padding: 20px;
+  }
+  h1 { text-align: center; font-size: 1.5rem; color: #4dabf7; margin-bottom: 4px; }
+  .subtitle { text-align: center; color: #888; font-size: 0.82rem; margin-bottom: 20px; }
+  .warn { text-align: center; background: #ffd43b18; color: #ffd43b; padding: 6px 14px; border-radius: 8px; font-size: 0.78rem; display: inline-block; margin: 0 auto 16px; }
+  .warn-wrap { text-align: center; }
+
+  .main { display: flex; gap: 20px; max-width: 1200px; margin: 0 auto; }
+  .controls { width: 280px; flex-shrink: 0; display: flex; flex-direction: column; gap: 12px; }
+  .preview-area { flex: 1; display: flex; flex-direction: column; gap: 16px; }
+
+  .card { background: #16213e; border: 1px solid #2a2a4a; border-radius: 10px; padding: 14px; }
+  .card h3 { font-size: 0.85rem; color: #4dabf7; margin-bottom: 10px; }
+
+  .ctrl-row { display: flex; flex-direction: column; gap: 4px; }
+  .ctrl-row label { font-size: 0.75rem; color: #aaa; }
+  .ctrl-row select, .ctrl-row input[type=range] { width: 100%; background: #1a1a2e; color: #e0e0e0; border: 1px solid #2a2a4a; border-radius: 6px; padding: 5px 8px; font-size: 0.8rem; }
+  .ctrl-row select:focus { outline: none; border-color: #0d6efd; }
+  .range-val { font-size: 0.72rem; color: #4dabf7; text-align: right; }
+
+  /* Preview container */
+  .flex-container {
+    border: 2px dashed #0d6efd55; border-radius: 10px; min-height: 340px; padding: 10px;
+    transition: all .3s; position: relative; background: #0d6efd08;
+  }
+  .flex-child {
+    border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.85rem; color: #1a1a2e; transition: all .35s;
+    min-width: 30px; min-height: 30px;
+  }
+  .child-colors-0 { background: #ffd43b; }
+  .child-colors-1 { background: #69db7c; }
+  .child-colors-2 { background: #4dabf7; }
+  .child-colors-3 { background: #ff6b6b; }
+  .child-colors-4 { background: #cc5de8; }
+  .child-colors-5 { background: #ff922b; }
+
+  /* Code output */
+  .code-block {
+    background: #0d1117; border: 1px solid #2a2a4a; border-radius: 8px; padding: 14px;
+    font-family: 'Cascadia Code', 'Fira Code', monospace; font-size: 0.78rem;
+    line-height: 1.7; overflow-x: auto; white-space: pre; color: #c9d1d9;
+  }
+  .code-block .kw { color: #ff7b72; }
+  .code-block .str { color: #a5d6ff; }
+  .code-block .num { color: #ffd43b; }
+  .code-block .prop { color: #d2a8ff; }
+  .code-block .comment { color: #555; font-style: italic; }
+
+  /* Child controls */
+  .child-ctrl { display: flex; align-items: center; gap: 6px; padding: 6px 0; border-bottom: 1px solid #2a2a4a22; }
+  .child-ctrl:last-child { border-bottom: none; }
+  .child-dot { width: 14px; height: 14px; border-radius: 4px; flex-shrink: 0; }
+  .child-ctrl label { font-size: 0.7rem; color: #aaa; width: 32px; }
+  .child-ctrl input { width: 52px; background: #1a1a2e; color: #e0e0e0; border: 1px solid #2a2a4a; border-radius: 4px; padding: 2px 4px; font-size: 0.75rem; text-align: center; }
+
+  .add-remove { display: flex; gap: 6px; margin-top: 8px; }
+  .btn-sm { background: #0d6efd22; color: #4dabf7; border: 1px solid #0d6efd44; border-radius: 6px; padding: 4px 12px; cursor: pointer; font-size: 0.75rem; transition: all .2s; }
+  .btn-sm:hover { background: #0d6efd44; }
+
+  @media (max-width: 850px) {
+    .main { flex-direction: column; }
+    .controls { width: 100%; flex-direction: row; flex-wrap: wrap; }
+    .controls .card { flex: 1; min-width: 200px; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Flexbox Playground — React Native</h1>
+<p class="subtitle">Bac à sable interactif Flexbox avec les valeurs par défaut de React Native</p>
+<div class="warn-wrap"><span class="warn">⚠ React Native utilise <strong>flexDirection: 'column'</strong> par défaut (contrairement au CSS qui utilise 'row')</span></div>
+
+<div class="main">
+  <div class="controls">
+    <div class="card">
+      <h3>Propriétés du conteneur</h3>
+      <div class="ctrl-row">
+        <label>flexDirection</label>
+        <select id="fd" onchange="update()">
+          <option value="column" selected>column (défaut RN)</option>
+          <option value="row">row</option>
+          <option value="column-reverse">column-reverse</option>
+          <option value="row-reverse">row-reverse</option>
+        </select>
+      </div>
+      <div class="ctrl-row" style="margin-top:8px">
+        <label>justifyContent</label>
+        <select id="jc" onchange="update()">
+          <option value="flex-start" selected>flex-start</option>
+          <option value="flex-end">flex-end</option>
+          <option value="center">center</option>
+          <option value="space-between">space-between</option>
+          <option value="space-around">space-around</option>
+          <option value="space-evenly">space-evenly</option>
+        </select>
+      </div>
+      <div class="ctrl-row" style="margin-top:8px">
+        <label>alignItems</label>
+        <select id="ai" onchange="update()">
+          <option value="stretch" selected>stretch (défaut)</option>
+          <option value="flex-start">flex-start</option>
+          <option value="flex-end">flex-end</option>
+          <option value="center">center</option>
+          <option value="baseline">baseline</option>
+        </select>
+      </div>
+      <div class="ctrl-row" style="margin-top:8px">
+        <label>flexWrap</label>
+        <select id="fw" onchange="update()">
+          <option value="nowrap" selected>nowrap (défaut)</option>
+          <option value="wrap">wrap</option>
+          <option value="wrap-reverse">wrap-reverse</option>
+        </select>
+      </div>
+      <div class="ctrl-row" style="margin-top:8px">
+        <label>gap : <span id="gap-val" class="range-val">8</span></label>
+        <input type="range" id="gap" min="0" max="30" value="8" oninput="document.getElementById('gap-val').textContent=this.value; update()">
+      </div>
+    </div>
+    <div class="card">
+      <h3>Enfants</h3>
+      <div id="children-ctrl"></div>
+      <div class="add-remove">
+        <button class="btn-sm" onclick="addChild()">+ Ajouter</button>
+        <button class="btn-sm" onclick="removeChild()">− Retirer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="preview-area">
+    <div class="card" style="flex:1">
+      <h3>Aperçu</h3>
+      <div class="flex-container" id="preview"></div>
+    </div>
+    <div class="card">
+      <h3>Code React Native équivalent</h3>
+      <div class="code-block" id="code-output"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const colors = ['child-colors-0','child-colors-1','child-colors-2','child-colors-3','child-colors-4','child-colors-5'];
+const colorNames = ['#ffd43b','#69db7c','#4dabf7','#ff6b6b','#cc5de8','#ff922b'];
+
+let children = [
+  { flex: 0, width: 70, height: 70 },
+  { flex: 0, width: 70, height: 100 },
+  { flex: 0, width: 70, height: 55 },
+];
+
+function addChild() {
+  if (children.length >= 6) return;
+  children.push({ flex: 0, width: 70, height: 70 });
+  update();
+}
+function removeChild() {
+  if (children.length <= 1) return;
+  children.pop();
+  update();
+}
+
+function renderChildControls() {
+  const wrap = document.getElementById('children-ctrl');
+  wrap.innerHTML = '';
+  children.forEach((c, i) => {
+    const div = document.createElement('div');
+    div.className = 'child-ctrl';
+    div.innerHTML = `
+      <div class="child-dot" style="background:${colorNames[i % 6]}"></div>
+      <label>flex</label><input type="number" min="0" max="10" value="${c.flex}" onchange="children[${i}].flex=+this.value; update(true)">
+      <label>W</label><input type="number" min="20" max="200" value="${c.width}" onchange="children[${i}].width=+this.value; update(true)">
+      <label>H</label><input type="number" min="20" max="200" value="${c.height}" onchange="children[${i}].height=+this.value; update(true)">
+    `;
+    wrap.appendChild(div);
+  });
+}
+
+function update(childOnly) {
+  const fd = document.getElementById('fd').value;
+  const jc = document.getElementById('jc').value;
+  const ai = document.getElementById('ai').value;
+  const fw = document.getElementById('fw').value;
+  const gap = document.getElementById('gap').value;
+
+  // Preview
+  const preview = document.getElementById('preview');
+  preview.style.display = 'flex';
+  preview.style.flexDirection = fd;
+  preview.style.justifyContent = jc;
+  preview.style.alignItems = ai;
+  preview.style.flexWrap = fw;
+  preview.style.gap = gap + 'px';
+
+  preview.innerHTML = '';
+  children.forEach((c, i) => {
+    const el = document.createElement('div');
+    el.className = `flex-child ${colors[i % 6]}`;
+    el.style.flex = c.flex;
+    el.style.width = c.width + 'px';
+    el.style.height = c.height + 'px';
+    el.textContent = i + 1;
+    preview.appendChild(el);
+  });
+
+  // Code
+  const code = document.getElementById('code-output');
+  const childrenCode = children.map((c, i) => {
+    let style = '';
+    if (c.flex > 0) style += `flex: ${c.flex}, `;
+    style += `width: ${c.width}, height: ${c.height}`;
+    return `  <span class="comment">{/* Enfant ${i+1} */}</span>\n  &lt;<span class="kw">View</span> <span class="prop">style</span>={{ ${style},\n    <span class="prop">backgroundColor</span>: <span class="str">'${colorNames[i%6]}'</span> }} /&gt;`;
+  }).join('\n');
+
+  let containerProps = [];
+  containerProps.push(`<span class="prop">flexDirection</span>: <span class="str">'${fd}'</span>`);
+  if (jc !== 'flex-start') containerProps.push(`<span class="prop">justifyContent</span>: <span class="str">'${jc}'</span>`);
+  if (ai !== 'stretch') containerProps.push(`<span class="prop">alignItems</span>: <span class="str">'${ai}'</span>`);
+  if (fw !== 'nowrap') containerProps.push(`<span class="prop">flexWrap</span>: <span class="str">'${fw}'</span>`);
+  if (+gap !== 0) containerProps.push(`<span class="prop">gap</span>: <span class="num">${gap}</span>`);
+
+  code.innerHTML = `&lt;<span class="kw">View</span> <span class="prop">style</span>={{
+  ${containerProps.join(',\n  ')},
+}}&gt;
+${childrenCode}
+&lt;/<span class="kw">View</span>&gt;`;
+
+  if (!childOnly) renderChildControls();
+}
+
+update();
+</script>
+</body>
+</html>

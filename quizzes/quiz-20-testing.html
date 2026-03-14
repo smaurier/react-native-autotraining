@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz 20 — Testing React Native</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a2e; color: #e0e0e0; min-height: 100vh; padding: 2rem 1rem; }
+    .container { max-width: 800px; margin: 0 auto; }
+    h1 { text-align: center; margin-bottom: 0.5rem; font-size: 1.8rem; color: #ffffff; }
+    .subtitle { text-align: center; color: #8892b0; margin-bottom: 2rem; font-size: 1rem; }
+    .progress-bar-container { background: #0d1117; border-radius: 10px; height: 14px; margin-bottom: 2rem; overflow: hidden; }
+    .progress-bar { background: linear-gradient(90deg, #0d6efd, #4dabf7); height: 100%; width: 0%; border-radius: 10px; transition: width 0.4s ease; }
+    .progress-text { text-align: center; color: #8892b0; margin-bottom: 1rem; font-size: 0.9rem; }
+    .card { background: #16213e; border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .question-label { font-size: 0.85rem; color: #4dabf7; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+    .question-text { font-size: 1.15rem; margin-bottom: 1.2rem; line-height: 1.5; color: #ffffff; }
+    pre { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 1rem; margin-bottom: 1.2rem; overflow-x: auto; font-size: 0.95rem; }
+    code { font-family: 'Consolas', 'Fira Code', 'Courier New', monospace; color: #c9d1d9; }
+    .options { list-style: none; }
+    .options li { margin-bottom: 0.5rem; }
+    .options label { display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1rem; background: #0d1117; border: 2px solid #30363d; border-radius: 8px; cursor: pointer; transition: border-color 0.2s, background 0.2s; font-size: 1rem; }
+    .options label:hover { border-color: #4dabf7; background: #1c2a4a; }
+    .options input[type="radio"] { accent-color: #0d6efd; width: 18px; height: 18px; flex-shrink: 0; }
+    .btn { display: inline-block; padding: 0.7rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+    .btn-primary { background: #0d6efd; color: #fff; }
+    .btn-primary:hover { background: #3b82f6; }
+    .btn-primary:disabled { background: #374151; cursor: not-allowed; }
+    .btn-restart { background: #238636; color: #fff; margin-top: 1rem; padding: 0.7rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+    .btn-restart:hover { background: #2ea043; }
+    .feedback { margin-top: 1rem; padding: 1rem 1.2rem; border-radius: 8px; font-size: 0.95rem; line-height: 1.5; display: none; }
+    .feedback.correct { background: #0f5132; border: 1px solid #198754; color: #d1fae5; display: block; }
+    .feedback.wrong { background: #842029; border: 1px solid #dc3545; color: #fdd; display: block; }
+    .score-card { text-align: center; padding: 3rem 2rem; }
+    .score-card .score { font-size: 3rem; font-weight: 700; color: #4dabf7; margin-bottom: 0.5rem; }
+    .score-card .score-label { font-size: 1.2rem; color: #8892b0; margin-bottom: 1.5rem; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Quiz 20 — Testing React Native</h1>
+    <p class="subtitle">Jest, RNTL, queries, mocks, snapshots, stores, couverture</p>
+    <div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+    <p class="progress-text" id="progressText">Question 1 / 5</p>
+    <div id="quizContainer"></div>
+    <div id="scoreContainer" class="card score-card hidden"></div>
+  </div>
+  <script>
+    const questions = [
+      {
+        label: "Question 1 — Queries RNTL",
+        text: "Quelle est la hierarchie de preference pour les queries dans React Native Testing Library ?",
+        code: "// Quel ordre de preference ?\nscreen.getByRole('button', { name: 'Valider' });\nscreen.getByText('Valider');\nscreen.getByTestId('validate-btn');",
+        options: [
+          "getByTestId > getByText > getByRole (testID est le plus fiable)",
+          "getByText > getByRole > getByTestId (le texte est le plus intuitif)",
+          "getByRole > getByText > getByTestId (l'accessibilite d'abord, testID en dernier recours)",
+          "Toutes les queries sont equivalentes, c'est une question de preference"
+        ],
+        answer: 2,
+        explanation: "La hierarchie recommandee est : getByRole (accessibilite), puis getByText/getByLabelText (contenu visible), puis getByTestId en dernier recours. Cette approche encourage l'accessibilite et teste ce que l'utilisateur voit reellement, pas les details d'implementation. Si vous ne pouvez pas trouver un element avec getByRole, c'est peut-etre un signe que l'accessibilite du composant doit etre amelioree."
+      },
+      {
+        label: "Question 2 — waitFor et findBy",
+        text: "Quelle est la difference entre waitFor et findBy ?",
+        code: "// Approche A\nawait waitFor(() => {\n  expect(screen.getByText('Donnees chargees')).toBeTruthy();\n});\n\n// Approche B\nconst element = await screen.findByText('Donnees chargees');",
+        options: [
+          "waitFor est synchrone, findBy est asynchrone",
+          "findBy est un raccourci pour waitFor + getBy : les deux attendent qu'un element apparaisse, mais findBy est plus concis pour les cas simples",
+          "waitFor attend un delai fixe, findBy interroge le DOM en continu",
+          "findBy est deprecie en faveur de waitFor"
+        ],
+        answer: 1,
+        explanation: "findByText (et les autres findBy*) est exactement equivalent a waitFor(() => getByText(...)). C'est un raccourci syntaxique pour le cas le plus courant : attendre qu'un element apparaisse dans le DOM. Utilisez findBy pour les cas simples (attente d'un element) et waitFor pour les assertions plus complexes (verifier plusieurs conditions, tester l'absence d'un element, etc.)."
+      },
+      {
+        label: "Question 3 — Snapshot testing",
+        text: "Dans quel cas les snapshot tests sont-ils NUISIBLES ?",
+        code: "// Test A\nit('match le badge', () => {\n  expect(render(<Badge count={3} />).toJSON())\n    .toMatchSnapshot();\n});\n\n// Test B\nit('match la page complete', () => {\n  expect(render(\n    <ProductPage\n      product={fullProduct}\n      reviews={allReviews}\n      recommendations={recs}\n    />\n  ).toJSON()).toMatchSnapshot();\n});",
+        options: [
+          "Test A : les badges changent trop souvent",
+          "Test B : un snapshot de composant complexe avec des donnees dynamiques est trop gros, change constamment, et est mis a jour mecaniquement (jest -u) sans verification reelle",
+          "Les deux sont nuisibles, les snapshots ne servent jamais",
+          "Aucun n'est nuisible, les snapshots sont toujours utiles"
+        ],
+        answer: 1,
+        explanation: "Les snapshots enormes (Test B) donnent un faux sentiment de securite. Ils changent a chaque modification mineure, sont mis a jour avec 'jest -u' sans que personne ne lise le diff de 500 lignes, et ne verifient rien de specifique. En revanche, les snapshots de petits composants stables (Test A) sont utiles pour detecter des changements visuels accidentels. Privilegiez les inline snapshots pour les petits composants."
+      },
+      {
+        label: "Question 4 — Mock de modules natifs",
+        text: "Pourquoi faut-il mocker les modules natifs dans les tests Jest ?",
+        code: "// jest.setup.ts\njest.mock('expo-camera', () => ({\n  Camera: 'MockCamera',\n  useCameraPermissions: jest.fn(() => [{ granted: true }, jest.fn()]),\n}));\n\njest.mock('@react-native-async-storage/async-storage', () =>\n  require('@react-native-async-storage/async-storage/jest/async-storage-mock')\n);",
+        options: [
+          "Les modules natifs sont trop lents pour les tests",
+          "Jest s'execute dans Node.js (pas sur un appareil mobile), donc les modules natifs (camera, GPS, stockage) n'existent pas dans cet environnement et doivent etre simules",
+          "Les mocks sont optionnels, Jest peut acceder aux modules natifs",
+          "On mocke uniquement pour eviter les couts de licence des SDK natifs"
+        ],
+        answer: 1,
+        explanation: "Jest tourne dans un environnement Node.js, pas sur un appareil iOS ou Android. Les modules natifs comme la camera, le GPS, AsyncStorage ou les animations natives n'ont pas de code natif disponible dans Node.js. Les mocks simulent leur comportement pour que les tests puissent s'executer. Beaucoup de librairies fournissent des mocks officiels (ex: async-storage/jest/async-storage-mock)."
+      },
+      {
+        label: "Question 5 — Tester un store Zustand",
+        text: "Quelle est la bonne pratique pour tester un store Zustand ?",
+        code: "// Store\nconst useCartStore = create((set) => ({\n  items: [],\n  addItem: (item) => set((s) => ({ items: [...s.items, item] })),\n  clearCart: () => set({ items: [] }),\n}));\n\n// Test\ndescribe('useCartStore', () => {\n  beforeEach(() => {\n    // ???\n  });\n  it('ajoute un item', () => { /* ... */ });\n});",
+        options: [
+          "Creer une nouvelle instance du store dans chaque test avec create()",
+          "Utiliser useCartStore.setState({ items: [] }) dans beforeEach pour reinitialiser l'etat entre les tests, car Zustand est un singleton",
+          "Mocker le store completement avec jest.mock",
+          "Les stores Zustand ne se testent pas directement, uniquement via les composants"
+        ],
+        answer: 1,
+        explanation: "Zustand cree un singleton : le meme store est partage entre tous les tests. Il faut donc reinitialiser l'etat dans beforeEach avec useCartStore.setState({ items: [] }). On peut aussi utiliser getState() pour lire l'etat et dispatch des actions directement, sans avoir besoin de rendre un composant. Pour les tests de composants, on peut pre-remplir le store avec setState avant le render."
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function render() {
+      const container = document.getElementById('quizContainer');
+      const q = questions[current];
+      const total = questions.length;
+      document.getElementById('progressBar').style.width = ((current / total) * 100) + '%';
+      document.getElementById('progressText').textContent = `Question ${current + 1} / ${total}`;
+
+      container.innerHTML = `
+        <div class="card">
+          <p class="question-label">${q.label}</p>
+          <p class="question-text">${q.text}</p>
+          ${q.code ? `<pre><code>${q.code}</code></pre>` : ''}
+          <ul class="options">
+            ${q.options.map((opt, i) => `
+              <li>
+                <label>
+                  <input type="radio" name="q${current}" value="${i}">
+                  ${opt}
+                </label>
+              </li>
+            `).join('')}
+          </ul>
+          <button class="btn btn-primary" id="submitBtn" onclick="submit()" disabled>Valider</button>
+          <div class="feedback" id="feedback"></div>
+        </div>
+      `;
+
+      container.querySelectorAll('input[type="radio"]').forEach(r => {
+        r.addEventListener('change', () => {
+          document.getElementById('submitBtn').disabled = false;
+        });
+      });
+    }
+
+    function submit() {
+      const selected = document.querySelector(`input[name="q${current}"]:checked`);
+      if (!selected) return;
+
+      const answer = parseInt(selected.value);
+      const q = questions[current];
+      const fb = document.getElementById('feedback');
+      const btn = document.getElementById('submitBtn');
+
+      document.querySelectorAll(`input[name="q${current}"]`).forEach(r => r.disabled = true);
+      btn.disabled = true;
+
+      if (answer === q.answer) {
+        score++;
+        fb.className = 'feedback correct';
+        fb.innerHTML = `<strong>Correct !</strong> ${q.explanation}`;
+      } else {
+        fb.className = 'feedback wrong';
+        fb.innerHTML = `<strong>Incorrect.</strong> ${q.explanation}`;
+      }
+
+      setTimeout(() => {
+        current++;
+        if (current < questions.length) {
+          render();
+        } else {
+          showScore();
+        }
+      }, 4000);
+    }
+
+    function showScore() {
+      const total = questions.length;
+      document.getElementById('progressBar').style.width = '100%';
+      document.getElementById('progressText').textContent = 'Termine !';
+      document.getElementById('quizContainer').classList.add('hidden');
+
+      const sc = document.getElementById('scoreContainer');
+      sc.classList.remove('hidden');
+
+      const pct = Math.round((score / total) * 100);
+      const emoji = pct === 100 ? '&#127942;' : pct >= 70 ? '&#128077;' : '&#128170;';
+
+      sc.innerHTML = `
+        <div class="score">${score} / ${total}</div>
+        <div class="score-label">${pct}% ${emoji}</div>
+        <p>${pct >= 70 ? 'Bravo ! Vous maitrisez le testing React Native.' : 'Revisez le module 20 et reessayez !'}</p>
+        <button class="btn-restart" onclick="restart()">Recommencer</button>
+      `;
+    }
+
+    function restart() {
+      current = 0;
+      score = 0;
+      document.getElementById('scoreContainer').classList.add('hidden');
+      document.getElementById('quizContainer').classList.remove('hidden');
+      render();
+    }
+
+    render();
+  </script>
+</body>
+</html>

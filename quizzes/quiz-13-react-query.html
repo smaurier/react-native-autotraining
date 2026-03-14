@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz 13 — React Query et cache</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a2e; color: #e0e0e0; min-height: 100vh; padding: 2rem 1rem; }
+    .container { max-width: 800px; margin: 0 auto; }
+    h1 { text-align: center; margin-bottom: 0.5rem; font-size: 1.8rem; color: #ffffff; }
+    .subtitle { text-align: center; color: #8892b0; margin-bottom: 2rem; font-size: 1rem; }
+    .progress-bar-container { background: #0d1117; border-radius: 10px; height: 14px; margin-bottom: 2rem; overflow: hidden; }
+    .progress-bar { background: linear-gradient(90deg, #0d6efd, #4dabf7); height: 100%; width: 0%; border-radius: 10px; transition: width 0.4s ease; }
+    .progress-text { text-align: center; color: #8892b0; margin-bottom: 1rem; font-size: 0.9rem; }
+    .card { background: #16213e; border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .question-label { font-size: 0.85rem; color: #4dabf7; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+    .question-text { font-size: 1.15rem; margin-bottom: 1.2rem; line-height: 1.5; color: #ffffff; }
+    pre { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 1rem; margin-bottom: 1.2rem; overflow-x: auto; font-size: 0.95rem; }
+    code { font-family: 'Consolas', 'Fira Code', 'Courier New', monospace; color: #c9d1d9; }
+    .options { list-style: none; }
+    .options li { margin-bottom: 0.5rem; }
+    .options label { display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1rem; background: #0d1117; border: 2px solid #30363d; border-radius: 8px; cursor: pointer; transition: border-color 0.2s, background 0.2s; font-size: 1rem; }
+    .options label:hover { border-color: #4dabf7; background: #1c2a4a; }
+    .options input[type="radio"] { accent-color: #0d6efd; width: 18px; height: 18px; flex-shrink: 0; }
+    .btn { display: inline-block; padding: 0.7rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+    .btn-primary { background: #0d6efd; color: #fff; }
+    .btn-primary:hover { background: #3b82f6; }
+    .btn-primary:disabled { background: #374151; cursor: not-allowed; }
+    .btn-restart { background: #238636; color: #fff; margin-top: 1rem; padding: 0.7rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+    .btn-restart:hover { background: #2ea043; }
+    .feedback { margin-top: 1rem; padding: 1rem 1.2rem; border-radius: 8px; font-size: 0.95rem; line-height: 1.5; display: none; }
+    .feedback.correct { background: #0f5132; border: 1px solid #198754; color: #d1fae5; display: block; }
+    .feedback.wrong { background: #842029; border: 1px solid #dc3545; color: #fdd; display: block; }
+    .score-card { text-align: center; padding: 3rem 2rem; }
+    .score-card .score { font-size: 3rem; font-weight: 700; color: #4dabf7; margin-bottom: 0.5rem; }
+    .score-card .score-label { font-size: 1.2rem; color: #8892b0; margin-bottom: 1.5rem; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Quiz 13 — React Query et cache</h1>
+    <p class="subtitle">staleTime vs gcTime, invalidation, optimistic updates, useInfiniteQuery, offline</p>
+    <div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+    <p class="progress-text" id="progressText">Question 1 / 5</p>
+    <div id="quizContainer"></div>
+    <div id="scoreContainer" class="card score-card hidden"></div>
+  </div>
+  <script>
+    const questions = [
+      {
+        label: "Question 1 — staleTime vs gcTime",
+        text: "Un composant utilise useQuery avec staleTime: 5 minutes et gcTime: 10 minutes. L'utilisateur quitte l'ecran apres 2 minutes, puis y revient 4 minutes plus tard (6 min au total). Que se passe-t-il ?",
+        code: "useQuery({\n  queryKey: ['profile'],\n  queryFn: fetchProfile,\n  staleTime: 5 * 60 * 1000,  // 5 min\n  gcTime: 10 * 60 * 1000,    // 10 min\n});",
+        options: [
+          "Les donnees sont perdues car le composant a ete demonte — un nouveau fetch est lance",
+          "Les donnees sont servies depuis le cache (elles sont stale apres 5 min), puis un refetch en arriere-plan est lance",
+          "Les donnees sont servies depuis le cache et considerees fraiches, pas de refetch",
+          "React Query leve une erreur car le gcTime est superieur au staleTime"
+        ],
+        answer: 1,
+        explanation: "Apres le demontage (2 min), les donnees restent en cache pendant gcTime (10 min). Le composant revient a 6 min, le cache existe encore (< 10 min gcTime). Mais les donnees ont depasse staleTime (5 min), donc elles sont stale. React Query les affiche immediatement depuis le cache (pas de loading spinner), puis lance un refetch en arriere-plan pour les mettre a jour. C'est le pattern 'stale-while-revalidate'."
+      },
+      {
+        label: "Question 2 — Invalidation de queries",
+        text: "Apres la creation d'un nouveau post, quelle est la meilleure strategie d'invalidation ?",
+        code: "// Option A\nqueryClient.invalidateQueries();\n\n// Option B\nqueryClient.invalidateQueries({ queryKey: ['posts'] });\n\n// Option C\nqueryClient.setQueryData(['posts', newPost.id], newPost);\nqueryClient.invalidateQueries({ queryKey: ['posts', 'list'] });",
+        options: [
+          "Option A : invalider tout le cache pour etre sur que toutes les donnees sont fraiches",
+          "Option B : invalider tous les posts (listes et details) pour forcer un refetch complet",
+          "Option C : ajouter le nouveau post au cache du detail et invalider uniquement les listes",
+          "Aucune invalidation necessaire : React Query detecte automatiquement les nouvelles donnees"
+        ],
+        answer: 2,
+        explanation: "L'option C est la plus efficace. setQueryData ajoute le nouveau post directement dans le cache des details (pas de requete supplementaire). invalidateQueries sur les listes force un refetch uniquement des listes qui incluent le nouveau post. L'option A est un gaspillage (tout le cache est invalide). L'option B invalide aussi les details existants inutilement."
+      },
+      {
+        label: "Question 3 — Mises a jour optimistes",
+        text: "Dans ce code de mise a jour optimiste d'un like, quel est le role de onSettled ?",
+        code: "useMutation({\n  mutationFn: (postId) => toggleLike(postId),\n  onMutate: async (postId) => {\n    await queryClient.cancelQueries({ queryKey: ['posts', postId] });\n    const previous = queryClient.getQueryData(['posts', postId]);\n    queryClient.setQueryData(['posts', postId], old => ({\n      ...old, isLiked: !old.isLiked,\n      likesCount: old.isLiked ? old.likesCount - 1 : old.likesCount + 1,\n    }));\n    return { previous };\n  },\n  onError: (err, postId, context) => {\n    queryClient.setQueryData(['posts', postId], context.previous);\n  },\n  onSettled: (data, error, postId) => {\n    queryClient.invalidateQueries({ queryKey: ['posts', postId] });\n  },\n});",
+        options: [
+          "Notifier l'utilisateur que l'operation est terminee (succes ou echec)",
+          "Re-synchroniser le cache avec le serveur, que la mutation ait reussi ou echoue",
+          "Nettoyer les resources memoire utilisees par la mutation",
+          "Envoyer des analytics sur le resultat de la mutation"
+        ],
+        answer: 1,
+        explanation: "onSettled s'execute dans tous les cas (succes ou echec). Ici, il invalide la query du post pour forcer un refetch depuis le serveur. En cas de succes, cela confirme que le cache optimiste est correct (ou le corrige si le serveur a une valeur differente). En cas d'echec, le rollback dans onError a deja restaure l'ancien etat, et le refetch assure la coherence finale. C'est le filet de securite ultime."
+      },
+      {
+        label: "Question 4 — useInfiniteQuery et FlatList",
+        text: "Comment obtenir un tableau plat de tous les posts a partir des pages de useInfiniteQuery ?",
+        code: "const { data } = useInfiniteQuery({\n  queryKey: ['feed'],\n  queryFn: ({ pageParam }) => fetchFeed(pageParam),\n  initialPageParam: 1,\n  getNextPageParam: (lastPage) =>\n    lastPage.page < lastPage.totalPages ? lastPage.page + 1 : undefined,\n});\n\n// data.pages = [\n//   { data: [post1, post2], page: 1, totalPages: 5 },\n//   { data: [post3, post4], page: 2, totalPages: 5 },\n// ]",
+        options: [
+          "data.pages.map(page => page.data) pour obtenir un tableau de tableaux",
+          "data.pages.flatMap(page => page.data) pour aplatir en un seul tableau",
+          "data.pages.reduce((acc, page) => [...acc, page], []) pour concatener les pages",
+          "data.flat() car useInfiniteQuery aplatit deja les donnees"
+        ],
+        answer: 1,
+        explanation: "data.pages est un tableau de pages, chaque page contenant un tableau data. flatMap combine map et flat en une seule operation : il applique la fonction a chaque page, puis aplatit le resultat en un seul tableau. Le resultat est [post1, post2, post3, post4]. C'est le pattern standard pour passer les donnees a FlatList."
+      },
+      {
+        label: "Question 5 — Support offline en React Native",
+        text: "Pourquoi faut-il configurer focusManager et onlineManager specifiquement pour React Native ?",
+        code: "// focusManager\nAppState.addEventListener('change', (status) => {\n  focusManager.setFocused(status === 'active');\n});\n\n// onlineManager\nNetInfo.addEventListener((state) => {\n  onlineManager.setOnline(!!state.isConnected);\n});",
+        options: [
+          "React Native n'a pas d'API reseau, donc NetInfo est obligatoire pour toute requete",
+          "React Native n'a pas les evenements window.focus et navigator.onLine du web — il faut les adapter via AppState et NetInfo",
+          "C'est optionnel mais recommande pour de meilleures performances sur les anciens appareils",
+          "focusManager gere le clavier natif et onlineManager detecte le mode avion uniquement"
+        ],
+        answer: 1,
+        explanation: "TanStack Query est initialement concu pour le web, ou il ecoute window.focus (pour refetch quand l'onglet redevient actif) et navigator.onLine (pour detecter la connectivite). Ces APIs n'existent pas en React Native. Il faut remplacer window.focus par AppState (actif/arriere-plan) et navigator.onLine par NetInfo (connectivite). Sans cette configuration, le refetch au retour de l'app et la pause des requetes en mode offline ne fonctionnent pas."
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+    let answered = false;
+
+    function render() {
+      const q = questions[current];
+      const pct = ((current) / questions.length) * 100;
+      document.getElementById('progressBar').style.width = pct + '%';
+      document.getElementById('progressText').textContent = `Question ${current + 1} / ${questions.length}`;
+      document.getElementById('scoreContainer').classList.add('hidden');
+
+      let html = `<div class="card"><p class="question-label">${q.label}</p><p class="question-text">${q.text}</p>`;
+      if (q.code) html += `<pre><code>${q.code}</code></pre>`;
+      html += `<ul class="options">`;
+      q.options.forEach((opt, i) => {
+        html += `<li><label><input type="radio" name="q" value="${i}"> ${opt}</label></li>`;
+      });
+      html += `</ul><button class="btn btn-primary" id="submitBtn" disabled onclick="checkAnswer()">Valider</button>`;
+      html += `<div class="feedback" id="feedback"></div></div>`;
+      document.getElementById('quizContainer').innerHTML = html;
+      answered = false;
+
+      document.querySelectorAll('input[name="q"]').forEach(r => {
+        r.addEventListener('change', () => {
+          document.getElementById('submitBtn').disabled = false;
+        });
+      });
+    }
+
+    function checkAnswer() {
+      if (answered) { next(); return; }
+      answered = true;
+      const selected = document.querySelector('input[name="q"]:checked');
+      if (!selected) return;
+      const val = parseInt(selected.value);
+      const q = questions[current];
+      const fb = document.getElementById('feedback');
+      const btn = document.getElementById('submitBtn');
+
+      if (val === q.answer) {
+        score++;
+        fb.className = 'feedback correct';
+        fb.innerHTML = `<strong>Correct !</strong> ${q.explanation}`;
+      } else {
+        fb.className = 'feedback wrong';
+        fb.innerHTML = `<strong>Incorrect.</strong> ${q.explanation}`;
+      }
+
+      document.querySelectorAll('input[name="q"]').forEach(r => { r.disabled = true; });
+      btn.textContent = current < questions.length - 1 ? 'Suivante' : 'Voir le score';
+    }
+
+    function next() {
+      current++;
+      if (current < questions.length) { render(); }
+      else { showScore(); }
+    }
+
+    function showScore() {
+      document.getElementById('quizContainer').innerHTML = '';
+      document.getElementById('progressBar').style.width = '100%';
+      document.getElementById('progressText').textContent = `Termine !`;
+      const pct = Math.round((score / questions.length) * 100);
+      const container = document.getElementById('scoreContainer');
+      container.classList.remove('hidden');
+      container.innerHTML = `
+        <div class="score">${score} / ${questions.length}</div>
+        <div class="score-label">${pct}% de bonnes reponses</div>
+        <p>${pct >= 80 ? 'Excellent ! Vous maitrisez TanStack Query en React Native.' : pct >= 60 ? 'Bien ! Relisez les sections sur les concepts manques.' : 'Revisez le module 13 avant de continuer.'}</p>
+        <button class="btn-restart" onclick="restart()">Recommencer</button>
+      `;
+    }
+
+    function restart() { current = 0; score = 0; render(); }
+
+    render();
+  </script>
+</body>
+</html>

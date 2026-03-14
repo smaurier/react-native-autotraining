@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz 19 — Performance et optimisation</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a2e; color: #e0e0e0; min-height: 100vh; padding: 2rem 1rem; }
+    .container { max-width: 800px; margin: 0 auto; }
+    h1 { text-align: center; margin-bottom: 0.5rem; font-size: 1.8rem; color: #ffffff; }
+    .subtitle { text-align: center; color: #8892b0; margin-bottom: 2rem; font-size: 1rem; }
+    .progress-bar-container { background: #0d1117; border-radius: 10px; height: 14px; margin-bottom: 2rem; overflow: hidden; }
+    .progress-bar { background: linear-gradient(90deg, #0d6efd, #4dabf7); height: 100%; width: 0%; border-radius: 10px; transition: width 0.4s ease; }
+    .progress-text { text-align: center; color: #8892b0; margin-bottom: 1rem; font-size: 0.9rem; }
+    .card { background: #16213e; border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .question-label { font-size: 0.85rem; color: #4dabf7; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+    .question-text { font-size: 1.15rem; margin-bottom: 1.2rem; line-height: 1.5; color: #ffffff; }
+    pre { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 1rem; margin-bottom: 1.2rem; overflow-x: auto; font-size: 0.95rem; }
+    code { font-family: 'Consolas', 'Fira Code', 'Courier New', monospace; color: #c9d1d9; }
+    .options { list-style: none; }
+    .options li { margin-bottom: 0.5rem; }
+    .options label { display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1rem; background: #0d1117; border: 2px solid #30363d; border-radius: 8px; cursor: pointer; transition: border-color 0.2s, background 0.2s; font-size: 1rem; }
+    .options label:hover { border-color: #4dabf7; background: #1c2a4a; }
+    .options input[type="radio"] { accent-color: #0d6efd; width: 18px; height: 18px; flex-shrink: 0; }
+    .btn { display: inline-block; padding: 0.7rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+    .btn-primary { background: #0d6efd; color: #fff; }
+    .btn-primary:hover { background: #3b82f6; }
+    .btn-primary:disabled { background: #374151; cursor: not-allowed; }
+    .btn-restart { background: #238636; color: #fff; margin-top: 1rem; padding: 0.7rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+    .btn-restart:hover { background: #2ea043; }
+    .feedback { margin-top: 1rem; padding: 1rem 1.2rem; border-radius: 8px; font-size: 0.95rem; line-height: 1.5; display: none; }
+    .feedback.correct { background: #0f5132; border: 1px solid #198754; color: #d1fae5; display: block; }
+    .feedback.wrong { background: #842029; border: 1px solid #dc3545; color: #fdd; display: block; }
+    .score-card { text-align: center; padding: 3rem 2rem; }
+    .score-card .score { font-size: 3rem; font-weight: 700; color: #4dabf7; margin-bottom: 0.5rem; }
+    .score-card .score-label { font-size: 1.2rem; color: #8892b0; margin-bottom: 1.5rem; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Quiz 19 — Performance et optimisation</h1>
+    <p class="subtitle">React.memo, Hermes, FlashList, images, bundle, memoire, profiling</p>
+    <div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+    <p class="progress-text" id="progressText">Question 1 / 5</p>
+    <div id="quizContainer"></div>
+    <div id="scoreContainer" class="card score-card hidden"></div>
+  </div>
+  <script>
+    const questions = [
+      {
+        label: "Question 1 — React.memo et re-renders",
+        text: "Dans quel cas React.memo est-il INUTILE ?",
+        code: "// Cas A : item de liste\nconst ProductCard = React.memo(({ product }) => (\n  <View><Text>{product.name}</Text></View>\n));\n\n// Cas B : composant racine dont les props changent a chaque render\nconst Timer = React.memo(({ time }) => (\n  <Text>{time}s</Text>\n));\n// time change chaque seconde",
+        options: [
+          "Cas A : les items de liste n'ont pas besoin de memo",
+          "Cas B : si les props changent a chaque render, la comparaison shallow est du travail gaspille — le composant re-rendera de toute facon",
+          "Les deux cas sont utiles",
+          "React.memo est toujours inutile avec la New Architecture"
+        ],
+        answer: 1,
+        explanation: "React.memo compare les props avant de decider de re-rendre. Si les props changent systematiquement (comme un timer), la comparaison est du travail supplementaire sans benefice. En revanche, les items de liste (Cas A) beneficient grandement de memo car seuls les items modifies re-rendent."
+      },
+      {
+        label: "Question 2 — Hermes et bytecode",
+        text: "Quel est l'avantage principal de la precompilation en bytecode par Hermes ?",
+        code: "// Pipeline de build :\n// Source (.ts) -> Metro Bundle (.js) -> Hermes Compiler -> Bytecode (.hbc)\n\n// Au lancement de l'app :\n// Sans Hermes : parse JS -> compile -> execute\n// Avec Hermes : charge bytecode -> execute",
+        options: [
+          "Le bytecode est plus securise car il ne peut pas etre decompile",
+          "Le bytecode permet d'utiliser des API JavaScript plus recentes",
+          "Le temps de demarrage est reduit car le parsing et la compilation sont faits au build, pas au lancement",
+          "Le bytecode permet d'executer du code natif directement"
+        ],
+        answer: 2,
+        explanation: "Hermes precompile le JavaScript en bytecode au moment du build. Au lancement, l'app charge directement le bytecode sans avoir a parser ni compiler le code source. Cela reduit significativement le TTI (Time to Interactive) et la consommation memoire initiale."
+      },
+      {
+        label: "Question 3 — FlashList vs FlatList",
+        text: "Quelle est la difference fondamentale entre FlashList et FlatList ?",
+        code: "// FlatList\n<FlatList\n  data={products}\n  renderItem={({ item }) => <ProductCard product={item} />}\n/>\n\n// FlashList\n<FlashList\n  data={products}\n  renderItem={({ item }) => <ProductCard product={item} />}\n  estimatedItemSize={80}\n/>",
+        options: [
+          "FlashList est plus rapide car il n'utilise pas le Virtual DOM",
+          "FlashList recycle les cellules (reutilise les vues existantes au lieu de les demonter/remonter), ce qui elimine les blank frames et reduit la consommation memoire",
+          "FlashList rend tous les items d'un coup au lieu de les virtualiser",
+          "FlashList utilise des animations natives pour le scroll"
+        ],
+        answer: 1,
+        explanation: "Le recycling est le concept cle de FlashList. Au lieu de demonter une cellule qui sort de l'ecran puis d'en monter une nouvelle, FlashList reutilise la cellule existante en mettant a jour ses props. Cela elimine les blank frames pendant le scroll rapide et reduit la consommation memoire. La prop estimatedItemSize est obligatoire pour precalculer le nombre de cellules a pre-rendre."
+      },
+      {
+        label: "Question 4 — Fuites memoire",
+        text: "Quel est le probleme dans ce code et comment le corriger ?",
+        code: "function NotificationListener() {\n  const [messages, setMessages] = useState([]);\n\n  useEffect(() => {\n    const ws = new WebSocket('wss://api.example.com/ws');\n    ws.onmessage = (event) => {\n      setMessages(prev => [...prev, JSON.parse(event.data)]);\n    };\n    // Pas de cleanup !\n  }, []);\n\n  return <MessageList messages={messages} />;\n}",
+        options: [
+          "Le probleme est que useState ne supporte pas les WebSockets",
+          "Il manque un return dans useEffect qui ferme le WebSocket (ws.close()). Sans cleanup, le WebSocket reste ouvert apres le demontage du composant, causant une fuite memoire et des mises a jour de state sur un composant demonte",
+          "Le probleme est que JSON.parse est trop lent pour les messages WebSocket",
+          "Il faut utiliser useRef au lieu de useState pour les messages"
+        ],
+        answer: 1,
+        explanation: "Chaque useEffect qui ouvre une connexion, un listener ou un timer doit retourner une fonction de cleanup. Ici, il faut ajouter 'return () => ws.close();' pour fermer le WebSocket quand le composant est demonte. Sans cela, le WebSocket continue de recevoir des messages et d'appeler setMessages sur un composant qui n'existe plus."
+      },
+      {
+        label: "Question 5 — Optimisation du bundle",
+        text: "Quelle strategie reduit le plus la taille du bundle ?",
+        code: "// Option A\nimport _ from 'lodash';\n_.map(data, transform);\n\n// Option B\nimport { map } from 'lodash-es';\nmap(data, transform);\n\n// Option C\nimport map from 'lodash/map';\nmap(data, transform);\n\n// Option D\nconst result = data.map(transform);",
+        options: [
+          "Option A : lodash est deja optimise par Metro",
+          "Option B : lodash-es est tree-shakeable mais inclut quand meme tout lodash",
+          "Option C : l'import specifique ne charge que la fonction map",
+          "Option D : utiliser la methode native Array.map est la plus legere car elle n'ajoute aucune dependance"
+        ],
+        answer: 3,
+        explanation: "La meilleure strategie est d'utiliser les methodes natives (Array.map, Array.filter, etc.) quand elles suffisent. Cela n'ajoute aucun poids au bundle. Si vous avez besoin de lodash, l'import specifique (Option C) est le meilleur compromis. lodash-es (Option B) est tree-shakeable en theorie mais necessite un bundler qui le supporte parfaitement. L'import par defaut (Option A) inclut tout lodash (~70KB)."
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function render() {
+      const container = document.getElementById('quizContainer');
+      const q = questions[current];
+      const total = questions.length;
+      document.getElementById('progressBar').style.width = ((current / total) * 100) + '%';
+      document.getElementById('progressText').textContent = `Question ${current + 1} / ${total}`;
+
+      container.innerHTML = `
+        <div class="card">
+          <p class="question-label">${q.label}</p>
+          <p class="question-text">${q.text}</p>
+          ${q.code ? `<pre><code>${q.code}</code></pre>` : ''}
+          <ul class="options">
+            ${q.options.map((opt, i) => `
+              <li>
+                <label>
+                  <input type="radio" name="q${current}" value="${i}">
+                  ${opt}
+                </label>
+              </li>
+            `).join('')}
+          </ul>
+          <button class="btn btn-primary" id="submitBtn" onclick="submit()" disabled>Valider</button>
+          <div class="feedback" id="feedback"></div>
+        </div>
+      `;
+
+      container.querySelectorAll('input[type="radio"]').forEach(r => {
+        r.addEventListener('change', () => {
+          document.getElementById('submitBtn').disabled = false;
+        });
+      });
+    }
+
+    function submit() {
+      const selected = document.querySelector(`input[name="q${current}"]:checked`);
+      if (!selected) return;
+
+      const answer = parseInt(selected.value);
+      const q = questions[current];
+      const fb = document.getElementById('feedback');
+      const btn = document.getElementById('submitBtn');
+
+      document.querySelectorAll(`input[name="q${current}"]`).forEach(r => r.disabled = true);
+      btn.disabled = true;
+
+      if (answer === q.answer) {
+        score++;
+        fb.className = 'feedback correct';
+        fb.innerHTML = `<strong>Correct !</strong> ${q.explanation}`;
+      } else {
+        fb.className = 'feedback wrong';
+        fb.innerHTML = `<strong>Incorrect.</strong> ${q.explanation}`;
+      }
+
+      setTimeout(() => {
+        current++;
+        if (current < questions.length) {
+          render();
+        } else {
+          showScore();
+        }
+      }, 4000);
+    }
+
+    function showScore() {
+      const total = questions.length;
+      document.getElementById('progressBar').style.width = '100%';
+      document.getElementById('progressText').textContent = 'Termine !';
+      document.getElementById('quizContainer').classList.add('hidden');
+
+      const sc = document.getElementById('scoreContainer');
+      sc.classList.remove('hidden');
+
+      const pct = Math.round((score / total) * 100);
+      const emoji = pct === 100 ? '&#127942;' : pct >= 70 ? '&#128077;' : '&#128170;';
+
+      sc.innerHTML = `
+        <div class="score">${score} / ${total}</div>
+        <div class="score-label">${pct}% ${emoji}</div>
+        <p>${pct >= 70 ? 'Bravo ! Vous maitrisez les techniques d\'optimisation.' : 'Revisez le module 19 et reessayez !'}</p>
+        <button class="btn-restart" onclick="restart()">Recommencer</button>
+      `;
+    }
+
+    function restart() {
+      current = 0;
+      score = 0;
+      document.getElementById('scoreContainer').classList.add('hidden');
+      document.getElementById('quizContainer').classList.remove('hidden');
+      render();
+    }
+
+    render();
+  </script>
+</body>
+</html>

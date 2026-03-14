@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz 22 — Deploiement et CI/CD</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a2e; color: #e0e0e0; min-height: 100vh; padding: 2rem 1rem; }
+    .container { max-width: 800px; margin: 0 auto; }
+    h1 { text-align: center; margin-bottom: 0.5rem; font-size: 1.8rem; color: #ffffff; }
+    .subtitle { text-align: center; color: #8892b0; margin-bottom: 2rem; font-size: 1rem; }
+    .progress-bar-container { background: #0d1117; border-radius: 10px; height: 14px; margin-bottom: 2rem; overflow: hidden; }
+    .progress-bar { background: linear-gradient(90deg, #0d6efd, #4dabf7); height: 100%; width: 0%; border-radius: 10px; transition: width 0.4s ease; }
+    .progress-text { text-align: center; color: #8892b0; margin-bottom: 1rem; font-size: 0.9rem; }
+    .card { background: #16213e; border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .question-label { font-size: 0.85rem; color: #4dabf7; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+    .question-text { font-size: 1.15rem; margin-bottom: 1.2rem; line-height: 1.5; color: #ffffff; }
+    pre { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 1rem; margin-bottom: 1.2rem; overflow-x: auto; font-size: 0.95rem; }
+    code { font-family: 'Consolas', 'Fira Code', 'Courier New', monospace; color: #c9d1d9; }
+    .options { list-style: none; }
+    .options li { margin-bottom: 0.5rem; }
+    .options label { display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1rem; background: #0d1117; border: 2px solid #30363d; border-radius: 8px; cursor: pointer; transition: border-color 0.2s, background 0.2s; font-size: 1rem; }
+    .options label:hover { border-color: #4dabf7; background: #1c2a4a; }
+    .options input[type="radio"] { accent-color: #0d6efd; width: 18px; height: 18px; flex-shrink: 0; }
+    .btn { display: inline-block; padding: 0.7rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+    .btn-primary { background: #0d6efd; color: #fff; }
+    .btn-primary:hover { background: #3b82f6; }
+    .btn-primary:disabled { background: #374151; cursor: not-allowed; }
+    .btn-restart { background: #238636; color: #fff; margin-top: 1rem; padding: 0.7rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+    .btn-restart:hover { background: #2ea043; }
+    .feedback { margin-top: 1rem; padding: 1rem 1.2rem; border-radius: 8px; font-size: 0.95rem; line-height: 1.5; display: none; }
+    .feedback.correct { background: #0f5132; border: 1px solid #198754; color: #d1fae5; display: block; }
+    .feedback.wrong { background: #842029; border: 1px solid #dc3545; color: #fdd; display: block; }
+    .score-card { text-align: center; padding: 3rem 2rem; }
+    .score-card .score { font-size: 3rem; font-weight: 700; color: #4dabf7; margin-bottom: 0.5rem; }
+    .score-card .score-label { font-size: 1.2rem; color: #8892b0; margin-bottom: 1.5rem; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Quiz 22 — Deploiement et CI/CD</h1>
+    <p class="subtitle">EAS Build, Submit, Update, signing, stores, CI/CD, versioning</p>
+    <div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+    <p class="progress-text" id="progressText">Question 1 / 6</p>
+    <div id="quizContainer"></div>
+    <div id="scoreContainer" class="card score-card hidden"></div>
+  </div>
+  <script>
+    const questions = [
+      {
+        label: "Question 1 — EAS Build profiles",
+        text: "Quelle est la difference entre les profils 'development', 'preview' et 'production' dans eas.json ?",
+        code: "{\n  \"build\": {\n    \"development\": {\n      \"developmentClient\": true,\n      \"distribution\": \"internal\"\n    },\n    \"preview\": {\n      \"distribution\": \"internal\",\n      \"autoIncrement\": true\n    },\n    \"production\": {\n      \"autoIncrement\": true\n    }\n  }\n}",
+        options: [
+          "Ils definissent juste des noms differents, la configuration est identique",
+          "development inclut le Dev Client et est interne, preview est une build de staging interne avec auto-increment, production est optimisee pour les stores avec auto-increment",
+          "development est pour iOS uniquement, preview pour Android, production pour les deux",
+          "development ne signe pas l'app, preview signe avec un certificat de test, production avec le vrai certificat"
+        ],
+        answer: 1,
+        explanation: "Le profil 'development' active le Expo Dev Client (hot reload, debugger) et la distribution interne. 'preview' produit une build de staging distribuee en interne aux testeurs/QA avec un build number auto-incremente. 'production' produit la build finale optimisee (minifiee, tree-shakee) pour soumission aux stores. Les trois profils peuvent avoir des variables d'environnement differentes (dev/staging/prod API URLs)."
+      },
+      {
+        label: "Question 2 — EAS Update (OTA)",
+        text: "Que peut-on mettre a jour via EAS Update (OTA) sans passer par les stores ?",
+        code: "// Apres un build production deploye sur les stores :\n\n// Scenario A : Corriger un bug dans un composant React\n// Scenario B : Ajouter un nouveau module natif (ex: react-native-camera)\n// Scenario C : Changer une permission (ex: ajouter la localisation)\n// Scenario D : Modifier le splash screen",
+        options: [
+          "Tout : code JS, modules natifs, permissions et assets natifs",
+          "Uniquement le scenario A : le code JavaScript/TypeScript et les assets statiques. Les scenarios B, C et D necessitent un nouveau build natif",
+          "Les scenarios A et D uniquement",
+          "Rien sans un nouveau build — les OTA updates ne sont plus supportees par Apple"
+        ],
+        answer: 1,
+        explanation: "EAS Update envoie un nouveau bundle JavaScript et les assets statiques (images, fonts). Cela couvre les corrections de bugs dans le code React/TS et les changements de style/layout. En revanche, tout changement natif (ajout de module, permissions, splash screen, icone) necessite un nouveau build natif car ces elements sont compiles dans le binaire. La runtime version assure la compatibilite entre le build natif et l'update OTA."
+      },
+      {
+        label: "Question 3 — Signature iOS",
+        text: "Quel est le role du Provisioning Profile dans la signature iOS ?",
+        code: "// Architecture de signature iOS :\n// Apple Developer Account\n//   ├── Distribution Certificate (.p12)\n//   ├── Provisioning Profile (.mobileprovision)\n//   └── App ID (Bundle Identifier)",
+        options: [
+          "Il contient le code source de l'application pour la review Apple",
+          "Il lie le certificat de distribution, l'App ID et (en dev) les appareils autorises, formant la 'permission' d'installer l'app",
+          "Il chiffre l'application pour empecher le reverse engineering",
+          "Il genere automatiquement les cles de signature a chaque build"
+        ],
+        answer: 1,
+        explanation: "Le Provisioning Profile est le lien entre trois elements : le certificat de distribution (qui vous etes), l'App ID/Bundle Identifier (quelle app), et en mode Development/Ad Hoc, la liste des appareils autorises. Pour l'App Store, pas de liste d'appareils — l'app est disponible pour tous. EAS gere automatiquement la creation et le renouvellement de ces profils."
+      },
+      {
+        label: "Question 4 — Runtime version",
+        text: "A quoi sert la runtime version dans EAS Update ?",
+        code: "// app.config.ts\n{\n  runtimeVersion: {\n    policy: \"fingerprint\"  // ou \"appVersion\"\n  }\n}\n\n// eas update --channel production",
+        options: [
+          "Elle determine la version de React Native utilisee par l'application",
+          "Elle assure la compatibilite entre un build natif et un update OTA — un update n'est envoye qu'aux builds avec le meme runtime version",
+          "Elle fixe la version minimum d'iOS/Android requise pour installer l'app",
+          "Elle est utilisee uniquement pour l'affichage dans les stores"
+        ],
+        answer: 1,
+        explanation: "La runtime version identifie le 'contrat' entre le code natif (build) et le code JavaScript (update). Un update OTA n'est distribue qu'aux builds ayant le meme runtime version, evitant qu'un update utilisant un nouveau module natif soit envoye a un build qui ne l'a pas. La politique 'fingerprint' (recommandee pour Expo SDK 52+) calcule automatiquement un hash du code natif pour detecter les changements."
+      },
+      {
+        label: "Question 5 — Play Store requirements",
+        text: "Quelles sont les exigences techniques actuelles du Google Play Store (2025) ?",
+        code: "// android/app/build.gradle\nandroid {\n  compileSdkVersion 35\n  defaultConfig {\n    targetSdkVersion ???\n    // Format de sortie : ???\n  }\n}",
+        options: [
+          "Target SDK API 30+, format APK, support 32-bit et 64-bit",
+          "Target SDK API 35+ (Android 15), format AAB (Android App Bundle), support 64-bit obligatoire",
+          "Target SDK API 33+, format APK ou AAB au choix, 64-bit optionnel",
+          "Pas d'exigence specifique, Google accepte toutes les versions"
+        ],
+        answer: 1,
+        explanation: "En 2025, Google exige un target SDK API 35 minimum (Android 15) pour les nouvelles apps et mises a jour. Le format AAB (Android App Bundle) est obligatoire — il permet a Google de generer des APKs optimises par appareil. Le support 64-bit est obligatoire depuis 2019. Il faut aussi remplir le formulaire Data Safety et le questionnaire de content rating (IARC)."
+      },
+      {
+        label: "Question 6 — CI/CD pipeline",
+        text: "Quel est le workflow CI/CD recommande pour un projet Expo avec EAS ?",
+        code: "# PR → merge develop → merge main → tag\n#\n# Quelles actions a chaque etape ?",
+        options: [
+          "Builder et soumettre aux stores a chaque commit sur n'importe quelle branche",
+          "PR : lint+test+typecheck. Push develop : EAS Update OTA sur channel preview. Push main : EAS Build production + auto-submit aux stores",
+          "Tout faire manuellement depuis la machine du developpeur",
+          "Utiliser uniquement EAS Update pour tout, sans jamais rebuild l'app native"
+        ],
+        answer: 1,
+        explanation: "Le workflow recommande separe les etapes : sur PR, on execute les verifications rapides (lint, tests, typecheck). Sur push develop, on publie un update OTA sur le canal 'preview' pour que les testeurs recoivent les changements instantanement. Sur push main (ou tag de version), on lance un build production complet via EAS Build avec auto-submit aux stores. Les hotfixes urgents peuvent etre deployes via EAS Update sur le canal production sans passer par les stores."
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+    const total = questions.length;
+    const container = document.getElementById('quizContainer');
+
+    function render() {
+      const q = questions[current];
+      document.getElementById('progressBar').style.width = `${((current) / total) * 100}%`;
+      document.getElementById('progressText').textContent = `Question ${current + 1} / ${total}`;
+
+      container.innerHTML = `
+        <div class="card">
+          <p class="question-label">${q.label}</p>
+          <p class="question-text">${q.text}</p>
+          ${q.code ? `<pre><code>${q.code}</code></pre>` : ''}
+          <ul class="options">
+            ${q.options.map((opt, i) => `
+              <li>
+                <label>
+                  <input type="radio" name="q${current}" value="${i}">
+                  ${opt}
+                </label>
+              </li>
+            `).join('')}
+          </ul>
+          <button class="btn btn-primary" id="submitBtn" onclick="submit()" disabled>Valider</button>
+          <div class="feedback" id="feedback"></div>
+        </div>
+      `;
+
+      container.querySelectorAll('input[type="radio"]').forEach(r => {
+        r.addEventListener('change', () => {
+          document.getElementById('submitBtn').disabled = false;
+        });
+      });
+    }
+
+    function submit() {
+      const selected = document.querySelector(`input[name="q${current}"]:checked`);
+      if (!selected) return;
+
+      const answer = parseInt(selected.value);
+      const q = questions[current];
+      const fb = document.getElementById('feedback');
+      const btn = document.getElementById('submitBtn');
+
+      document.querySelectorAll(`input[name="q${current}"]`).forEach(r => r.disabled = true);
+      btn.disabled = true;
+
+      if (answer === q.answer) {
+        score++;
+        fb.className = 'feedback correct';
+        fb.innerHTML = `<strong>Correct !</strong> ${q.explanation}`;
+      } else {
+        fb.className = 'feedback wrong';
+        fb.innerHTML = `<strong>Incorrect.</strong> ${q.explanation}`;
+      }
+
+      setTimeout(() => {
+        current++;
+        if (current < questions.length) {
+          render();
+        } else {
+          showScore();
+        }
+      }, 4000);
+    }
+
+    function showScore() {
+      const total = questions.length;
+      document.getElementById('progressBar').style.width = '100%';
+      document.getElementById('progressText').textContent = 'Termine !';
+      document.getElementById('quizContainer').classList.add('hidden');
+
+      const sc = document.getElementById('scoreContainer');
+      sc.classList.remove('hidden');
+
+      const pct = Math.round((score / total) * 100);
+      const emoji = pct === 100 ? '&#127942;' : pct >= 70 ? '&#128077;' : '&#128170;';
+
+      sc.innerHTML = `
+        <div class="score">${score} / ${total}</div>
+        <div class="score-label">${pct}% ${emoji}</div>
+        <p>${pct >= 70 ? 'Bravo ! Vous maitrisez le deploiement et le CI/CD.' : 'Revisez le module 22 et reessayez !'}</p>
+        <button class="btn-restart" onclick="restart()">Recommencer</button>
+      `;
+    }
+
+    function restart() {
+      current = 0;
+      score = 0;
+      document.getElementById('scoreContainer').classList.add('hidden');
+      document.getElementById('quizContainer').classList.remove('hidden');
+      render();
+    }
+
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz 08 — React Navigation fondamentaux</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a2e; color: #e0e0e0; min-height: 100vh; padding: 2rem 1rem; }
+    .container { max-width: 800px; margin: 0 auto; }
+    h1 { text-align: center; margin-bottom: 0.5rem; font-size: 1.8rem; color: #ffffff; }
+    .subtitle { text-align: center; color: #8892b0; margin-bottom: 2rem; font-size: 1rem; }
+    .progress-bar-container { background: #0d1117; border-radius: 10px; height: 14px; margin-bottom: 2rem; overflow: hidden; }
+    .progress-bar { background: linear-gradient(90deg, #0d6efd, #4dabf7); height: 100%; width: 0%; border-radius: 10px; transition: width 0.4s ease; }
+    .progress-text { text-align: center; color: #8892b0; margin-bottom: 1rem; font-size: 0.9rem; }
+    .card { background: #16213e; border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .question-label { font-size: 0.85rem; color: #4dabf7; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+    .question-text { font-size: 1.15rem; margin-bottom: 1.2rem; line-height: 1.5; color: #ffffff; }
+    pre { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 1rem; margin-bottom: 1.2rem; overflow-x: auto; font-size: 0.95rem; }
+    code { font-family: 'Consolas', 'Fira Code', 'Courier New', monospace; color: #c9d1d9; }
+    .options { list-style: none; }
+    .options li { margin-bottom: 0.5rem; }
+    .options label { display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1rem; background: #0d1117; border: 2px solid #30363d; border-radius: 8px; cursor: pointer; transition: border-color 0.2s, background 0.2s; font-size: 1rem; }
+    .options label:hover { border-color: #4dabf7; background: #1c2a4a; }
+    .options input[type="radio"] { accent-color: #0d6efd; width: 18px; height: 18px; flex-shrink: 0; }
+    .btn { display: inline-block; padding: 0.7rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+    .btn-primary { background: #0d6efd; color: #fff; }
+    .btn-primary:hover { background: #3b82f6; }
+    .btn-primary:disabled { background: #374151; cursor: not-allowed; }
+    .btn-restart { background: #238636; color: #fff; margin-top: 1rem; padding: 0.7rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+    .btn-restart:hover { background: #2ea043; }
+    .feedback { margin-top: 1rem; padding: 1rem 1.2rem; border-radius: 8px; font-size: 0.95rem; line-height: 1.5; display: none; }
+    .feedback.correct { background: #0f5132; border: 1px solid #198754; color: #d1fae5; display: block; }
+    .feedback.wrong { background: #842029; border: 1px solid #dc3545; color: #fdd; display: block; }
+    .score-card { text-align: center; padding: 3rem 2rem; }
+    .score-card .score { font-size: 3rem; font-weight: 700; color: #4dabf7; margin-bottom: 0.5rem; }
+    .score-card .score-label { font-size: 1.2rem; color: #8892b0; margin-bottom: 1.5rem; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Quiz 08 — React Navigation fondamentaux</h1>
+    <p class="subtitle">Stack Navigator, actions, parametres, TypeScript, header, animations</p>
+    <div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+    <p class="progress-text" id="progressText">Question 1 / 6</p>
+    <div id="quizContainer"></div>
+    <div id="scoreContainer" class="card score-card hidden"></div>
+  </div>
+  <script>
+    const questions = [
+      {
+        label: "Question 1 — navigate vs push",
+        text: "Quelle est la difference entre navigation.navigate('Details') et navigation.push('Details') ?",
+        code: "// Pile actuelle : Home -> Details(id=1)\n\n// Option A :\nnavigation.navigate('Details', { id: 2 });\n// Resultat : Home -> Details(id=2)\n\n// Option B :\nnavigation.push('Details', { id: 2 });\n// Resultat : Home -> Details(id=1) -> Details(id=2)",
+        options: [
+          "navigate et push font exactement la meme chose",
+          "navigate reutilise l'instance existante (met a jour les params), push empile toujours une nouvelle instance",
+          "push est deprecated, il faut toujours utiliser navigate",
+          "navigate est pour les stacks, push est pour les tabs"
+        ],
+        answer: 1,
+        explanation: "navigate cherche d'abord si l'ecran existe deja dans la pile et met a jour ses params. push cree toujours une nouvelle instance, meme si un ecran du meme nom existe deja. push est utile quand on veut plusieurs instances du meme ecran (ex: naviguer dans une liste de produits)."
+      },
+      {
+        label: "Question 2 — RootStackParamList",
+        text: "A quoi sert le type RootStackParamList dans React Navigation ?",
+        code: "type RootStackParamList = {\n  Home: undefined;\n  Details: { itemId: number; title: string };\n  Profile: { userId: string };\n};\n\nconst Stack = createNativeStackNavigator<RootStackParamList>();",
+        options: [
+          "Il definit les styles CSS de chaque ecran",
+          "Il associe chaque nom d'ecran a ses parametres de route, permettant a TypeScript de verifier les appels de navigation",
+          "Il configure les animations de transition entre ecrans",
+          "Il definit les permissions d'acces pour chaque ecran"
+        ],
+        answer: 1,
+        explanation: "RootStackParamList est un type TypeScript qui associe chaque nom d'ecran a la forme de ses parametres. Il permet a TypeScript de verifier que les appels navigate/push utilisent des noms d'ecrans valides et passent les bons parametres. undefined signifie que l'ecran ne prend pas de parametres."
+      },
+      {
+        label: "Question 3 — Screen options",
+        text: "Comment definir des options d'ecran qui dependent des parametres de la route ?",
+        code: "// Methode A :\n<Stack.Screen\n  name=\"Details\"\n  options={{ title: 'Details' }}\n/>\n\n// Methode B :\n<Stack.Screen\n  name=\"Details\"\n  options={({ route }) => ({\n    title: route.params?.title ?? 'Details'\n  })}\n/>",
+        options: [
+          "Uniquement avec la methode A (objet statique)",
+          "Uniquement avec navigation.setOptions dans useEffect",
+          "Avec la methode B : options accepte une fonction qui recoit { route, navigation } et retourne les options",
+          "Ce n'est pas possible, le titre doit etre statique"
+        ],
+        answer: 2,
+        explanation: "La prop options accepte soit un objet statique (methode A), soit une fonction (methode B). La fonction recoit { route, navigation } en argument, ce qui permet de calculer les options dynamiquement a partir des parametres de la route. On peut aussi utiliser navigation.setOptions() depuis le composant ecran."
+      },
+      {
+        label: "Question 4 — goBack et canGoBack",
+        text: "Que se passe-t-il si on appelle navigation.goBack() sur le premier ecran de la pile ?",
+        code: "function HomeScreen({ navigation }) {\n  return (\n    <Button\n      title=\"Retour\"\n      onPress={() => navigation.goBack()}\n    />\n  );\n}",
+        options: [
+          "L'application se ferme proprement",
+          "Rien ne se passe, l'appel est ignore silencieusement",
+          "Une erreur est levee car il n'y a pas d'ecran precedent dans la pile",
+          "L'ecran est remplace par un ecran vide"
+        ],
+        answer: 2,
+        explanation: "Appeler goBack() quand il n'y a pas d'ecran precedent dans la pile leve une erreur. C'est pourquoi il faut verifier avec navigation.canGoBack() avant d'appeler goBack(). Le pattern recommande est : if (navigation.canGoBack()) navigation.goBack()."
+      },
+      {
+        label: "Question 5 — useFocusEffect",
+        text: "A quoi sert le hook useFocusEffect et quand se declenche-t-il ?",
+        code: "import { useFocusEffect } from '@react-navigation/native';\n\nfunction ProductListScreen() {\n  useFocusEffect(\n    useCallback(() => {\n      fetchProducts();\n      return () => cleanup();\n    }, [])\n  );\n}",
+        options: [
+          "Il se declenche une seule fois au montage du composant, comme useEffect([], [])",
+          "Il se declenche chaque fois que l'ecran obtient le focus (devient visible), et le cleanup se lance quand l'ecran perd le focus",
+          "Il se declenche uniquement quand l'utilisateur appuie sur l'ecran",
+          "Il est identique a useEffect mais avec un meilleur nom"
+        ],
+        answer: 1,
+        explanation: "useFocusEffect se declenche chaque fois que l'ecran obtient le focus — c'est-a-dire quand il devient l'ecran visible. Contrairement a useEffect qui ne se declenche qu'au montage, useFocusEffect se relance quand on revient sur l'ecran (ex: apres un goBack). Le cleanup se lance quand l'ecran perd le focus. C'est ideal pour rafraichir des donnees."
+      },
+      {
+        label: "Question 6 — replace vs reset",
+        text: "Quelle est la difference entre navigation.replace() et navigation.reset() ?",
+        code: "// Pile actuelle : Home -> Login\n\n// Option A : replace\nnavigation.replace('Dashboard');\n// Resultat : Home -> Dashboard\n\n// Option B : reset\nnavigation.reset({\n  index: 0,\n  routes: [{ name: 'Dashboard' }],\n});\n// Resultat : Dashboard (seul ecran)",
+        options: [
+          "replace et reset sont identiques",
+          "replace remplace uniquement l'ecran courant (la pile reste), reset reinitialise toute la pile de navigation",
+          "reset remplace l'ecran courant, replace reinitialise la pile",
+          "replace est pour les stacks, reset est pour les tabs"
+        ],
+        answer: 1,
+        explanation: "replace remplace uniquement l'ecran au sommet de la pile sans toucher aux autres ecrans. reset reinitialise completement la pile de navigation avec les routes specifiees. Apres un login, on utilise souvent reset pour empecher l'utilisateur de revenir a l'ecran de login avec le bouton retour."
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function render() {
+      const container = document.getElementById('quizContainer');
+      const q = questions[current];
+      const total = questions.length;
+      document.getElementById('progressBar').style.width = ((current / total) * 100) + '%';
+      document.getElementById('progressText').textContent = `Question ${current + 1} / ${total}`;
+
+      container.innerHTML = `
+        <div class="card">
+          <p class="question-label">${q.label}</p>
+          <p class="question-text">${q.text}</p>
+          ${q.code ? `<pre><code>${q.code}</code></pre>` : ''}
+          <ul class="options">
+            ${q.options.map((opt, i) => `
+              <li>
+                <label>
+                  <input type="radio" name="q${current}" value="${i}">
+                  ${opt}
+                </label>
+              </li>
+            `).join('')}
+          </ul>
+          <button class="btn btn-primary" id="submitBtn" onclick="submit()" disabled>Valider</button>
+          <div class="feedback" id="feedback"></div>
+        </div>
+      `;
+
+      container.querySelectorAll('input[type="radio"]').forEach(r => {
+        r.addEventListener('change', () => {
+          document.getElementById('submitBtn').disabled = false;
+        });
+      });
+    }
+
+    function submit() {
+      const selected = document.querySelector(`input[name="q${current}"]:checked`);
+      if (!selected) return;
+
+      const answer = parseInt(selected.value);
+      const q = questions[current];
+      const fb = document.getElementById('feedback');
+      const btn = document.getElementById('submitBtn');
+
+      document.querySelectorAll(`input[name="q${current}"]`).forEach(r => r.disabled = true);
+      btn.disabled = true;
+
+      if (answer === q.answer) {
+        score++;
+        fb.className = 'feedback correct';
+        fb.innerHTML = `<strong>Correct !</strong> ${q.explanation}`;
+      } else {
+        fb.className = 'feedback wrong';
+        fb.innerHTML = `<strong>Incorrect.</strong> ${q.explanation}`;
+      }
+
+      setTimeout(() => {
+        current++;
+        if (current < questions.length) {
+          render();
+        } else {
+          showScore();
+        }
+      }, 4000);
+    }
+
+    function showScore() {
+      const total = questions.length;
+      document.getElementById('progressBar').style.width = '100%';
+      document.getElementById('progressText').textContent = 'Termine !';
+      document.getElementById('quizContainer').classList.add('hidden');
+
+      const sc = document.getElementById('scoreContainer');
+      sc.classList.remove('hidden');
+
+      const pct = Math.round((score / total) * 100);
+      const emoji = pct === 100 ? '&#127942;' : pct >= 70 ? '&#128077;' : '&#128170;';
+
+      sc.innerHTML = `
+        <div class="score">${score} / ${total}</div>
+        <div class="score-label">${pct}% ${emoji}</div>
+        <p>${pct >= 70 ? 'Bravo ! Vous maitrisez les fondamentaux de React Navigation.' : 'Revisez le module 08 et reessayez !'}</p>
+        <button class="btn-restart" onclick="restart()">Recommencer</button>
+      `;
+    }
+
+    function restart() {
+      current = 0;
+      score = 0;
+      document.getElementById('scoreContainer').classList.add('hidden');
+      document.getElementById('quizContainer').classList.remove('hidden');
+      render();
+    }
+
+    render();
+  </script>
+</body>
+</html>

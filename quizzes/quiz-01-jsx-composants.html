@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz 01 — JSX et premiers composants</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a2e; color: #e0e0e0; min-height: 100vh; padding: 2rem 1rem; }
+    .container { max-width: 800px; margin: 0 auto; }
+    h1 { text-align: center; margin-bottom: 0.5rem; font-size: 1.8rem; color: #ffffff; }
+    .subtitle { text-align: center; color: #8892b0; margin-bottom: 2rem; font-size: 1rem; }
+    .progress-bar-container { background: #0d1117; border-radius: 10px; height: 14px; margin-bottom: 2rem; overflow: hidden; }
+    .progress-bar { background: linear-gradient(90deg, #0d6efd, #4dabf7); height: 100%; width: 0%; border-radius: 10px; transition: width 0.4s ease; }
+    .progress-text { text-align: center; color: #8892b0; margin-bottom: 1rem; font-size: 0.9rem; }
+    .card { background: #16213e; border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .question-label { font-size: 0.85rem; color: #4dabf7; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+    .question-text { font-size: 1.15rem; margin-bottom: 1.2rem; line-height: 1.5; color: #ffffff; }
+    pre { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 1rem; margin-bottom: 1.2rem; overflow-x: auto; font-size: 0.95rem; }
+    code { font-family: 'Consolas', 'Fira Code', 'Courier New', monospace; color: #c9d1d9; }
+    .options { list-style: none; }
+    .options li { margin-bottom: 0.5rem; }
+    .options label { display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1rem; background: #0d1117; border: 2px solid #30363d; border-radius: 8px; cursor: pointer; transition: border-color 0.2s, background 0.2s; font-size: 1rem; }
+    .options label:hover { border-color: #4dabf7; background: #1c2a4a; }
+    .options input[type="radio"] { accent-color: #0d6efd; width: 18px; height: 18px; flex-shrink: 0; }
+    .btn { display: inline-block; padding: 0.7rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+    .btn-primary { background: #0d6efd; color: #fff; }
+    .btn-primary:hover { background: #3b82f6; }
+    .btn-primary:disabled { background: #374151; cursor: not-allowed; }
+    .btn-restart { background: #238636; color: #fff; margin-top: 1rem; padding: 0.7rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+    .btn-restart:hover { background: #2ea043; }
+    .feedback { margin-top: 1rem; padding: 1rem 1.2rem; border-radius: 8px; font-size: 0.95rem; line-height: 1.5; display: none; }
+    .feedback.correct { background: #0f5132; border: 1px solid #198754; color: #d1fae5; display: block; }
+    .feedback.wrong { background: #842029; border: 1px solid #dc3545; color: #fdd; display: block; }
+    .score-card { text-align: center; padding: 3rem 2rem; }
+    .score-card .score { font-size: 3rem; font-weight: 700; color: #4dabf7; margin-bottom: 0.5rem; }
+    .score-card .score-label { font-size: 1.2rem; color: #8892b0; margin-bottom: 1.5rem; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Quiz 01 — JSX et premiers composants</h1>
+    <p class="subtitle">Composants, JSX, styling et composition</p>
+    <div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+    <p class="progress-text" id="progressText">Question 1 / 5</p>
+    <div id="quizContainer"></div>
+    <div id="scoreContainer" class="card score-card hidden"></div>
+  </div>
+  <script>
+    const questions = [
+      {
+        label: "Question 1 — JSX et expressions",
+        text: "Quel est le resultat du rendu de ce composant JSX ?",
+        code: "function Demo() {\n  const count = 0;\n  return (\n    <View>\n      {count && <Text>Messages: {count}</Text>}\n      <Text>Fin</Text>\n    </View>\n  );\n}",
+        options: [
+          "Affiche 'Messages: 0' puis 'Fin'",
+          "Affiche uniquement 'Fin'",
+          "Affiche '0' puis 'Fin' (le 0 est rendu comme texte)",
+          "Erreur de compilation TypeScript"
+        ],
+        answer: 2,
+        explanation: "C'est un piege classique en React ! L'expression {count && ...} avec count = 0 evalue a 0 (falsy), et React rend le nombre 0 comme texte visible. Pour eviter cela, utilisez {count > 0 && <Text>...</Text>} pour obtenir un boolean false (non rendu)."
+      },
+      {
+        label: "Question 2 — View vs div",
+        text: "Pourquoi ne peut-on pas utiliser &lt;div&gt; dans React Native ?",
+        options: [
+          "div est un composant deprece dans React Native",
+          "React Native n'utilise pas le DOM — il utilise des composants natifs (UIView sur iOS, android.view.View sur Android)",
+          "div ne supporte pas Flexbox",
+          "div existe mais il faut l'importer depuis 'react-native-web'"
+        ],
+        answer: 1,
+        explanation: "React Native ne fonctionne pas avec le DOM du navigateur. Au lieu de balises HTML, il utilise des composants qui correspondent a des widgets natifs de chaque plateforme. &lt;View&gt; est traduit en UIView (iOS) ou android.view.View (Android). Pour le web, React Native Web existe et traduit View en div."
+      },
+      {
+        label: "Question 3 — Composition de composants",
+        text: "Quelle est la meilleure facon de creer un composant Card reutilisable qui accepte du contenu variable ?",
+        code: "// Option A\nfunction Card({ content }: { content: string }) {\n  return <View><Text>{content}</Text></View>;\n}\n\n// Option B\nfunction Card({ children }: { children: ReactNode }) {\n  return <View style={styles.card}>{children}</View>;\n}\n\n// Option C\nfunction Card() {\n  return <View style={styles.card}><Text>Contenu fixe</Text></View>;\n}",
+        options: [
+          "Option A — passer le contenu comme string",
+          "Option B — utiliser children pour accepter n'importe quel JSX",
+          "Option C — contenu fixe est plus simple",
+          "Les trois sont equivalentes"
+        ],
+        answer: 1,
+        explanation: "Le pattern children (Option B) est le plus flexible et le plus idiomatique en React. Il permet de passer n'importe quel JSX comme contenu : texte, images, autres composants, listes, etc. L'option A est limitee au texte seul, et l'option C n'est pas reutilisable."
+      },
+      {
+        label: "Question 4 — ScrollView vs FlatList",
+        text: "Pourquoi faut-il utiliser FlatList plutot que ScrollView pour afficher une liste de 1000 elements ?",
+        options: [
+          "FlatList supporte le scroll horizontal, pas ScrollView",
+          "ScrollView rend tous les 1000 elements d'un coup (memoire), FlatList ne rend que les elements visibles (virtualisation)",
+          "FlatList est plus rapide car il utilise le thread natif",
+          "ScrollView ne supporte pas la prop key"
+        ],
+        answer: 1,
+        explanation: "ScrollView rend tous ses enfants immediatement dans le DOM natif, meme ceux hors ecran. Avec 1000 elements, cela consomme beaucoup de memoire et ralentit le rendu initial. FlatList utilise la virtualisation : seuls les elements visibles (+ un buffer) sont rendus. Les elements hors ecran sont recycles."
+      },
+      {
+        label: "Question 5 — Texte obligatoire dans Text",
+        text: "Que se passe-t-il avec ce code React Native ?",
+        code: "function Greeting({ name }: { name: string }) {\n  return (\n    <View>\n      Bonjour {name} !\n    </View>\n  );\n}",
+        options: [
+          "Affiche 'Bonjour Alice !' normalement",
+          "Erreur runtime : 'Text strings must be rendered within a &lt;Text&gt; component'",
+          "Le texte est ignore silencieusement",
+          "Erreur de compilation TypeScript"
+        ],
+        answer: 1,
+        explanation: "En React Native, tout texte doit etre enveloppe dans un composant &lt;Text&gt;. Contrairement au web ou le texte nu dans un &lt;div&gt; est valide, React Native leve une erreur runtime. La correction : &lt;View&gt;&lt;Text&gt;Bonjour {name} !&lt;/Text&gt;&lt;/View&gt;."
+      }
+    ];
+    let currentQuestion = 0, score = 0, answered = false;
+    function renderQuestion() {
+      const q = questions[currentQuestion];
+      const total = questions.length;
+      document.getElementById('progressBar').style.width = ((currentQuestion / total) * 100) + '%';
+      document.getElementById('progressText').textContent = `Question ${currentQuestion + 1} / ${total}`;
+      let html = `<div class="card"><p class="question-label">${q.label}</p><p class="question-text">${q.text}</p>`;
+      if (q.code) html += `<pre><code>${q.code}</code></pre>`;
+      html += `<ul class="options">`;
+      q.options.forEach((opt, i) => { html += `<li><label><input type="radio" name="q" value="${i}"> ${opt}</label></li>`; });
+      html += `</ul><button class="btn btn-primary" id="validateBtn" onclick="validate()" disabled>Valider</button><div class="feedback" id="feedback"></div></div>`;
+      document.getElementById('quizContainer').innerHTML = html;
+      document.querySelectorAll('input[name="q"]').forEach(r => { r.addEventListener('change', () => { document.getElementById('validateBtn').disabled = false; }); });
+      answered = false;
+    }
+    function validate() {
+      if (answered) { currentQuestion++; if (currentQuestion < questions.length) renderQuestion(); else showScore(); return; }
+      answered = true;
+      const selected = document.querySelector('input[name="q"]:checked');
+      if (!selected) return;
+      const val = parseInt(selected.value);
+      const q = questions[currentQuestion];
+      const fb = document.getElementById('feedback');
+      const btn = document.getElementById('validateBtn');
+      document.querySelectorAll('input[name="q"]').forEach(r => r.disabled = true);
+      if (val === q.answer) { score++; fb.className = 'feedback correct'; fb.innerHTML = `<strong>Correct !</strong> ${q.explanation}`; }
+      else { fb.className = 'feedback wrong'; fb.innerHTML = `<strong>Incorrect.</strong> ${q.explanation}`; }
+      btn.textContent = currentQuestion < questions.length - 1 ? 'Suivant' : 'Voir le score';
+    }
+    function showScore() {
+      document.getElementById('quizContainer').classList.add('hidden');
+      document.getElementById('progressBar').style.width = '100%';
+      document.getElementById('progressText').textContent = 'Termine !';
+      const sc = document.getElementById('scoreContainer');
+      sc.classList.remove('hidden');
+      const pct = Math.round((score / questions.length) * 100);
+      let msg = pct === 100 ? 'Parfait !' : pct >= 60 ? 'Bien joue !' : 'Continuez a reviser !';
+      sc.innerHTML = `<div class="score">${score} / ${questions.length}</div><div class="score-label">${msg} (${pct}%)</div><button class="btn-restart" onclick="restart()">Recommencer</button>`;
+    }
+    function restart() { currentQuestion = 0; score = 0; answered = false; document.getElementById('scoreContainer').classList.add('hidden'); document.getElementById('quizContainer').classList.remove('hidden'); renderQuestion(); }
+    renderQuestion();
+  </script>
+</body>
+</html>

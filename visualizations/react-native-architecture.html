@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Architecture React Native</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh; padding: 24px;
+  }
+  h1 { text-align: center; font-size: 1.6rem; margin-bottom: 8px; color: #4dabf7; }
+  .subtitle { text-align: center; color: #888; font-size: 0.9rem; margin-bottom: 24px; }
+
+  /* Toggle */
+  .toggle-wrap { display: flex; justify-content: center; gap: 12px; margin-bottom: 28px; align-items: center; }
+  .toggle-label { font-size: 0.85rem; cursor: pointer; padding: 8px 16px; border-radius: 8px; transition: all .25s; border: 1px solid transparent; }
+  .toggle-label.active { background: #0d6efd22; border-color: #0d6efd; color: #4dabf7; }
+  .toggle-label:hover:not(.active) { background: #ffffff08; }
+  .switch { position: relative; width: 52px; height: 28px; background: #333; border-radius: 14px; cursor: pointer; transition: background .3s; flex-shrink: 0; }
+  .switch.on { background: #0d6efd; }
+  .switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; background: #fff; border-radius: 50%; transition: transform .3s; }
+  .switch.on::after { transform: translateX(24px); }
+
+  /* Layout */
+  .arch-container { display: flex; gap: 32px; max-width: 1100px; margin: 0 auto; align-items: flex-start; }
+  .layers { flex: 1; display: flex; flex-direction: column; gap: 0; position: relative; }
+  .detail-panel { width: 340px; background: #16213e; border-radius: 12px; padding: 20px; border: 1px solid #2a2a4a; min-height: 200px; transition: all .3s; }
+  .detail-panel h3 { color: #4dabf7; margin-bottom: 8px; font-size: 1rem; }
+  .detail-panel p { font-size: 0.85rem; line-height: 1.6; color: #bbb; }
+  .detail-panel .tag { display: inline-block; background: #0d6efd22; color: #4dabf7; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; margin: 2px; }
+
+  /* Layer card */
+  .layer {
+    background: #16213e; border: 1px solid #2a2a4a; border-radius: 12px; padding: 18px 20px;
+    cursor: pointer; transition: all .25s; position: relative; z-index: 1;
+  }
+  .layer:hover, .layer.selected { border-color: #0d6efd; box-shadow: 0 0 20px #0d6efd22; }
+  .layer.selected { background: #1a2744; }
+  .layer-header { display: flex; justify-content: space-between; align-items: center; }
+  .layer-name { font-weight: 600; font-size: 1rem; }
+  .layer-badge { font-size: 0.7rem; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
+  .layer-desc { font-size: 0.8rem; color: #888; margin-top: 4px; }
+  .layer-modules { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .module-chip { font-size: 0.72rem; background: #0d6efd15; color: #4dabf7; padding: 3px 10px; border-radius: 6px; border: 1px solid #0d6efd33; }
+
+  /* Arrows between layers */
+  .arrow-zone {
+    display: flex; justify-content: center; align-items: center; height: 48px; position: relative;
+  }
+  .arrow-zone svg { overflow: visible; }
+  .arrow-label {
+    position: absolute; font-size: 0.7rem; padding: 2px 8px; border-radius: 4px;
+    white-space: nowrap; font-weight: 500;
+  }
+  .arrow-label.left { left: 20px; }
+  .arrow-label.right { right: 20px; }
+
+  /* Colors per thread */
+  .js-thread .layer-name { color: #ffd43b; }
+  .js-thread .layer-badge { background: #ffd43b22; color: #ffd43b; }
+  .shadow-thread .layer-name { color: #69db7c; }
+  .shadow-thread .layer-badge { background: #69db7c22; color: #69db7c; }
+  .native-thread .layer-name { color: #ff6b6b; }
+  .native-thread .layer-badge { background: #ff6b6b22; color: #ff6b6b; }
+
+  /* Bridge mode styling */
+  .bridge-arrow { color: #ff6b6b; }
+  .jsi-arrow { color: #69db7c; }
+  .bridge-label { background: #ff6b6b22; color: #ff6b6b; }
+  .jsi-label { background: #69db7c22; color: #69db7c; }
+
+  /* Speed indicator */
+  .speed-bar { display: flex; align-items: center; gap: 8px; margin-top: 16px; justify-content: center; }
+  .speed-bar .bar { height: 6px; border-radius: 3px; transition: width .5s, background .3s; }
+  .speed-label { font-size: 0.75rem; }
+
+  @media (max-width: 800px) {
+    .arch-container { flex-direction: column; }
+    .detail-panel { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Architecture React Native</h1>
+<p class="subtitle">Cliquez sur chaque couche pour voir les détails</p>
+
+<div class="toggle-wrap">
+  <span class="toggle-label active" id="lbl-new" onclick="setArch(true)">Architecture actuelle (JSI / Fabric)</span>
+  <div class="switch on" id="arch-switch" onclick="toggleArch()"></div>
+  <span class="toggle-label" id="lbl-old" onclick="setArch(false)">Ancienne architecture (Bridge)</span>
+</div>
+
+<div class="arch-container">
+  <div class="layers" id="layers-col"></div>
+  <div class="detail-panel" id="detail">
+    <h3>Sélectionnez une couche</h3>
+    <p>Cliquez sur l'un des blocs à gauche pour afficher ses responsabilités et technologies associées.</p>
+  </div>
+</div>
+
+<div class="speed-bar">
+  <span class="speed-label" id="speed-text"></span>
+  <div class="bar" id="speed-bar" style="width:0; background:#69db7c;"></div>
+</div>
+
+<script>
+let isModern = true;
+let selectedLayer = null;
+
+const layers = {
+  js: {
+    name: 'JS Thread',
+    badge: 'JavaScript',
+    cssClass: 'js-thread',
+    descModern: 'React, logique métier, hooks, state management',
+    descOld: 'React, logique métier, sérialisation JSON vers le Bridge',
+    modulesModern: ['React 18+', 'Hermes Engine', 'Turbo Modules', 'JSI Bindings', 'Concurrent Features'],
+    modulesOld: ['React', 'JavaScriptCore', 'Bridge (JSON)', 'Native Modules (async)'],
+    detailModern: {
+      title: 'JS Thread — Architecture moderne',
+      text: 'Le thread JavaScript exécute tout votre code React et votre logique métier. Avec <strong>Hermes</strong>, le bytecode est pré-compilé pour un démarrage ultra-rapide. Grâce à <strong>JSI</strong> (JavaScript Interface), le JS peut appeler directement des fonctions C++ sans sérialisation — communication synchrone et performante.',
+      tags: ['Hermes', 'JSI', 'React 18', 'Concurrent Mode', 'Turbo Modules']
+    },
+    detailOld: {
+      title: 'JS Thread — Ancienne architecture',
+      text: 'Le thread JS exécutait le code React avec <strong>JavaScriptCore</strong>. Toute communication avec le natif passait par le <strong>Bridge</strong> : les données étaient sérialisées en JSON, envoyées de façon asynchrone, puis désérialisées côté natif. Ce goulot d\'étranglement causait des ralentissements, surtout pour les animations et listes.',
+      tags: ['JavaScriptCore', 'Bridge', 'JSON serialize', 'Async only']
+    }
+  },
+  shadow: {
+    name: 'Shadow Thread',
+    badge: 'Layout',
+    cssClass: 'shadow-thread',
+    descModern: 'Yoga layout engine, Fabric renderer, C++ partagé',
+    descOld: 'Yoga layout engine, calcul de layout asynchrone',
+    modulesModern: ['Yoga (C++)', 'Fabric Renderer', 'View Flattening', 'Shared C++ Core'],
+    modulesOld: ['Yoga (C++)', 'Shadow Tree', 'Async Layout'],
+    detailModern: {
+      title: 'Shadow Thread — Fabric',
+      text: '<strong>Fabric</strong> est le nouveau système de rendu. Le shadow tree est calculé en C++ et partagé entre JS et Native. <strong>Yoga</strong> calcule le layout Flexbox. Le \"view flattening\" supprime les vues wrapper inutiles pour de meilleures performances. Le tout fonctionne de manière synchrone grâce à JSI.',
+      tags: ['Fabric', 'Yoga', 'C++ shared', 'View Flattening', 'Synchrone']
+    },
+    detailOld: {
+      title: 'Shadow Thread — Ancien renderer',
+      text: 'Le shadow tree était calculé par <strong>Yoga</strong> de manière asynchrone. Les mises à jour de layout devaient traverser le Bridge, créant un décalage visible lors des interactions rapides (scroll, animations). Pas de partage de mémoire entre JS et natif.',
+      tags: ['Yoga', 'Shadow Tree', 'Async', 'Pas de partage mémoire']
+    }
+  },
+  native: {
+    name: 'Native Thread (Main/UI)',
+    badge: 'Platform',
+    cssClass: 'native-thread',
+    descModern: 'UIKit / Android Views, Fabric Components natifs',
+    descOld: 'UIKit / Android Views, Native Modules via Bridge',
+    modulesModern: ['UIKit (iOS)', 'Android Views', 'Fabric Components', 'Platform APIs', 'Codegen'],
+    modulesOld: ['UIKit (iOS)', 'Android Views', 'Native Modules', 'UI Manager'],
+    detailModern: {
+      title: 'Native Thread — Composants Fabric',
+      text: 'Le thread principal gère le rendu réel à l\'écran. Avec <strong>Fabric Components</strong>, les vues natives sont créées et mises à jour de manière synchrone. <strong>Codegen</strong> génère automatiquement le code d\'interface entre JS et natif, assurant la type-safety. Les composants natifs sont de vrais UIView/Android.View.',
+      tags: ['UIKit', 'Android Views', 'Fabric Components', 'Codegen', 'Type-safe']
+    },
+    detailOld: {
+      title: 'Native Thread — UI Manager',
+      text: 'Le <strong>UI Manager</strong> recevait les commandes de création/mise à jour de vues via le Bridge. Chaque interaction impliquait un aller-retour asynchrone. Les <strong>Native Modules</strong> étaient initialisés au démarrage même s\'ils n\'étaient pas utilisés, ralentissant le lancement de l\'app.',
+      tags: ['UI Manager', 'Bridge', 'Native Modules', 'Eager init', 'Async']
+    }
+  }
+};
+
+function render() {
+  const col = document.getElementById('layers-col');
+  col.innerHTML = '';
+
+  const keys = ['js', 'shadow', 'native'];
+  keys.forEach((key, i) => {
+    const l = layers[key];
+    const data = isModern ? 'Modern' : 'Old';
+
+    const div = document.createElement('div');
+    div.className = `layer ${l.cssClass}` + (selectedLayer === key ? ' selected' : '');
+    div.onclick = () => selectLayer(key);
+    const modules = l['modules' + data];
+    div.innerHTML = `
+      <div class="layer-header">
+        <span class="layer-name">${l.name}</span>
+        <span class="layer-badge">${l.badge}</span>
+      </div>
+      <div class="layer-desc">${l['desc' + data]}</div>
+      <div class="layer-modules">${modules.map(m => `<span class="module-chip">${m}</span>`).join('')}</div>
+    `;
+    col.appendChild(div);
+
+    if (i < keys.length - 1) {
+      const arrow = document.createElement('div');
+      arrow.className = 'arrow-zone';
+      const cls = isModern ? 'jsi' : 'bridge';
+      const labelLeft = isModern ? 'Synchrone (JSI)' : 'JSON sérialisé';
+      const labelRight = isModern ? 'Accès direct C++' : 'Asynchrone (Bridge)';
+      arrow.innerHTML = `
+        <span class="arrow-label left ${cls}-label">${labelLeft}</span>
+        <svg width="40" height="48"><path d="M20 0 L20 48" stroke="${isModern ? '#69db7c' : '#ff6b6b'}" stroke-width="2" stroke-dasharray="${isModern ? '0' : '6 4'}"/>
+        <polygon points="12,36 20,48 28,36" fill="${isModern ? '#69db7c' : '#ff6b6b'}"/>
+        <polygon points="12,12 20,0 28,12" fill="${isModern ? '#69db7c' : '#ff6b6b'}"/></svg>
+        <span class="arrow-label right ${cls}-label">${labelRight}</span>
+      `;
+      col.appendChild(arrow);
+    }
+  });
+
+  // Speed bar
+  const bar = document.getElementById('speed-bar');
+  const txt = document.getElementById('speed-text');
+  if (isModern) {
+    bar.style.width = '260px'; bar.style.background = '#69db7c';
+    txt.textContent = 'Performance : Excellente';
+    txt.style.color = '#69db7c';
+  } else {
+    bar.style.width = '120px'; bar.style.background = '#ff6b6b';
+    txt.textContent = 'Performance : Limitée par le Bridge';
+    txt.style.color = '#ff6b6b';
+  }
+
+  if (selectedLayer) selectLayer(selectedLayer, true);
+}
+
+function selectLayer(key, noRerender) {
+  selectedLayer = key;
+  const l = layers[key];
+  const data = isModern ? 'detailModern' : 'detailOld';
+  const d = l[data];
+  const panel = document.getElementById('detail');
+  panel.innerHTML = `<h3>${d.title}</h3><p>${d.text}</p><div style="margin-top:12px">${d.tags.map(t => `<span class="tag">${t}</span>`).join(' ')}</div>`;
+  if (!noRerender) {
+    document.querySelectorAll('.layer').forEach((el, i) => {
+      const keys = ['js','shadow','native'];
+      el.classList.toggle('selected', keys[i] === key);
+    });
+  }
+}
+
+function toggleArch() {
+  isModern = !isModern;
+  updateToggle();
+  render();
+}
+function setArch(modern) {
+  isModern = modern;
+  updateToggle();
+  render();
+}
+function updateToggle() {
+  document.getElementById('arch-switch').classList.toggle('on', isModern);
+  document.getElementById('lbl-new').classList.toggle('active', isModern);
+  document.getElementById('lbl-old').classList.toggle('active', !isModern);
+}
+
+render();
+</script>
+</body>
+</html>

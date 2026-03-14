@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz 25 — Hermes Engine et mode Bridgeless</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a2e; color: #e0e0e0; min-height: 100vh; padding: 2rem 1rem; }
+    .container { max-width: 800px; margin: 0 auto; }
+    h1 { text-align: center; margin-bottom: 0.5rem; font-size: 1.8rem; color: #ffffff; }
+    .subtitle { text-align: center; color: #8892b0; margin-bottom: 2rem; font-size: 1rem; }
+    .progress-bar-container { background: #0d1117; border-radius: 10px; height: 14px; margin-bottom: 2rem; overflow: hidden; }
+    .progress-bar { background: linear-gradient(90deg, #0d6efd, #4dabf7); height: 100%; width: 0%; border-radius: 10px; transition: width 0.4s ease; }
+    .progress-text { text-align: center; color: #8892b0; margin-bottom: 1rem; font-size: 0.9rem; }
+    .card { background: #16213e; border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .question-label { font-size: 0.85rem; color: #4dabf7; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+    .question-text { font-size: 1.15rem; margin-bottom: 1.2rem; line-height: 1.5; color: #ffffff; }
+    pre { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 1rem; margin-bottom: 1.2rem; overflow-x: auto; font-size: 0.95rem; }
+    code { font-family: 'Consolas', 'Fira Code', 'Courier New', monospace; color: #c9d1d9; }
+    .options { list-style: none; }
+    .options li { margin-bottom: 0.5rem; }
+    .options label { display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1rem; background: #0d1117; border: 2px solid #30363d; border-radius: 8px; cursor: pointer; transition: border-color 0.2s, background 0.2s; font-size: 1rem; }
+    .options label:hover { border-color: #4dabf7; background: #1c2a4a; }
+    .options input[type="radio"] { accent-color: #0d6efd; width: 18px; height: 18px; flex-shrink: 0; }
+    .btn { display: inline-block; padding: 0.7rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+    .btn-primary { background: #0d6efd; color: #fff; }
+    .btn-primary:hover { background: #3b82f6; }
+    .btn-primary:disabled { background: #374151; cursor: not-allowed; }
+    .btn-restart { background: #238636; color: #fff; margin-top: 1rem; padding: 0.7rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+    .btn-restart:hover { background: #2ea043; }
+    .feedback { margin-top: 1rem; padding: 1rem 1.2rem; border-radius: 8px; font-size: 0.95rem; line-height: 1.5; display: none; }
+    .feedback.correct { background: #0f5132; border: 1px solid #198754; color: #d1fae5; display: block; }
+    .feedback.wrong { background: #842029; border: 1px solid #dc3545; color: #fdd; display: block; }
+    .score-card { text-align: center; padding: 3rem 2rem; }
+    .score-card .score { font-size: 3rem; font-weight: 700; color: #4dabf7; margin-bottom: 0.5rem; }
+    .score-card .score-label { font-size: 1.2rem; color: #8892b0; margin-bottom: 1.5rem; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Quiz 25 — Hermes Engine et mode Bridgeless</h1>
+    <p class="subtitle">Bytecode, GenGC, JSI, Fabric, profiling, startup</p>
+    <div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+    <p class="progress-text" id="progressText">Question 1 / 10</p>
+    <div id="quizContainer"></div>
+    <div id="scoreContainer" class="card score-card hidden"></div>
+  </div>
+  <script>
+    const questions = [
+      {
+        label: "Question 1 — Compilation Hermes",
+        text: "Quelle est la strategie de compilation de Hermes, et pourquoi est-elle avantageuse sur mobile ?",
+        code: null,
+        options: [
+          "JIT (Just-In-Time) — compile pendant l'execution pour un throughput maximal",
+          "AOT (Ahead-Of-Time) — precompile en bytecode au build, eliminant le parsing au demarrage",
+          "Interpretation pure — lit le source JS directement sans compilation",
+          "AOT vers code machine natif — compile en ARM/x86 au build"
+        ],
+        correct: 1,
+        explanation: "Hermes compile le JavaScript en bytecode (.hbc) pendant le build (AOT). Au demarrage, la VM Hermes charge directement ce bytecode sans avoir a parser ni compiler le source JS, ce qui reduit drastiquement le temps de cold start (typiquement 50-150ms vs 200-600ms avec JIT)."
+      },
+      {
+        label: "Question 2 — Format bytecode",
+        text: "Quel est le format de sortie du compilateur Hermes et que contient-il ?",
+        code: "hermesc -emit-binary -out bundle.hbc bundle.js",
+        options: [
+          "Un fichier .wasm (WebAssembly) contenant du code machine",
+          "Un fichier .hbc contenant une function table, string table, et instructions bytecode",
+          "Un fichier .dex (Dalvik) compatible avec la VM Android",
+          "Un fichier .js minifie avec des optimisations avancees"
+        ],
+        correct: 1,
+        explanation: "Le format .hbc (Hermes Bytecode) est un binaire optimise contenant : magic number, function table (headers + instructions), string table (identifiants dedupliques), regexp table, CJS module table, et optionnellement des source maps. Ce format est ~30-50% plus petit que le JS minifie."
+      },
+      {
+        label: "Question 3 — GenGC generations",
+        text: "Comment fonctionne le garbage collector generationnel (GenGC) de Hermes ?",
+        code: null,
+        options: [
+          "Un seul tas avec un algorithme mark-and-sweep global",
+          "Deux generations : young gen (copy GC, <5ms) et old gen (mark-compact, <30ms)",
+          "Reference counting sans collecte cyclique",
+          "Trois generations avec une nursery, un eden et un tenured space"
+        ],
+        correct: 1,
+        explanation: "GenGC utilise deux generations. La Young Generation utilise un semi-space copying GC tres rapide (<5ms) pour les objets ephemeres. Les objets survivants sont promus vers l'Old Generation qui utilise un mark-compact, plus lent (<30ms) mais moins frequent. Cela exploite l'hypothese generationnelle : la plupart des objets meurent jeunes."
+      },
+      {
+        label: "Question 4 — Hermes vs V8",
+        text: "Quel est le principal compromis de Hermes par rapport a V8 ?",
+        code: null,
+        options: [
+          "Hermes ne supporte pas ES6+",
+          "Hermes a un throughput inferieur (10-30% sur les boucles numeriques) en echange d'un startup beaucoup plus rapide",
+          "Hermes ne fonctionne que sur Android",
+          "Hermes consomme plus de memoire mais est plus rapide"
+        ],
+        correct: 1,
+        explanation: "Sans JIT, Hermes interprete le bytecode au lieu de le compiler en code machine natif. Le throughput pur est donc 10-30% inferieur a V8 pour les calculs intensifs. En contrepartie, Hermes offre un startup 2-4x plus rapide, une consommation memoire 50% inferieure, et une taille binaire plus petite (~3 Mo vs ~8 Mo)."
+      },
+      {
+        label: "Question 5 — JSI et mode Bridgeless",
+        text: "Qu'est-ce que JSI et quel probleme resout-il ?",
+        code: "// Ancien bridge\nNativeModules.MyModule.getValue()\n  // → JSON.serialize → bridge async → native → JSON → bridge → JS\n\n// JSI\nglobal.__myModule.getValue()\n  // → appel C++ direct → valeur",
+        options: [
+          "JSI est un framework de test pour les modules natifs",
+          "JSI (JavaScript Interface) est une API C++ qui permet des appels synchrones entre JS et natif sans serialisation JSON",
+          "JSI est un remplacement de Metro pour le bundling",
+          "JSI est un outil de debugging pour Hermes"
+        ],
+        correct: 1,
+        explanation: "JSI (JavaScript Interface) est une API C++ qui remplace l'ancien bridge asynchrone JSON. Elle permet des appels synchrones entre JavaScript et le code natif via des Host Objects C++, eliminant le cout de serialisation/deserialisation JSON. Les appels sont ~40x plus rapides qu'avec l'ancien bridge."
+      },
+      {
+        label: "Question 6 — Turbo Modules",
+        text: "Quelle est la difference principale entre un NativeModule (ancien) et un TurboModule ?",
+        code: "// Spec TurboModule\nexport interface Spec extends TurboModule {\n  add(a: number, b: number): number; // synchrone !\n}",
+        options: [
+          "Les TurboModules sont ecrits en JavaScript, les NativeModules en natif",
+          "Les TurboModules sont charges a la demande (lazy loading) et supportent les appels synchrones via JSI",
+          "Les TurboModules ne fonctionnent que sur iOS",
+          "Les TurboModules sont plus lents mais plus stables"
+        ],
+        correct: 1,
+        explanation: "Les TurboModules sont charges a la demande (lazy loading) au lieu d'etre tous initialises au demarrage, ce qui reduit le startup time. De plus, ils utilisent JSI pour des appels synchrones, et le Codegen genere automatiquement les bindings C++ types a partir des specs TypeScript/Flow, eliminant les erreurs de serialisation."
+      },
+      {
+        label: "Question 7 — Fabric renderer",
+        text: "Quel avantage majeur apporte Fabric par rapport a l'ancien renderer ?",
+        code: null,
+        options: [
+          "Fabric utilise WebGL pour le rendu",
+          "Fabric maintient le shadow tree en C++ et supporte le rendu concurrent (React 18)",
+          "Fabric remplace Yoga pour le calcul de layout",
+          "Fabric est uniquement disponible sur Android"
+        ],
+        correct: 1,
+        explanation: "Fabric est le nouveau renderer de React Native qui maintient l'arbre d'ombres (shadow tree) en C++ au lieu de le passer par le bridge. Il supporte le rendu concurrent de React 18, permet des mesures de layout synchrones, et reduit la latence de mise a jour UI a ~0.3ms (vs ~2.1ms avec l'ancien renderer)."
+      },
+      {
+        label: "Question 8 — Sampling Profiler",
+        text: "Comment fonctionne le sampling profiler integre a Hermes ?",
+        code: "HermesInternal.enableSamplingProfiler();\n// ... code a profiler ...\nHermesInternal.disableSamplingProfiler();",
+        options: [
+          "Il instrumente chaque fonction pour mesurer le temps exact",
+          "Il echantillonne la stack d'appels a intervalles reguliers (~1ms) pour construire un flame chart",
+          "Il mesure uniquement les allocations memoire",
+          "Il enregistre tous les appels de fonctions dans un fichier log"
+        ],
+        correct: 1,
+        explanation: "Le sampling profiler echantillonne la stack d'appels toutes les ~1ms sans instrumenter le code (overhead minimal). Ces echantillons sont agreges en un flame chart ou la largeur de chaque barre represente le temps CPU consomme. Les barres les plus larges indiquent les fonctions les plus gourmandes."
+      },
+      {
+        label: "Question 9 — Fuite memoire",
+        text: "Parmi ces patterns, lequel cause une fuite memoire ?",
+        code: "function LeakyComponent() {\n  useEffect(() => {\n    const ws = new WebSocket('wss://api.example.com');\n    ws.onmessage = (e) => setData(JSON.parse(e.data));\n    // pas de return cleanup\n  }, []);\n}",
+        options: [
+          "L'utilisation de JSON.parse dans le callback",
+          "L'absence de cleanup function dans useEffect — le WebSocket reste ouvert apres demontage",
+          "L'utilisation de setData dans un callback",
+          "La creation du WebSocket dans useEffect"
+        ],
+        correct: 1,
+        explanation: "Sans cleanup function (return () => ws.close()), le WebSocket reste ouvert quand le composant est demonte. Il continue a recevoir des messages et tente d'appeler setData sur un composant inexistant. La connexion et les callbacks ne sont jamais liberes, causant une fuite memoire croissante."
+      },
+      {
+        label: "Question 10 — Optimisation startup",
+        text: "Quelle technique a le plus grand impact sur le temps de demarrage ?",
+        code: "// Option A\nimport { Button, Card, Modal, Drawer } from './components';\n\n// Option B\nimport { Button } from './components/Button';\nconst Modal = lazy(() => import('./components/Modal'));",
+        options: [
+          "L'option A est meilleure car elle permet le tree-shaking",
+          "L'option B est meilleure : import direct + lazy loading reduit le code charge au demarrage",
+          "Les deux sont equivalentes grace au dead code elimination de Metro",
+          "Il faut utiliser require() au lieu d'import pour optimiser le startup"
+        ],
+        correct: 1,
+        explanation: "L'option B combine deux optimisations majeures : (1) import direct au lieu du barrel import (qui charge tout le dossier components), et (2) lazy loading pour les composants non critiques (Modal). Cela peut reduire le temps d'import de 80-90%. Metro ne fait pas de tree-shaking comme Webpack/Vite."
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let answered = false;
+
+    function renderQuestion() {
+      const q = questions[currentQuestion];
+      const container = document.getElementById('quizContainer');
+      const progressBar = document.getElementById('progressBar');
+      const progressText = document.getElementById('progressText');
+
+      progressBar.style.width = `${((currentQuestion) / questions.length) * 100}%`;
+      progressText.textContent = `Question ${currentQuestion + 1} / ${questions.length}`;
+
+      let html = `<div class="card">`;
+      html += `<p class="question-label">${q.label}</p>`;
+      html += `<p class="question-text">${q.text}</p>`;
+      if (q.code) {
+        html += `<pre><code>${q.code}</code></pre>`;
+      }
+      html += `<ul class="options">`;
+      q.options.forEach((opt, i) => {
+        html += `<li><label><input type="radio" name="q${currentQuestion}" value="${i}" ${answered ? 'disabled' : ''}> ${opt}</label></li>`;
+      });
+      html += `</ul>`;
+      html += `<button class="btn btn-primary" id="submitBtn" ${answered ? 'disabled' : ''} onclick="checkAnswer()">Valider</button>`;
+      html += `<div id="feedback" class="feedback"></div>`;
+      html += `</div>`;
+
+      container.innerHTML = html;
+      answered = false;
+    }
+
+    function checkAnswer() {
+      if (answered) return;
+      const selected = document.querySelector(`input[name="q${currentQuestion}"]:checked`);
+      if (!selected) return;
+
+      answered = true;
+      const answer = parseInt(selected.value);
+      const q = questions[currentQuestion];
+      const feedback = document.getElementById('feedback');
+      const submitBtn = document.getElementById('submitBtn');
+
+      document.querySelectorAll(`input[name="q${currentQuestion}"]`).forEach(r => r.disabled = true);
+      submitBtn.disabled = true;
+
+      if (answer === q.correct) {
+        score++;
+        feedback.className = 'feedback correct';
+        feedback.innerHTML = `<strong>Correct !</strong> ${q.explanation}`;
+      } else {
+        feedback.className = 'feedback wrong';
+        feedback.innerHTML = `<strong>Incorrect.</strong> ${q.explanation}`;
+      }
+
+      setTimeout(() => {
+        currentQuestion++;
+        if (currentQuestion < questions.length) {
+          renderQuestion();
+        } else {
+          showScore();
+        }
+      }, 3500);
+    }
+
+    function showScore() {
+      const container = document.getElementById('quizContainer');
+      const scoreContainer = document.getElementById('scoreContainer');
+      const progressBar = document.getElementById('progressBar');
+
+      container.innerHTML = '';
+      progressBar.style.width = '100%';
+      document.getElementById('progressText').textContent = `Termine !`;
+
+      const pct = Math.round((score / questions.length) * 100);
+      let msg = '';
+      if (pct === 100) msg = 'Parfait ! Vous maitrisez Hermes et le mode Bridgeless.';
+      else if (pct >= 80) msg = 'Excellent ! Quelques details a revoir.';
+      else if (pct >= 60) msg = 'Bien ! Relisez les sections sur les points manques.';
+      else msg = 'Continuez a pratiquer — relisez le module 25.';
+
+      scoreContainer.className = 'card score-card';
+      scoreContainer.innerHTML = `
+        <div class="score">${score} / ${questions.length}</div>
+        <div class="score-label">${pct}% — ${msg}</div>
+        <button class="btn-restart" onclick="restart()">Recommencer</button>
+      `;
+    }
+
+    function restart() {
+      currentQuestion = 0;
+      score = 0;
+      answered = false;
+      document.getElementById('scoreContainer').className = 'card score-card hidden';
+      renderQuestion();
+    }
+
+    renderQuestion();
+  </script>
+</body>
+</html>

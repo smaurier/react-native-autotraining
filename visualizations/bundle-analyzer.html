@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analyseur de Bundle React Native</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#1a1a2e;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;padding:20px}
+  h1{text-align:center;color:#4dabf7;margin-bottom:4px;font-size:1.6rem}
+  .subtitle{text-align:center;color:#8899aa;margin-bottom:20px;font-size:.9rem}
+  .layout{max-width:1300px;margin:0 auto;display:grid;grid-template-columns:1fr 300px;gap:20px}
+  .panel{background:#16213e;border-radius:12px;padding:18px;border:1px solid #253555}
+  .panel h2{color:#4dabf7;font-size:1rem;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #253555}
+
+  .toggles{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+  .toggle-btn{padding:8px 16px;border:2px solid #253555;border-radius:8px;background:transparent;color:#8899aa;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s}
+  .toggle-btn.active{border-color:#4dabf7;color:#4dabf7;background:#0d6efd22}
+  .toggle-btn:hover{border-color:#4dabf7}
+
+  .treemap-container{position:relative;min-height:500px;background:#0f1729;border-radius:10px;border:1px solid #253555;overflow:hidden;cursor:pointer}
+  .treemap-node{position:absolute;border:1px solid #1a1a2e;display:flex;align-items:center;justify-content:center;text-align:center;font-size:.72rem;font-weight:600;overflow:hidden;transition:all .3s;cursor:pointer;padding:4px}
+  .treemap-node:hover{filter:brightness(1.25);z-index:10}
+  .treemap-node .node-label{pointer-events:none;line-height:1.2;text-shadow:0 1px 3px rgba(0,0,0,.7)}
+  .treemap-node .node-size{font-size:.62rem;font-weight:400;opacity:.8;pointer-events:none}
+
+  .breadcrumb{display:flex;gap:6px;margin-bottom:10px;font-size:.8rem;flex-wrap:wrap}
+  .breadcrumb span{color:#4dabf7;cursor:pointer;padding:2px 8px;border-radius:4px;background:#253555}
+  .breadcrumb span:hover{background:#2a4060}
+  .breadcrumb span.current{color:#e0e0e0;cursor:default;background:#0d6efd33}
+
+  .tooltip{position:fixed;background:#16213e;border:1px solid #4dabf7;border-radius:8px;padding:10px 14px;font-size:.8rem;pointer-events:none;z-index:100;display:none;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+  .tooltip .tt-name{color:#4dabf7;font-weight:700;margin-bottom:4px}
+  .tooltip .tt-size{color:#e0e0e0}
+  .tooltip .tt-pct{color:#8899aa;font-size:.75rem}
+
+  .stat-card{background:#0f1729;border-radius:8px;padding:12px;margin-bottom:10px;border:1px solid #253555}
+  .stat-card .val{font-size:1.3rem;font-weight:700;color:#4dabf7}
+  .stat-card .label{font-size:.75rem;color:#8899aa}
+
+  .top-modules{list-style:none;font-size:.8rem}
+  .top-modules li{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #253555}
+  .top-modules li:last-child{border:none}
+  .top-modules .mod-name{color:#e0e0e0}
+  .top-modules .mod-size{color:#4dabf7;font-weight:600}
+
+  .suggestions{font-size:.8rem;color:#aabbcc;line-height:1.7}
+  .suggestions li{margin-bottom:4px}
+  .suggestions strong{color:#f59f00}
+
+  .add-dep{margin-top:12px}
+  .add-dep select{width:100%;background:#0f1729;color:#e0e0e0;border:1px solid #253555;border-radius:6px;padding:8px;font-size:.82rem;cursor:pointer}
+  .add-dep select:focus{outline:none;border-color:#4dabf7}
+  .added-deps{margin-top:8px;font-size:.78rem}
+  .added-dep{display:flex;justify-content:space-between;align-items:center;padding:4px 8px;background:#253555;border-radius:6px;margin-bottom:4px}
+  .added-dep .remove{color:#ff6b6b;cursor:pointer;font-weight:700}
+
+  .color-legend{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;font-size:.72rem}
+  .color-legend span{display:flex;align-items:center;gap:4px}
+  .color-legend .swatch{width:12px;height:12px;border-radius:3px}
+</style>
+</head>
+<body>
+<h1>Analyseur de Bundle React Native</h1>
+<p class="subtitle">Treemap interactif des modules composant un bundle React Native typique</p>
+
+<div class="layout">
+  <div>
+    <div class="panel">
+      <div class="toggles">
+        <button class="toggle-btn active" id="toggleDev">Bundle Dev</button>
+        <button class="toggle-btn" id="toggleProd">Bundle Production</button>
+        <button class="toggle-btn" id="toggleHermes">Bytecode Hermes</button>
+      </div>
+      <div class="color-legend" id="colorLegend"></div>
+      <div class="breadcrumb" id="breadcrumb"><span class="current">Racine</span></div>
+      <div class="treemap-container" id="treemap"></div>
+    </div>
+  </div>
+
+  <div>
+    <div class="panel">
+      <h2>Resume du bundle</h2>
+      <div class="stat-card"><div class="val" id="totalSize">0 KB</div><div class="label">Taille totale</div></div>
+      <div class="stat-card"><div class="val" id="moduleCount">0</div><div class="label">Nombre de modules</div></div>
+
+      <h2 style="margin-top:16px">Top 5 modules</h2>
+      <ul class="top-modules" id="topModules"></ul>
+
+      <h2 style="margin-top:16px">Suggestions d'optimisation</h2>
+      <ul class="suggestions" id="suggestions"></ul>
+
+      <div class="add-dep">
+        <h2>Ajouter une dependance</h2>
+        <select id="addDepSelect">
+          <option value="">-- Choisir un package --</option>
+          <option value="moment">moment (290 KB)</option>
+          <option value="lodash">lodash (72 KB)</option>
+          <option value="axios">axios (29 KB)</option>
+          <option value="lottie">lottie-react-native (145 KB)</option>
+          <option value="firebase">firebase (180 KB)</option>
+          <option value="sentry">@sentry/react-native (95 KB)</option>
+          <option value="maps">react-native-maps (110 KB)</option>
+          <option value="reanimated">react-native-reanimated (160 KB)</option>
+        </select>
+        <div class="added-deps" id="addedDeps"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tooltip" id="tooltip">
+  <div class="tt-name" id="ttName"></div>
+  <div class="tt-size" id="ttSize"></div>
+  <div class="tt-pct" id="ttPct"></div>
+</div>
+
+<script>
+const CATEGORIES = {
+  'react-native core': { color: '#4dabf7', devSize: 820, prodSize: 580, hermesRatio: 0.68 },
+  'react': { color: '#748ffc', devSize: 180, prodSize: 95, hermesRatio: 0.72 },
+  'navigation': { color: '#da77f2', devSize: 210, prodSize: 165, hermesRatio: 0.70 },
+  'state (zustand)': { color: '#ff922b', devSize: 15, prodSize: 12, hermesRatio: 0.75 },
+  'ui libs': { color: '#20c997', devSize: 160, prodSize: 125, hermesRatio: 0.72 },
+  'code applicatif': { color: '#ffd43b', devSize: 140, prodSize: 110, hermesRatio: 0.65 },
+  'assets': { color: '#69db7c', devSize: 280, prodSize: 200, hermesRatio: 0.95 },
+  'dev tools': { color: '#ff6b6b', devSize: 190, prodSize: 0, hermesRatio: 0 },
+  'polyfills': { color: '#868e96', devSize: 65, prodSize: 45, hermesRatio: 0.60 }
+};
+
+const SUBCATEGORIES = {
+  'react-native core': [
+    { name: 'ReactNativeRenderer', ratio: 0.30 },
+    { name: 'NativeModules', ratio: 0.18 },
+    { name: 'Animated', ratio: 0.15 },
+    { name: 'StyleSheet', ratio: 0.08 },
+    { name: 'VirtualizedList', ratio: 0.12 },
+    { name: 'Image/Text/View', ratio: 0.10 },
+    { name: 'Networking', ratio: 0.07 }
+  ],
+  'react': [
+    { name: 'react', ratio: 0.35 },
+    { name: 'react-dom shims', ratio: 0.25 },
+    { name: 'scheduler', ratio: 0.20 },
+    { name: 'jsx-runtime', ratio: 0.20 }
+  ],
+  'navigation': [
+    { name: '@react-navigation/native', ratio: 0.30 },
+    { name: '@react-navigation/stack', ratio: 0.25 },
+    { name: '@react-navigation/bottom-tabs', ratio: 0.20 },
+    { name: 'react-native-screens', ratio: 0.15 },
+    { name: 'react-native-safe-area', ratio: 0.10 }
+  ],
+  'state (zustand)': [
+    { name: 'zustand/core', ratio: 0.60 },
+    { name: 'zustand/middleware', ratio: 0.40 }
+  ],
+  'ui libs': [
+    { name: 'react-native-svg', ratio: 0.30 },
+    { name: 'react-native-gesture-handler', ratio: 0.25 },
+    { name: 'react-native-vector-icons', ratio: 0.30 },
+    { name: 'react-native-fast-image', ratio: 0.15 }
+  ],
+  'code applicatif': [
+    { name: 'screens/', ratio: 0.35 },
+    { name: 'components/', ratio: 0.30 },
+    { name: 'hooks/', ratio: 0.10 },
+    { name: 'services/api', ratio: 0.15 },
+    { name: 'utils/', ratio: 0.10 }
+  ],
+  'assets': [
+    { name: 'images/', ratio: 0.50 },
+    { name: 'fonts/', ratio: 0.35 },
+    { name: 'json/data', ratio: 0.15 }
+  ],
+  'dev tools': [
+    { name: 'React DevTools', ratio: 0.30 },
+    { name: 'Metro HMR', ratio: 0.25 },
+    { name: 'LogBox', ratio: 0.20 },
+    { name: 'Inspector', ratio: 0.15 },
+    { name: 'Source Maps', ratio: 0.10 }
+  ],
+  'polyfills': [
+    { name: 'core-js', ratio: 0.50 },
+    { name: 'regenerator-runtime', ratio: 0.30 },
+    { name: 'whatwg-fetch', ratio: 0.20 }
+  ]
+};
+
+const EXTRA_DEPS = {
+  moment: { name: 'moment', size: 290, category: 'deps ajoutees', color: '#e599f7' },
+  lodash: { name: 'lodash', size: 72, category: 'deps ajoutees', color: '#e599f7' },
+  axios: { name: 'axios', size: 29, category: 'deps ajoutees', color: '#e599f7' },
+  lottie: { name: 'lottie-react-native', size: 145, category: 'deps ajoutees', color: '#e599f7' },
+  firebase: { name: 'firebase', size: 180, category: 'deps ajoutees', color: '#e599f7' },
+  sentry: { name: '@sentry/react-native', size: 95, category: 'deps ajoutees', color: '#e599f7' },
+  maps: { name: 'react-native-maps', size: 110, category: 'deps ajoutees', color: '#e599f7' },
+  reanimated: { name: 'react-native-reanimated', size: 160, category: 'deps ajoutees', color: '#e599f7' }
+};
+
+let mode = 'dev'; // dev | prod
+let hermes = false;
+let addedDeps = [];
+let zoomCategory = null;
+
+const $ = id => document.getElementById(id);
+
+function getModuleSize(cat, catData) {
+  let base = mode === 'dev' ? catData.devSize : catData.prodSize;
+  if (hermes && mode === 'prod') base *= catData.hermesRatio;
+  return base;
+}
+
+function buildData() {
+  const data = [];
+  for (const [cat, catData] of Object.entries(CATEGORIES)) {
+    const size = getModuleSize(cat, catData);
+    if (size <= 0) continue;
+    const subs = SUBCATEGORIES[cat] || [];
+    const children = subs.map(s => ({
+      name: s.name,
+      size: Math.round(size * s.ratio),
+      color: catData.color,
+      category: cat
+    }));
+    data.push({
+      name: cat,
+      size: Math.round(size),
+      color: catData.color,
+      children
+    });
+  }
+  // Added deps
+  for (const key of addedDeps) {
+    const dep = EXTRA_DEPS[key];
+    let s = dep.size;
+    if (mode === 'prod') s *= 0.75;
+    if (hermes && mode === 'prod') s *= 0.70;
+    data.push({
+      name: dep.name,
+      size: Math.round(s),
+      color: dep.color,
+      children: [{ name: dep.name, size: Math.round(s), color: dep.color, category: 'deps ajoutees' }]
+    });
+  }
+  return data;
+}
+
+// Squarified treemap layout
+function squarify(items, x, y, w, h) {
+  const total = items.reduce((a, b) => a + b.size, 0);
+  if (total === 0 || items.length === 0) return [];
+
+  const rects = [];
+  let remaining = [...items].sort((a, b) => b.size - a.size);
+  let cx = x, cy = y, cw = w, ch = h;
+
+  while (remaining.length > 0) {
+    const isWide = cw >= ch;
+    const side = isWide ? ch : cw;
+    const remTotal = remaining.reduce((a, b) => a + b.size, 0);
+
+    // Find the best row
+    let row = [remaining[0]];
+    let rowArea = remaining[0].size / remTotal * cw * ch;
+    let bestAspect = worstAspect(row, side, remTotal, cw * ch);
+
+    for (let i = 1; i < remaining.length; i++) {
+      const test = [...row, remaining[i]];
+      const aspect = worstAspect(test, side, remTotal, cw * ch);
+      if (aspect < bestAspect) {
+        row = test;
+        bestAspect = aspect;
+      } else break;
+    }
+
+    // Lay out the row
+    const rowTotal = row.reduce((a, b) => a + b.size, 0);
+    const rowRatio = rowTotal / remTotal;
+    const rowSize = isWide ? cw * rowRatio : ch * rowRatio;
+
+    let offset = 0;
+    for (const item of row) {
+      const itemRatio = item.size / rowTotal;
+      const itemSize = side * itemRatio;
+      if (isWide) {
+        rects.push({ ...item, x: cx, y: cy + offset, w: rowSize, h: itemSize });
+      } else {
+        rects.push({ ...item, x: cx + offset, y: cy, w: itemSize, h: rowSize });
+      }
+      offset += itemSize;
+    }
+
+    remaining = remaining.filter(r => !row.includes(r));
+    if (isWide) { cx += rowSize; cw -= rowSize; }
+    else { cy += rowSize; ch -= rowSize; }
+  }
+  return rects;
+}
+
+function worstAspect(row, side, totalArea, area) {
+  const rowTotal = row.reduce((a, b) => a + b.size, 0);
+  const rowWidth = (rowTotal / totalArea) * area / side;
+  let worst = 0;
+  for (const item of row) {
+    const h = (item.size / rowTotal) * side;
+    const aspect = Math.max(rowWidth / h, h / rowWidth);
+    worst = Math.max(worst, aspect);
+  }
+  return worst;
+}
+
+function render() {
+  const container = $('treemap');
+  container.innerHTML = '';
+  const data = buildData();
+  const W = container.clientWidth;
+  const H = container.clientHeight;
+
+  let items;
+  if (zoomCategory) {
+    const cat = data.find(d => d.name === zoomCategory);
+    items = cat ? cat.children : [];
+  } else {
+    items = data;
+  }
+
+  const rects = squarify(items, 0, 0, W, H);
+
+  rects.forEach(r => {
+    const node = document.createElement('div');
+    node.className = 'treemap-node';
+    node.style.left = r.x + 'px';
+    node.style.top = r.y + 'px';
+    node.style.width = r.w + 'px';
+    node.style.height = r.h + 'px';
+    node.style.backgroundColor = r.color + '44';
+    node.style.borderColor = r.color + '88';
+
+    if (r.w > 50 && r.h > 30) {
+      const label = document.createElement('div');
+      label.className = 'node-label';
+      label.innerHTML = `${r.name}<br><span class="node-size">${r.size} KB</span>`;
+      label.style.color = '#fff';
+      node.appendChild(label);
+    }
+
+    node.addEventListener('mouseenter', (e) => {
+      const tt = $('tooltip');
+      $('ttName').textContent = r.name;
+      $('ttSize').textContent = r.size + ' KB';
+      const total = data.reduce((a, b) => a + b.size, 0);
+      $('ttPct').textContent = (r.size / total * 100).toFixed(1) + '% du bundle';
+      tt.style.display = 'block';
+    });
+    node.addEventListener('mousemove', (e) => {
+      const tt = $('tooltip');
+      tt.style.left = (e.clientX + 14) + 'px';
+      tt.style.top = (e.clientY + 14) + 'px';
+    });
+    node.addEventListener('mouseleave', () => {
+      $('tooltip').style.display = 'none';
+    });
+
+    // Click to zoom
+    if (!zoomCategory && r.children) {
+      node.addEventListener('click', () => {
+        zoomCategory = r.name;
+        updateBreadcrumb();
+        render();
+      });
+    }
+
+    container.appendChild(node);
+  });
+
+  updateSidebar(data);
+  updateLegend(data);
+}
+
+function updateBreadcrumb() {
+  const bc = $('breadcrumb');
+  if (zoomCategory) {
+    bc.innerHTML = `<span id="bcRoot">Racine</span> <span style="color:#556677;background:none;cursor:default">→</span> <span class="current">${zoomCategory}</span>`;
+    $('bcRoot').addEventListener('click', () => { zoomCategory = null; updateBreadcrumb(); render(); });
+  } else {
+    bc.innerHTML = '<span class="current">Racine</span>';
+  }
+}
+
+function updateSidebar(data) {
+  const total = data.reduce((a, b) => a + b.size, 0);
+  $('totalSize').textContent = total + ' KB (' + (total / 1024).toFixed(1) + ' MB)';
+
+  let allModules = [];
+  data.forEach(d => {
+    if (d.children) allModules.push(...d.children);
+    else allModules.push(d);
+  });
+  $('moduleCount').textContent = allModules.length;
+
+  // Top 5
+  const sorted = [...data].sort((a, b) => b.size - a.size).slice(0, 5);
+  $('topModules').innerHTML = sorted.map(m =>
+    `<li><span class="mod-name">${m.name}</span><span class="mod-size">${m.size} KB</span></li>`
+  ).join('');
+
+  // Suggestions
+  const sugs = [];
+  if (mode === 'dev') sugs.push('<li><strong>Production build</strong> : activez le mode prod pour supprimer les dev tools (-~190 KB)</li>');
+  if (!hermes && mode === 'prod') sugs.push('<li><strong>Hermes bytecode</strong> : compilez en bytecode Hermes pour ~30% de reduction</li>');
+  const hasLodash = addedDeps.includes('lodash');
+  const hasMoment = addedDeps.includes('moment');
+  if (hasLodash) sugs.push('<li><strong>lodash</strong> : utilisez lodash-es avec tree-shaking ou des imports individuels</li>');
+  if (hasMoment) sugs.push('<li><strong>moment</strong> : remplacez par day.js (2 KB) pour une reduction de ~288 KB</li>');
+  sugs.push('<li><strong>Assets</strong> : compressez les images (WebP) et limitez les polices embarquees</li>');
+  sugs.push('<li><strong>Code splitting</strong> : utilisez React.lazy pour les ecrans rarement visites</li>');
+  if (total > 1500) sugs.push('<li><strong>Attention</strong> : le bundle depasse 1.5 MB, temps de demarrage impacte</li>');
+  $('suggestions').innerHTML = sugs.join('');
+}
+
+function updateLegend(data) {
+  const cats = new Map();
+  data.forEach(d => cats.set(d.name, d.color));
+  $('colorLegend').innerHTML = [...cats.entries()].map(([name, color]) =>
+    `<span><span class="swatch" style="background:${color}"></span>${name}</span>`
+  ).join('');
+}
+
+// Toggle handlers
+$('toggleDev').addEventListener('click', () => {
+  mode = 'dev'; hermes = false;
+  $('toggleDev').classList.add('active');
+  $('toggleProd').classList.remove('active');
+  $('toggleHermes').classList.remove('active');
+  zoomCategory = null; updateBreadcrumb(); render();
+});
+$('toggleProd').addEventListener('click', () => {
+  mode = 'prod'; hermes = false;
+  $('toggleProd').classList.add('active');
+  $('toggleDev').classList.remove('active');
+  $('toggleHermes').classList.remove('active');
+  zoomCategory = null; updateBreadcrumb(); render();
+});
+$('toggleHermes').addEventListener('click', () => {
+  if (mode === 'dev') { mode = 'prod'; $('toggleProd').classList.add('active'); $('toggleDev').classList.remove('active'); }
+  hermes = !hermes;
+  $('toggleHermes').classList.toggle('active', hermes);
+  zoomCategory = null; updateBreadcrumb(); render();
+});
+
+// Add dependency
+$('addDepSelect').addEventListener('change', (e) => {
+  const val = e.target.value;
+  if (!val || addedDeps.includes(val)) return;
+  addedDeps.push(val);
+  e.target.value = '';
+  renderAddedDeps();
+  render();
+});
+
+function renderAddedDeps() {
+  $('addedDeps').innerHTML = addedDeps.map(key => {
+    const dep = EXTRA_DEPS[key];
+    return `<div class="added-dep"><span>${dep.name} (${dep.size} KB)</span><span class="remove" data-key="${key}">✕</span></div>`;
+  }).join('');
+  $('addedDeps').querySelectorAll('.remove').forEach(btn => {
+    btn.addEventListener('click', () => {
+      addedDeps = addedDeps.filter(k => k !== btn.dataset.key);
+      renderAddedDeps();
+      render();
+    });
+  });
+}
+
+// Initial render
+render();
+window.addEventListener('resize', render);
+</script>
+</body>
+</html>

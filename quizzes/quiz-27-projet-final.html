@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz 27 — Projet final NomadNote</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a2e; color: #e0e0e0; min-height: 100vh; padding: 2rem 1rem; }
+    .container { max-width: 800px; margin: 0 auto; }
+    h1 { text-align: center; margin-bottom: 0.5rem; font-size: 1.8rem; color: #ffffff; }
+    .subtitle { text-align: center; color: #8892b0; margin-bottom: 2rem; font-size: 1rem; }
+    .progress-bar-container { background: #0d1117; border-radius: 10px; height: 14px; margin-bottom: 2rem; overflow: hidden; }
+    .progress-bar { background: linear-gradient(90deg, #0d6efd, #4dabf7); height: 100%; width: 0%; border-radius: 10px; transition: width 0.4s ease; }
+    .progress-text { text-align: center; color: #8892b0; margin-bottom: 1rem; font-size: 0.9rem; }
+    .card { background: #16213e; border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .question-label { font-size: 0.85rem; color: #4dabf7; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+    .question-text { font-size: 1.15rem; margin-bottom: 1.2rem; line-height: 1.5; color: #ffffff; }
+    pre { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 1rem; margin-bottom: 1.2rem; overflow-x: auto; font-size: 0.95rem; }
+    code { font-family: 'Consolas', 'Fira Code', 'Courier New', monospace; color: #c9d1d9; }
+    .options { list-style: none; }
+    .options li { margin-bottom: 0.5rem; }
+    .options label { display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1rem; background: #0d1117; border: 2px solid #30363d; border-radius: 8px; cursor: pointer; transition: border-color 0.2s, background 0.2s; font-size: 1rem; }
+    .options label:hover { border-color: #4dabf7; background: #1c2a4a; }
+    .options input[type="radio"] { accent-color: #0d6efd; width: 18px; height: 18px; flex-shrink: 0; }
+    .btn { display: inline-block; padding: 0.7rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+    .btn-primary { background: #0d6efd; color: #fff; }
+    .btn-primary:hover { background: #3b82f6; }
+    .btn-primary:disabled { background: #374151; cursor: not-allowed; }
+    .btn-restart { background: #238636; color: #fff; margin-top: 1rem; padding: 0.7rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+    .btn-restart:hover { background: #2ea043; }
+    .feedback { margin-top: 1rem; padding: 1rem 1.2rem; border-radius: 8px; font-size: 0.95rem; line-height: 1.5; display: none; }
+    .feedback.correct { background: #0f5132; border: 1px solid #198754; color: #d1fae5; display: block; }
+    .feedback.wrong { background: #842029; border: 1px solid #dc3545; color: #fdd; display: block; }
+    .score-card { text-align: center; padding: 3rem 2rem; }
+    .score-card .score { font-size: 3rem; font-weight: 700; color: #4dabf7; margin-bottom: 0.5rem; }
+    .score-card .score-label { font-size: 1.2rem; color: #8892b0; margin-bottom: 1.5rem; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Quiz 27 — Projet final NomadNote</h1>
+    <p class="subtitle">Architecture, state management, offline-first, performance, tests, deploiement</p>
+    <div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+    <p class="progress-text" id="progressText">Question 1 / 10</p>
+    <div id="quizContainer"></div>
+    <div id="scoreContainer" class="card score-card hidden"></div>
+  </div>
+  <script>
+    const questions = [
+      {
+        label: "Question 1 — Architecture et state management",
+        text: "Dans NomadNote, pourquoi separer l'etat entre Zustand (etat client) et React Query (etat serveur) plutot que d'utiliser un seul store global ?",
+        options: [
+          "Parce que Zustand ne supporte pas les requetes HTTP",
+          "Pour eviter la duplication d'etat : React Query gere le cache serveur (revalidation, stale-while-revalidate) tandis que Zustand gere l'etat purement local (UI, brouillons, preferences) — chacun excelle dans son domaine",
+          "Parce que React Query est plus rapide que Zustand pour toutes les operations",
+          "C'est uniquement une convention, un seul store global fonctionnerait aussi bien"
+        ],
+        correct: 1,
+        explanation: "La separation des responsabilites est le principe fondamental. React Query apporte le cache intelligent, la revalidation automatique, les mutations optimistes et la gestion de la pagination — des fonctionnalites qu'il faudrait reimplementer manuellement dans Zustand. Zustand excelle pour l'etat ephemere/local qui n'a pas besoin de synchronisation serveur."
+      },
+      {
+        label: "Question 2 — Offline-first et synchronisation",
+        text: "Quelle strategie de resolution de conflits est la plus appropriee pour une application de notes collaborative comme NomadNote ?",
+        code: "// Scenario : Alice et Bob editent la meme note hors ligne\n// Alice modifie le titre, Bob modifie le contenu\n// Les deux reviennent en ligne simultanement",
+        options: [
+          "Toujours prendre la version du serveur (server wins)",
+          "Toujours prendre la version locale (client wins)",
+          "Last-Write-Wins (LWW) par champ : comparer chaque champ individuellement et garder la modification la plus recente",
+          "Rejeter toutes les modifications et demander une re-saisie manuelle"
+        ],
+        correct: 2,
+        explanation: "Le LWW par champ est le meilleur compromis : puisque Alice a modifie le titre et Bob le contenu, les deux modifications sont preservees car elles portent sur des champs differents. Le server-wins ou client-wins perdrait systematiquement les modifications d'un utilisateur. Le rejet total serait une experience utilisateur desastreuse."
+      },
+      {
+        label: "Question 3 — React Query et mutations optimistes",
+        text: "Que se passe-t-il si une mutation optimiste React Query echoue (ex: creation de note envoyee au serveur qui retourne une erreur 500) ?",
+        code: "const useCreateNote = () => {\n  const queryClient = useQueryClient();\n  return useMutation({\n    mutationFn: (data) => api.post('/notes', data),\n    onMutate: async (newNote) => {\n      await queryClient.cancelQueries({ queryKey: ['notes'] });\n      const previous = queryClient.getQueryData(['notes']);\n      queryClient.setQueryData(['notes'], (old) => [newNote, ...old]);\n      return { previous };\n    },\n    onError: (_err, _vars, context) => {\n      queryClient.setQueryData(['notes'], context?.previous);\n    },\n    onSettled: () => {\n      queryClient.invalidateQueries({ queryKey: ['notes'] });\n    },\n  });\n};",
+        options: [
+          "La note reste dans le cache indefiniment, creant un etat fantome",
+          "React Query crashe l'application avec une erreur non geree",
+          "Le callback onError restaure l'etat precedent du cache (rollback), puis onSettled revalide les donnees depuis le serveur pour garantir la coherence",
+          "React Query re-tente automatiquement la mutation sans limite jusqu'a succes"
+        ],
+        correct: 2,
+        explanation: "Le pattern onMutate/onError/onSettled forme un cycle complet : onMutate sauvegarde l'etat precedent et applique l'update optimiste, onError rollback en cas d'echec, et onSettled revalide dans tous les cas pour synchroniser avec le serveur. C'est le pattern standard pour les mutations optimistes avec React Query."
+      },
+      {
+        label: "Question 4 — Navigation et deep linking",
+        text: "Dans Expo Router, comment structurer le flux d'authentification pour que les deep links fonctionnent correctement meme quand l'utilisateur n'est pas connecte ?",
+        options: [
+          "Utiliser un middleware serveur qui redirige les utilisateurs non connectes",
+          "Stocker le deep link dans un state, rediriger vers le login, puis naviguer vers le deep link apres authentification reussie via un guard dans le root layout",
+          "Desactiver les deep links pour les utilisateurs non connectes",
+          "Utiliser des deep links differents pour les utilisateurs connectes et non connectes"
+        ],
+        correct: 1,
+        explanation: "Le pattern standard est le suivant : le root layout detecte l'etat d'authentification et redirige vers (auth) si necessaire. Le deep link initial est preserve dans le state de navigation par Expo Router. Apres login, le layout re-rend et montre (tabs), permettant la navigation vers la destination du deep link. C'est le pattern 'auth guard' applique au niveau du layout."
+      },
+      {
+        label: "Question 5 — Performance et Hermes",
+        text: "Pourquoi le pre-compilage en bytecode Hermes ameliore-t-il le temps de demarrage (TTI) d'une application React Native ?",
+        options: [
+          "Hermes comprime le code JavaScript pour reduire la taille du bundle",
+          "Hermes saute l'etape de parsing et de compilation JIT au runtime : le bytecode precompile est directement executable par la VM, eliminant le cout de demarrage lie a la compilation",
+          "Hermes telecharge le code depuis un CDN au lieu de le lire depuis le disque",
+          "Hermes execute le code sur le thread natif au lieu du thread JavaScript"
+        ],
+        correct: 1,
+        explanation: "Le bytecode Hermes (.hbc) est pre-compile en amont (build time). Au lancement, Hermes n'a pas besoin de parser le JavaScript source ni de le compiler — il execute directement le bytecode. Cela elimine typiquement 200-500ms de demarrage sur des appareils milieu de gamme. C'est un avantage majeur par rapport aux moteurs JS classiques comme JavaScriptCore."
+      },
+      {
+        label: "Question 6 — Turbo Modules et New Architecture",
+        text: "Quel est l'avantage principal d'implementer le chiffrement AES-256 comme un Turbo Module plutot que comme une librairie JavaScript pure ?",
+        options: [
+          "Le Turbo Module est plus facile a tester que du JavaScript pur",
+          "Les appels via JSI sont synchrones et sans serialisation JSON, offrant des performances ~10x superieures pour les operations cryptographiques intensives par rapport au passage par le bridge classique",
+          "Le Turbo Module fonctionne automatiquement sur le web en plus de iOS et Android",
+          "Le Turbo Module permet d'utiliser des algorithmes de chiffrement impossibles en JavaScript"
+        ],
+        correct: 1,
+        explanation: "Les Turbo Modules utilisent JSI (JavaScript Interface) pour des appels synchrones directs entre JS et C++ sans passer par le bridge asynchrone ni la serialisation JSON. Pour le chiffrement, ou chaque operation peut prendre des millisecondes, eviter le cout de serialisation et le passage asynchrone apporte un gain significatif. Les algorithmes restent les memes (OpenSSL/BoringSSL), mais l'overhead de communication est elimine."
+      },
+      {
+        label: "Question 7 — Tests et pyramide de tests",
+        text: "Pour NomadNote, quelle repartition de tests est la plus efficace en termes de couverture et de cout de maintenance ?",
+        options: [
+          "80% E2E (Detox), 15% integration, 5% unitaires — les E2E testent tout d'un coup",
+          "100% unitaires — ils sont rapides et couvrent tout le code",
+          "70% unitaires (logique metier, utils, stores), 20% integration (ecrans avec RNTL + MSW), 10% E2E (parcours critiques avec Detox)",
+          "50% unitaires, 50% E2E, pas de tests d'integration"
+        ],
+        correct: 2,
+        explanation: "La pyramide de tests classique s'applique : beaucoup de tests unitaires (rapides, stables, bon feedback), des tests d'integration pour valider l'assemblage des composants, et quelques E2E pour les parcours critiques. Les E2E sont couteux a maintenir et lents a executer — les utiliser pour 80% des tests serait un anti-pattern qui ralentirait drastiquement la CI."
+      },
+      {
+        label: "Question 8 — Cache LRU et performance memoire",
+        text: "Pourquoi un cache LRU (Least Recently Used) est-il preferable a un cache FIFO (First In, First Out) pour les notes dans NomadNote ?",
+        options: [
+          "Le LRU est plus simple a implementer que le FIFO",
+          "Le LRU consomme moins de memoire que le FIFO",
+          "Le LRU conserve les notes frequemment consultees en cache meme si elles sont anciennes, optimisant le hit rate pour les patterns d'acces typiques ou l'utilisateur revient souvent sur les memes notes recentes",
+          "Le LRU garantit que le cache ne depasse jamais sa taille maximale, contrairement au FIFO"
+        ],
+        correct: 2,
+        explanation: "Le LRU est superieur au FIFO car il s'adapte au pattern d'usage reel. Un utilisateur qui consulte frequemment les memes 5 notes les gardera en cache meme apres avoir brievement consulte 10 autres notes. Avec FIFO, ces 5 notes frequentes seraient evincees chronologiquement, degradant le hit rate. Les deux caches respectent la taille maximale — la difference est dans la strategie d'eviction."
+      },
+      {
+        label: "Question 9 — CI/CD et deploiement EAS",
+        text: "Quelle est la strategie optimale pour les mises a jour mineures (corrections de bugs non critiques) sur une application deja deployee avec EAS ?",
+        options: [
+          "Publier une nouvelle version complete sur les stores (App Store + Play Store) via eas build + eas submit",
+          "Utiliser les OTA updates (expo-updates) pour pousser le correctif JavaScript sans passer par la review des stores, avec un channel de production",
+          "Demander aux utilisateurs de reinstaller l'application manuellement",
+          "Attendre la prochaine version majeure pour regrouper les correctifs"
+        ],
+        correct: 1,
+        explanation: "Les OTA updates via expo-updates permettent de pousser des modifications JavaScript instantanement sans passer par le processus de review des stores (1-7 jours). C'est ideal pour les correctifs mineurs. Les modifications natives (nouveau module natif, changement de permissions) necessitent toujours un build complet. Le systeme de channels permet de tester sur preview avant de deployer en production."
+      },
+      {
+        label: "Question 10 — Fabric Components et New Architecture",
+        text: "Quel est le principal benefice de creer l'editeur de texte riche comme un Fabric Component natif plutot que d'utiliser une WebView avec un editeur HTML ?",
+        code: "// Option A: Fabric Component natif\n// Rendu directement par le thread UI natif\n// Gestion native du clavier et des gestes\n\n// Option B: WebView + editeur HTML\n// Rendu dans un contexte web isole\n// Communication via postMessage",
+        options: [
+          "Le Fabric Component supporte plus de formats de texte que la WebView",
+          "Le Fabric Component est rendu directement par le thread UI natif sans couche web intermediaire, offrant des interactions clavier et gestes plus fluides, un demarrage plus rapide et une integration transparente avec le systeme de layout React Native",
+          "Le Fabric Component ne necessite aucun code natif, contrairement a la WebView",
+          "Le Fabric Component est automatiquement compatible avec tous les appareils"
+        ],
+        correct: 1,
+        explanation: "Un Fabric Component est rendu nativement, sans la surcouche d'une WebView. L'editeur beneficie donc de la gestion native du clavier (pas de decalage entre le clavier et le contenu), des gestes natifs, et d'un temps d'initialisation bien plus court qu'une WebView. De plus, le composant s'integre directement dans l'arbre React Native avec le systeme de layout Yoga/Fabric, sans les problemes de dimensionnement courants avec les WebViews."
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let answered = false;
+
+    function render() {
+      const container = document.getElementById('quizContainer');
+      const scoreContainer = document.getElementById('scoreContainer');
+      const progressBar = document.getElementById('progressBar');
+      const progressText = document.getElementById('progressText');
+
+      if (currentQuestion >= questions.length) {
+        container.classList.add('hidden');
+        scoreContainer.classList.remove('hidden');
+        const pct = Math.round((score / questions.length) * 100);
+        scoreContainer.innerHTML = `
+          <div class="score">${score} / ${questions.length}</div>
+          <div class="score-label">${pct}% de bonnes reponses</div>
+          <p style="margin-bottom:1rem;color:#8892b0;">${
+            pct >= 80 ? 'Excellent ! Vous maitrisez l\'ensemble des concepts du cours.' :
+            pct >= 60 ? 'Bon travail ! Revoyez les modules concernes pour les questions manquees.' :
+            'Revisez les modules du cours avant de vous lancer dans le projet final.'
+          }</p>
+          <button class="btn-restart" onclick="restart()">Recommencer</button>
+        `;
+        progressBar.style.width = '100%';
+        progressText.textContent = 'Termine !';
+        return;
+      }
+
+      const q = questions[currentQuestion];
+      progressBar.style.width = ((currentQuestion / questions.length) * 100) + '%';
+      progressText.textContent = `Question ${currentQuestion + 1} / ${questions.length}`;
+
+      let html = `<div class="card">
+        <div class="question-label">${q.label}</div>
+        <div class="question-text">${q.text}</div>`;
+
+      if (q.code) {
+        html += `<pre><code>${q.code}</code></pre>`;
+      }
+
+      html += `<ul class="options">`;
+      q.options.forEach((opt, i) => {
+        html += `<li>
+          <label>
+            <input type="radio" name="q${currentQuestion}" value="${i}" ${answered ? 'disabled' : ''}>
+            ${opt}
+          </label>
+        </li>`;
+      });
+      html += `</ul>`;
+
+      if (!answered) {
+        html += `<button class="btn btn-primary" id="submitBtn" onclick="submit()" disabled>Valider</button>`;
+      }
+
+      html += `<div id="feedback" class="feedback"></div>`;
+
+      if (answered) {
+        html += `<button class="btn btn-primary" style="margin-top:1rem;" onclick="next()">Suivant</button>`;
+      }
+
+      html += `</div>`;
+      container.innerHTML = html;
+
+      if (!answered) {
+        document.querySelectorAll(`input[name="q${currentQuestion}"]`).forEach(input => {
+          input.addEventListener('change', () => {
+            document.getElementById('submitBtn').disabled = false;
+          });
+        });
+      }
+    }
+
+    function submit() {
+      const selected = document.querySelector(`input[name="q${currentQuestion}"]:checked`);
+      if (!selected) return;
+
+      answered = true;
+      const q = questions[currentQuestion];
+      const value = parseInt(selected.value);
+      const feedback = document.getElementById('feedback');
+
+      if (value === q.correct) {
+        score++;
+        feedback.className = 'feedback correct';
+        feedback.textContent = 'Correct ! ' + q.explanation;
+      } else {
+        feedback.className = 'feedback wrong';
+        feedback.textContent = 'Incorrect. ' + q.explanation;
+      }
+
+      render();
+    }
+
+    function next() {
+      currentQuestion++;
+      answered = false;
+      render();
+    }
+
+    function restart() {
+      currentQuestion = 0;
+      score = 0;
+      answered = false;
+      document.getElementById('scoreContainer').classList.add('hidden');
+      document.getElementById('quizContainer').classList.remove('hidden');
+      render();
+    }
+
+    render();
+  </script>
+</body>
+</html>

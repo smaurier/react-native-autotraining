@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz 10 — Gestion de l'etat</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a2e; color: #e0e0e0; min-height: 100vh; padding: 2rem 1rem; }
+    .container { max-width: 800px; margin: 0 auto; }
+    h1 { text-align: center; margin-bottom: 0.5rem; font-size: 1.8rem; color: #ffffff; }
+    .subtitle { text-align: center; color: #8892b0; margin-bottom: 2rem; font-size: 1rem; }
+    .progress-bar-container { background: #0d1117; border-radius: 10px; height: 14px; margin-bottom: 2rem; overflow: hidden; }
+    .progress-bar { background: linear-gradient(90deg, #0d6efd, #4dabf7); height: 100%; width: 0%; border-radius: 10px; transition: width 0.4s ease; }
+    .progress-text { text-align: center; color: #8892b0; margin-bottom: 1rem; font-size: 0.9rem; }
+    .card { background: #16213e; border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .question-label { font-size: 0.85rem; color: #4dabf7; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+    .question-text { font-size: 1.15rem; margin-bottom: 1.2rem; line-height: 1.5; color: #ffffff; }
+    pre { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 1rem; margin-bottom: 1.2rem; overflow-x: auto; font-size: 0.95rem; }
+    code { font-family: 'Consolas', 'Fira Code', 'Courier New', monospace; color: #c9d1d9; }
+    .options { list-style: none; }
+    .options li { margin-bottom: 0.5rem; }
+    .options label { display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1rem; background: #0d1117; border: 2px solid #30363d; border-radius: 8px; cursor: pointer; transition: border-color 0.2s, background 0.2s; font-size: 1rem; }
+    .options label:hover { border-color: #4dabf7; background: #1c2a4a; }
+    .options input[type="radio"] { accent-color: #0d6efd; width: 18px; height: 18px; flex-shrink: 0; }
+    .btn { display: inline-block; padding: 0.7rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+    .btn-primary { background: #0d6efd; color: #fff; }
+    .btn-primary:hover { background: #3b82f6; }
+    .btn-primary:disabled { background: #374151; cursor: not-allowed; }
+    .btn-restart { background: #238636; color: #fff; margin-top: 1rem; padding: 0.7rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+    .btn-restart:hover { background: #2ea043; }
+    .feedback { margin-top: 1rem; padding: 1rem 1.2rem; border-radius: 8px; font-size: 0.95rem; line-height: 1.5; display: none; }
+    .feedback.correct { background: #0f5132; border: 1px solid #198754; color: #d1fae5; display: block; }
+    .feedback.wrong { background: #842029; border: 1px solid #dc3545; color: #fdd; display: block; }
+    .score-card { text-align: center; padding: 3rem 2rem; }
+    .score-card .score { font-size: 3rem; font-weight: 700; color: #4dabf7; margin-bottom: 0.5rem; }
+    .score-card .score-label { font-size: 1.2rem; color: #8892b0; margin-bottom: 1.5rem; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Quiz 10 — Gestion de l'etat</h1>
+    <p class="subtitle">Context, Zustand, selecteurs, persistence, slices</p>
+    <div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+    <p class="progress-text" id="progressText">Question 1 / 5</p>
+    <div id="quizContainer"></div>
+    <div id="scoreContainer" class="card score-card hidden"></div>
+  </div>
+  <script>
+    const questions = [
+      {
+        label: "Question 1 — Re-renders avec Context",
+        text: "Pourquoi un composant qui lit uniquement `theme` depuis un Context contenant aussi `cartCount` se re-rend quand `cartCount` change ?",
+        code: "const AppContext = createContext({ theme: 'light', cartCount: 0 });\n\nfunction Header() {\n  const { theme } = useContext(AppContext);\n  return <Text>{theme}</Text>;\n}",
+        options: [
+          "Parce que useContext fait un deep compare et detecte le changement",
+          "Parce que useContext ne permet pas de selecteur : quand la valeur du Context change, TOUS les consommateurs se re-rendent, meme s'ils n'utilisent qu'une partie de la valeur",
+          "Parce que le composant Header n'utilise pas React.memo",
+          "Parce que le Context ne fonctionne pas correctement avec les objets"
+        ],
+        answer: 1,
+        explanation: "C'est le piege principal de Context : il n'y a pas de mecanisme de selecteur natif. Quand la valeur du Provider change (meme si seul cartCount est modifie), React notifie tous les composants qui appellent useContext, meme ceux qui n'utilisent que theme. React.memo ne resout pas ce probleme car useContext contourne la memoisation. La solution : splitter en plusieurs contextes ou utiliser Zustand."
+      },
+      {
+        label: "Question 2 — Selecteur Zustand",
+        text: "Quelle est la difference entre ces deux facons de consommer un store Zustand ?",
+        code: "// Version A\nconst store = useCartStore();\nreturn <Text>{store.items.length}</Text>;\n\n// Version B\nconst count = useCartStore((state) => state.items.length);\nreturn <Text>{count}</Text>;",
+        options: [
+          "Aucune difference, les deux sont equivalentes",
+          "La version A est plus performante car elle ne cree pas de closure",
+          "La version B ne se re-rend que quand items.length change, tandis que la version A se re-rend a chaque changement du store (n'importe quelle propriete)",
+          "La version A ne fonctionne pas avec Zustand"
+        ],
+        answer: 2,
+        explanation: "La version B utilise un selecteur : Zustand compare le resultat du selecteur (items.length) avant et apres chaque changement. Si la valeur est identique (===), le composant ne se re-rend pas. La version A sans selecteur recoit l'objet store entier : elle se re-rend a chaque setState, meme si on n'utilise que items.length. Toujours utiliser un selecteur."
+      },
+      {
+        label: "Question 3 — Persist middleware",
+        text: "Quelle est la bonne configuration pour persister un store Zustand avec MMKV et ne sauvegarder que certains champs ?",
+        code: "const useAuthStore = create<AuthStore>()(\n  persist(\n    (set) => ({ user: null, token: null, isLoading: false }),\n    {\n      name: 'auth-storage',\n      storage: createJSONStorage(() => mmkvStorage),\n      ???\n    },\n  ),\n);",
+        options: [
+          "include: ['user', 'token'] pour lister les champs a persister",
+          "exclude: ['isLoading'] pour exclure les champs transitoires",
+          "partialize: (state) => ({ user: state.user, token: state.token }) pour retourner un sous-ensemble de l'etat a persister",
+          "filter: (key) => key !== 'isLoading' pour filtrer les cles"
+        ],
+        answer: 2,
+        explanation: "L'option partialize du persist middleware recoit l'etat complet et retourne un objet contenant uniquement les champs a persister. C'est la facon standard d'eviter de sauvegarder des valeurs transitoires comme isLoading ou error. MMKV est prefere a AsyncStorage car il est synchrone et beaucoup plus rapide (stockage binaire natif)."
+      },
+      {
+        label: "Question 4 — Slice pattern",
+        text: "Quel est l'avantage du slice pattern avec Zustand ?",
+        code: "const createAuthSlice: StateCreator<AppStore, [], [], AuthSlice> = (set) => ({\n  user: null,\n  login: (user) => set({ user }),\n  logout: () => set({ user: null }),\n});\n\nconst createCartSlice: StateCreator<AppStore, [], [], CartSlice> = (set) => ({\n  items: [],\n  addItem: (item) => set((s) => ({ items: [...s.items, item] })),\n});\n\nconst useAppStore = create<AppStore>()((...args) => ({\n  ...createAuthSlice(...args),\n  ...createCartSlice(...args),\n}));",
+        options: [
+          "Il cree des stores isoles qui ne peuvent pas communiquer entre eux",
+          "Il permet de decouper un gros store en modules independants, chaque slice definit son propre etat et ses actions, tout en partageant le meme store et pouvant acceder a l'etat des autres slices via get()",
+          "Il est obligatoire pour utiliser le persist middleware",
+          "Il remplace les selecteurs en permettant de s'abonner uniquement a un slice"
+        ],
+        answer: 1,
+        explanation: "Le slice pattern est un pattern d'organisation : chaque fichier definit une tranche (slice) d'etat et ses actions. Les slices sont fusionnees dans un seul store avec le spread operator. L'avantage cle : chaque slice peut acceder a l'etat des autres via get(), ce qui permet la communication inter-domaines (ex: le cart slice verifie l'auth avant d'ajouter un item). Ce n'est pas de l'isolation mais de la modularite."
+      },
+      {
+        label: "Question 5 — Context vs Zustand",
+        text: "Dans quel scenario Context + useReducer est-il suffisant par rapport a Zustand ?",
+        code: "// Scenario : theme (light/dark), change 1-2 fois par session\n// vs\n// Scenario : panier d'achat, MAJ frequentes, 15+ composants lecteurs",
+        options: [
+          "Context suffit toujours, Zustand est superflu",
+          "Zustand est toujours necessaire, Context est obsolete",
+          "Context suffit pour le theme (mises a jour rares, peu de consommateurs), mais Zustand est preferable pour le panier (MAJ frequentes, beaucoup de composants lecteurs, besoin de selecteurs)",
+          "Il faut utiliser Redux pour les deux cas"
+        ],
+        answer: 2,
+        explanation: "Context est adapte quand l'etat change rarement (theme, locale) et que peu de composants le lisent. Le cout des re-renders est negligeable. Pour le panier (mises a jour frequentes, beaucoup de composants lecteurs, besoin de selecteurs fins et de persistence), Zustand evite les re-renders en cascade grace aux selecteurs. La regle : si vous vous demandez si Context suffit, c'est probablement le cas. Si vous avez des problemes de performance, passez a Zustand."
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function render() {
+      const container = document.getElementById('quizContainer');
+      const q = questions[current];
+      const total = questions.length;
+      document.getElementById('progressBar').style.width = ((current / total) * 100) + '%';
+      document.getElementById('progressText').textContent = `Question ${current + 1} / ${total}`;
+
+      container.innerHTML = `
+        <div class="card">
+          <p class="question-label">${q.label}</p>
+          <p class="question-text">${q.text}</p>
+          ${q.code ? `<pre><code>${q.code}</code></pre>` : ''}
+          <ul class="options">
+            ${q.options.map((opt, i) => `
+              <li>
+                <label>
+                  <input type="radio" name="q${current}" value="${i}">
+                  ${opt}
+                </label>
+              </li>
+            `).join('')}
+          </ul>
+          <button class="btn btn-primary" id="submitBtn" onclick="submit()" disabled>Valider</button>
+          <div class="feedback" id="feedback"></div>
+        </div>
+      `;
+
+      container.querySelectorAll('input[type="radio"]').forEach(r => {
+        r.addEventListener('change', () => {
+          document.getElementById('submitBtn').disabled = false;
+        });
+      });
+    }
+
+    function submit() {
+      const selected = document.querySelector(`input[name="q${current}"]:checked`);
+      if (!selected) return;
+      const answer = parseInt(selected.value);
+      const q = questions[current];
+      const fb = document.getElementById('feedback');
+      const btn = document.getElementById('submitBtn');
+
+      document.querySelectorAll(`input[name="q${current}"]`).forEach(r => r.disabled = true);
+      btn.disabled = true;
+
+      if (answer === q.answer) {
+        score++;
+        fb.className = 'feedback correct';
+        fb.innerHTML = `<strong>Correct !</strong> ${q.explanation}`;
+      } else {
+        fb.className = 'feedback wrong';
+        fb.innerHTML = `<strong>Incorrect.</strong> ${q.explanation}`;
+      }
+
+      setTimeout(() => {
+        current++;
+        if (current < questions.length) {
+          render();
+        } else {
+          showScore();
+        }
+      }, 4000);
+    }
+
+    function showScore() {
+      document.getElementById('quizContainer').classList.add('hidden');
+      document.getElementById('progressBar').style.width = '100%';
+      document.getElementById('progressText').textContent = 'Termine !';
+      const sc = document.getElementById('scoreContainer');
+      sc.classList.remove('hidden');
+      const pct = Math.round((score / questions.length) * 100);
+      sc.innerHTML = `
+        <div class="score">${score} / ${questions.length}</div>
+        <div class="score-label">${pct}% — ${pct >= 80 ? 'Excellent !' : pct >= 60 ? 'Bien joue !' : 'A revoir...'}</div>
+        <button class="btn-restart" onclick="restart()">Recommencer</button>
+      `;
+    }
+
+    function restart() {
+      current = 0;
+      score = 0;
+      document.getElementById('scoreContainer').classList.add('hidden');
+      document.getElementById('quizContainer').classList.remove('hidden');
+      render();
+    }
+
+    render();
+  </script>
+</body>
+</html>

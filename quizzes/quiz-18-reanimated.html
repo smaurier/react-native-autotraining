@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz 18 — Reanimated et Gesture Handler</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a2e; color: #e0e0e0; min-height: 100vh; padding: 2rem 1rem; }
+    .container { max-width: 800px; margin: 0 auto; }
+    h1 { text-align: center; margin-bottom: 0.5rem; font-size: 1.8rem; color: #ffffff; }
+    .subtitle { text-align: center; color: #8892b0; margin-bottom: 2rem; font-size: 1rem; }
+    .progress-bar-container { background: #0d1117; border-radius: 10px; height: 14px; margin-bottom: 2rem; overflow: hidden; }
+    .progress-bar { background: linear-gradient(90deg, #0d6efd, #4dabf7); height: 100%; width: 0%; border-radius: 10px; transition: width 0.4s ease; }
+    .progress-text { text-align: center; color: #8892b0; margin-bottom: 1rem; font-size: 0.9rem; }
+    .card { background: #16213e; border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .question-label { font-size: 0.85rem; color: #4dabf7; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+    .question-text { font-size: 1.15rem; margin-bottom: 1.2rem; line-height: 1.5; color: #ffffff; }
+    pre { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 1rem; margin-bottom: 1.2rem; overflow-x: auto; font-size: 0.95rem; }
+    code { font-family: 'Consolas', 'Fira Code', 'Courier New', monospace; color: #c9d1d9; }
+    .options { list-style: none; }
+    .options li { margin-bottom: 0.5rem; }
+    .options label { display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1rem; background: #0d1117; border: 2px solid #30363d; border-radius: 8px; cursor: pointer; transition: border-color 0.2s, background 0.2s; font-size: 1rem; }
+    .options label:hover { border-color: #4dabf7; background: #1c2a4a; }
+    .options input[type="radio"] { accent-color: #0d6efd; width: 18px; height: 18px; flex-shrink: 0; }
+    .btn { display: inline-block; padding: 0.7rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+    .btn-primary { background: #0d6efd; color: #fff; }
+    .btn-primary:hover { background: #3b82f6; }
+    .btn-primary:disabled { background: #374151; cursor: not-allowed; }
+    .btn-restart { background: #238636; color: #fff; margin-top: 1rem; padding: 0.7rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+    .btn-restart:hover { background: #2ea043; }
+    .feedback { margin-top: 1rem; padding: 1rem 1.2rem; border-radius: 8px; font-size: 0.95rem; line-height: 1.5; display: none; }
+    .feedback.correct { background: #0f5132; border: 1px solid #198754; color: #d1fae5; display: block; }
+    .feedback.wrong { background: #842029; border: 1px solid #dc3545; color: #fdd; display: block; }
+    .score-card { text-align: center; padding: 3rem 2rem; }
+    .score-card .score { font-size: 3rem; font-weight: 700; color: #4dabf7; margin-bottom: 0.5rem; }
+    .score-card .score-label { font-size: 1.2rem; color: #8892b0; margin-bottom: 1.5rem; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Quiz 18 — Reanimated et Gesture Handler</h1>
+    <p class="subtitle">Shared values, worklets, Gesture API, layout animations</p>
+    <div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+    <p class="progress-text" id="progressText">Question 1 / 10</p>
+    <div id="quizContainer"></div>
+    <div id="scoreContainer" class="card score-card hidden"></div>
+  </div>
+  <script>
+    const questions = [
+      {
+        label: "Question 1 — Shared Value vs useState",
+        text: "Quelle est la difference fondamentale entre useSharedValue et useState pour les animations ?",
+        code: null,
+        options: [
+          "useSharedValue est plus lent mais plus precis",
+          "useSharedValue ne provoque pas de re-render React et s'execute sur le UI thread",
+          "useState fonctionne sur le UI thread, useSharedValue sur le JS thread",
+          "Il n'y a aucune difference, les deux sont equivalents"
+        ],
+        correct: 1,
+        explanation: "useSharedValue stocke la valeur en memoire partagee entre le JS thread et le UI thread. Les modifications ne provoquent pas de re-render React, ce qui permet des animations a 60 fps sans saccades. useState provoque un re-render a chaque changement, ce qui passe par le bridge."
+      },
+      {
+        label: "Question 2 — Directive worklet",
+        text: "Sur quel thread s'execute une fonction marquee avec la directive 'worklet' ?",
+        code: "function animate() {\n  'worklet';\n  // ...\n}",
+        options: [
+          "Le JS thread uniquement",
+          "Le main thread (natif) uniquement",
+          "Le UI thread — le plugin Babel la serialise pour execution native",
+          "Un Web Worker dedie aux animations"
+        ],
+        correct: 2,
+        explanation: "La directive 'worklet' indique au plugin Babel de Reanimated de transformer la fonction pour qu'elle puisse s'executer sur le UI thread (thread natif responsable du rendu). C'est ce qui permet les animations 60 fps sans passer par le bridge JS."
+      },
+      {
+        label: "Question 3 — Gesture API vs PanResponder",
+        text: "Pourquoi la Gesture API (v2) de react-native-gesture-handler est-elle preferee a PanResponder ?",
+        code: null,
+        options: [
+          "PanResponder est plus performant mais plus complexe",
+          "La Gesture API est declarative, composable, et s'execute nativement (pas sur le JS thread)",
+          "PanResponder ne fonctionne pas avec la New Architecture",
+          "La Gesture API est uniquement disponible sur iOS"
+        ],
+        correct: 1,
+        explanation: "La Gesture API est declarative (chainage fluide), composable (Simultaneous, Exclusive, Race), et les gestes sont traites nativement, evitant la latence du JS thread. PanResponder utilise le JS thread et est difficile a composer pour des gestes simultanes."
+      },
+      {
+        label: "Question 4 — Parametres withSpring",
+        text: "Quel effet a l'augmentation du parametre 'damping' dans withSpring ?",
+        code: "translateX.value = withSpring(100, {\n  damping: 30,   // augmente\n  stiffness: 100,\n});",
+        options: [
+          "Plus de rebond et d'oscillations",
+          "Animation plus lente",
+          "Moins de rebond — l'animation se stabilise plus vite",
+          "L'animation devient lineaire"
+        ],
+        correct: 2,
+        explanation: "Le damping (amortissement) controle la resistance au mouvement. Plus il est eleve, moins il y a de rebond et plus l'animation se stabilise rapidement. Un damping faible (ex: 6) produit un effet rebondissant, un damping eleve (ex: 30) produit un mouvement fluide sans oscillation."
+      },
+      {
+        label: "Question 5 — Layout animations",
+        text: "Que fait ce code quand un element apparait dans le DOM ?",
+        code: "<Animated.View\n  entering={FadeIn.delay(200).duration(400).springify()}\n  exiting={FadeOut.duration(200)}\n/>",
+        options: [
+          "L'element apparait immediatement sans animation",
+          "Apres 200ms de delai, l'element fait un fade-in de 400ms avec un effet spring",
+          "L'element fait un spring puis un fade-in",
+          "Erreur : on ne peut pas combiner delay et springify"
+        ],
+        correct: 1,
+        explanation: "Le chainage est lu de gauche a droite : d'abord un delai de 200ms, puis un fade-in de 400ms avec springify() qui ajoute un leger rebond elastique a la fin. A la sortie, l'element fait un fade-out de 200ms."
+      },
+      {
+        label: "Question 6 — Composition Simultaneous",
+        text: "Que permet Gesture.Simultaneous(pinch, rotation, pan) ?",
+        code: null,
+        options: [
+          "Les gestes s'executent les uns apres les autres",
+          "Seul le premier geste reconnu est active",
+          "Les trois gestes peuvent s'executer en parallele en meme temps",
+          "Les gestes sont mis en file d'attente"
+        ],
+        correct: 2,
+        explanation: "Gesture.Simultaneous permet a plusieurs gestes de s'executer en meme temps. C'est indispensable pour le pinch-to-zoom avec rotation : l'utilisateur peut zoomer (pinch), tourner (rotation) et deplacer (pan) simultanement avec deux doigts."
+      },
+      {
+        label: "Question 7 — interpolate avec CLAMP",
+        text: "Quel est le resultat de cet appel ?",
+        code: "interpolate(\n  300,           // valeur d'entree\n  [0, 200],      // inputRange\n  [0, 100],      // outputRange\n  Extrapolation.CLAMP\n)",
+        options: [
+          "150 (continue la pente)",
+          "300 (retourne l'entree)",
+          "100 (bloque a la borne max de sortie)",
+          "Erreur : valeur hors plage"
+        ],
+        correct: 2,
+        explanation: "Avec Extrapolation.CLAMP, quand la valeur d'entree (300) depasse la plage d'entree [0, 200], la sortie est bloquee a la borne correspondante de outputRange. Ici, 300 > 200, donc la sortie est bloquee a 100 (le max de outputRange)."
+      },
+      {
+        label: "Question 8 — runOnJS",
+        text: "Pourquoi faut-il utiliser runOnJS dans ce contexte ?",
+        code: "const pan = Gesture.Pan()\n  .onEnd((event) => {\n    'worklet';\n    if (event.translationX > 150) {\n      runOnJS(navigation.navigate)('NextScreen');\n    }\n  });",
+        options: [
+          "Pour ameliorer les performances de la navigation",
+          "Parce que la navigation est une API JS qui ne peut pas s'executer sur le UI thread",
+          "Pour eviter les memory leaks",
+          "runOnJS est optionnel ici, c'est juste une bonne pratique"
+        ],
+        correct: 1,
+        explanation: "Les callbacks de gestes s'executent sur le UI thread (worklet). Les API JavaScript comme la navigation React Navigation, setState, fetch, etc. ne sont disponibles que sur le JS thread. runOnJS transfere l'execution vers le JS thread pour appeler ces API."
+      },
+      {
+        label: "Question 9 — withRepeat",
+        text: "Que produit cette animation ?",
+        code: "scale.value = withRepeat(\n  withTiming(1.3, { duration: 600 }),\n  -1,    // repetitions\n  true   // reverse\n);",
+        options: [
+          "Un seul agrandissement a 1.3x puis retour a la taille normale",
+          "Une pulsation infinie : scale oscille entre la valeur initiale et 1.3",
+          "L'element grossit infiniment sans s'arreter",
+          "L'element fait 1.3x puis disparait"
+        ],
+        correct: 1,
+        explanation: "withRepeat avec -1 repetitions cree une boucle infinie. Le parametre reverse: true fait que l'animation alterne entre aller (vers 1.3) et retour (vers la valeur de depart). Resultat : une pulsation continue, souvent utilisee pour des indicateurs d'activite."
+      },
+      {
+        label: "Question 10 — Gesture.Exclusive",
+        text: "Comment fonctionne Gesture.Exclusive(doubleTap, singleTap) ?",
+        code: "const doubleTap = Gesture.Tap().numberOfTaps(2);\nconst singleTap = Gesture.Tap();\n\nconst gesture = Gesture.Exclusive(doubleTap, singleTap);",
+        options: [
+          "Les deux gestes sont toujours declenches en meme temps",
+          "Le doubleTap est prioritaire : s'il est reconnu, le singleTap est annule",
+          "Le singleTap est toujours declenche en premier",
+          "Seul le doubleTap fonctionne, le singleTap est ignore"
+        ],
+        correct: 1,
+        explanation: "Gesture.Exclusive donne la priorite au premier geste dans la liste. Le systeme attend de voir si un doubleTap est detecte. Si oui, le singleTap est annule. Si le doubleTap echoue (un seul tap), alors le singleTap est reconnu. C'est le pattern standard pour distinguer tap simple et double tap."
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let answered = false;
+
+    function renderQuestion() {
+      const q = questions[currentQuestion];
+      const container = document.getElementById('quizContainer');
+      const progressBar = document.getElementById('progressBar');
+      const progressText = document.getElementById('progressText');
+
+      progressBar.style.width = `${((currentQuestion) / questions.length) * 100}%`;
+      progressText.textContent = `Question ${currentQuestion + 1} / ${questions.length}`;
+
+      let html = `<div class="card">`;
+      html += `<p class="question-label">${q.label}</p>`;
+      html += `<p class="question-text">${q.text}</p>`;
+      if (q.code) {
+        html += `<pre><code>${q.code}</code></pre>`;
+      }
+      html += `<ul class="options">`;
+      q.options.forEach((opt, i) => {
+        html += `<li><label><input type="radio" name="q${currentQuestion}" value="${i}" ${answered ? 'disabled' : ''}> ${opt}</label></li>`;
+      });
+      html += `</ul>`;
+      html += `<button class="btn btn-primary" id="submitBtn" ${answered ? 'disabled' : ''} onclick="checkAnswer()">Valider</button>`;
+      html += `<div id="feedback" class="feedback"></div>`;
+      html += `</div>`;
+
+      container.innerHTML = html;
+      answered = false;
+    }
+
+    function checkAnswer() {
+      if (answered) return;
+      const selected = document.querySelector(`input[name="q${currentQuestion}"]:checked`);
+      if (!selected) return;
+
+      answered = true;
+      const answer = parseInt(selected.value);
+      const q = questions[currentQuestion];
+      const feedback = document.getElementById('feedback');
+      const submitBtn = document.getElementById('submitBtn');
+
+      document.querySelectorAll(`input[name="q${currentQuestion}"]`).forEach(r => r.disabled = true);
+      submitBtn.disabled = true;
+
+      if (answer === q.correct) {
+        score++;
+        feedback.className = 'feedback correct';
+        feedback.innerHTML = `<strong>Correct !</strong> ${q.explanation}`;
+      } else {
+        feedback.className = 'feedback wrong';
+        feedback.innerHTML = `<strong>Incorrect.</strong> ${q.explanation}`;
+      }
+
+      setTimeout(() => {
+        currentQuestion++;
+        if (currentQuestion < questions.length) {
+          renderQuestion();
+        } else {
+          showScore();
+        }
+      }, 3500);
+    }
+
+    function showScore() {
+      const container = document.getElementById('quizContainer');
+      const scoreContainer = document.getElementById('scoreContainer');
+      const progressBar = document.getElementById('progressBar');
+
+      container.innerHTML = '';
+      progressBar.style.width = '100%';
+      document.getElementById('progressText').textContent = `Termine !`;
+
+      const pct = Math.round((score / questions.length) * 100);
+      let msg = '';
+      if (pct === 100) msg = 'Parfait ! Vous maitrisez Reanimated et Gesture Handler.';
+      else if (pct >= 80) msg = 'Excellent ! Quelques details a revoir.';
+      else if (pct >= 60) msg = 'Bien ! Relisez les sections sur les points manques.';
+      else msg = 'Continuez a pratiquer — relisez le module 18.';
+
+      scoreContainer.className = 'card score-card';
+      scoreContainer.innerHTML = `
+        <div class="score">${score} / ${questions.length}</div>
+        <div class="score-label">${pct}% — ${msg}</div>
+        <button class="btn-restart" onclick="restart()">Recommencer</button>
+      `;
+    }
+
+    function restart() {
+      currentQuestion = 0;
+      score = 0;
+      answered = false;
+      document.getElementById('scoreContainer').className = 'card score-card hidden';
+      renderQuestion();
+    }
+
+    renderQuestion();
+  </script>
+</body>
+</html>

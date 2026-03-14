@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz 15 — APIs natives essentielles</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a2e; color: #e0e0e0; min-height: 100vh; padding: 2rem 1rem; }
+    .container { max-width: 800px; margin: 0 auto; }
+    h1 { text-align: center; margin-bottom: 0.5rem; font-size: 1.8rem; color: #ffffff; }
+    .subtitle { text-align: center; color: #8892b0; margin-bottom: 2rem; font-size: 1rem; }
+    .progress-bar-container { background: #0d1117; border-radius: 10px; height: 14px; margin-bottom: 2rem; overflow: hidden; }
+    .progress-bar { background: linear-gradient(90deg, #0d6efd, #4dabf7); height: 100%; width: 0%; border-radius: 10px; transition: width 0.4s ease; }
+    .progress-text { text-align: center; color: #8892b0; margin-bottom: 1rem; font-size: 0.9rem; }
+    .card { background: #16213e; border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .question-label { font-size: 0.85rem; color: #4dabf7; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+    .question-text { font-size: 1.15rem; margin-bottom: 1.2rem; line-height: 1.5; color: #ffffff; }
+    pre { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 1rem; margin-bottom: 1.2rem; overflow-x: auto; font-size: 0.95rem; }
+    code { font-family: 'Consolas', 'Fira Code', 'Courier New', monospace; color: #c9d1d9; }
+    .options { list-style: none; }
+    .options li { margin-bottom: 0.5rem; }
+    .options label { display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1rem; background: #0d1117; border: 2px solid #30363d; border-radius: 8px; cursor: pointer; transition: border-color 0.2s, background 0.2s; font-size: 1rem; }
+    .options label:hover { border-color: #4dabf7; background: #1c2a4a; }
+    .options input[type="radio"] { accent-color: #0d6efd; width: 18px; height: 18px; flex-shrink: 0; }
+    .btn { display: inline-block; padding: 0.7rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+    .btn-primary { background: #0d6efd; color: #fff; }
+    .btn-primary:hover { background: #3b82f6; }
+    .btn-primary:disabled { background: #374151; cursor: not-allowed; }
+    .btn-restart { background: #238636; color: #fff; margin-top: 1rem; padding: 0.7rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+    .btn-restart:hover { background: #2ea043; }
+    .feedback { margin-top: 1rem; padding: 1rem 1.2rem; border-radius: 8px; font-size: 0.95rem; line-height: 1.5; display: none; }
+    .feedback.correct { background: #0f5132; border: 1px solid #198754; color: #d1fae5; display: block; }
+    .feedback.wrong { background: #842029; border: 1px solid #dc3545; color: #fdd; display: block; }
+    .score-card { text-align: center; padding: 3rem 2rem; }
+    .score-card .score { font-size: 3rem; font-weight: 700; color: #4dabf7; margin-bottom: 0.5rem; }
+    .score-card .score-label { font-size: 1.2rem; color: #8892b0; margin-bottom: 1.5rem; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Quiz 15 — APIs natives essentielles</h1>
+    <p class="subtitle">Permissions, camera, images, geolocalisation, fichiers, partage, haptiques</p>
+    <div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+    <p class="progress-text" id="progressText">Question 1 / 8</p>
+    <div id="quizContainer"></div>
+    <div id="scoreContainer" class="card score-card hidden"></div>
+  </div>
+  <script>
+    const questions = [
+      {
+        label: "Question 1 — Modele de permissions",
+        text: "Quel est le bon moment pour demander une permission a l'utilisateur dans une app mobile ?",
+        options: [
+          "Au lancement de l'application, pour toutes les permissions en une seule fois",
+          "Quand l'utilisateur declenche l'action qui necessite la permission (ex: appuie sur 'Scanner')",
+          "Dans le splash screen, avant meme d'afficher l'interface",
+          "Apres chaque mise a jour de l'application"
+        ],
+        answer: 1,
+        explanation: "Les bonnes pratiques UX recommandent de demander la permission au moment pertinent, quand l'utilisateur comprend pourquoi elle est necessaire. Demander toutes les permissions au lancement est intrusif et reduit le taux d'acceptation de 30 a 50%. Un ecran d'explication avant le dialogue systeme ameliore encore le taux d'acceptation."
+      },
+      {
+        label: "Question 2 — Permission definitivement refusee",
+        text: "Que faire quand une permission est definitivement refusee (canAskAgain: false) sur iOS ?",
+        code: "const { status, canAskAgain } = await Camera.getCameraPermissionsAsync();\n// status: 'denied', canAskAgain: false",
+        options: [
+          "Appeler requestPermissionsAsync() en boucle jusqu'a ce que l'utilisateur accepte",
+          "Afficher un message explicatif et proposer un bouton qui ouvre les reglages systeme via Linking.openSettings()",
+          "Desinstaller et reinstaller l'application pour reinitialiser les permissions",
+          "Contourner la permission en utilisant une API differente"
+        ],
+        answer: 1,
+        explanation: "Sur iOS, apres un refus definitif, l'application ne peut plus afficher le dialogue systeme. La seule solution est de guider l'utilisateur vers les Reglages de l'app via Linking.openSettings(). On affiche un Alert avec une explication claire et un bouton 'Ouvrir les reglages'. C'est le pattern utilise par toutes les grandes applications."
+      },
+      {
+        label: "Question 3 — expo-camera scan",
+        text: "Comment scanner un code-barres avec expo-camera en evitant les scans multiples ?",
+        code: "function Scanner() {\n  const [scanned, setScanned] = useState(false);\n\n  return (\n    <CameraView\n      barcodeScannerSettings={{\n        barcodeTypes: ['qr', 'ean13'],\n      }}\n      onBarcodeScanned={???}\n    />\n  );\n}",
+        options: [
+          "onBarcodeScanned={handleScan} — la camera s'arrete automatiquement apres un scan",
+          "onBarcodeScanned={scanned ? undefined : handleScan} — passer undefined desactive le callback jusqu'a ce que scanned soit reinitialise",
+          "onBarcodeScanned est appele une seule fois par defaut",
+          "Il faut arreter la camera manuellement apres chaque scan"
+        ],
+        answer: 1,
+        explanation: "Le callback onBarcodeScanned est appele en continu tant qu'un code est visible. Pour eviter les scans multiples, on passe undefined quand scanned est true, ce qui desactive le callback. On reinitialise scanned a false quand l'utilisateur veut scanner a nouveau. C'est le pattern recommande dans la documentation expo-camera."
+      },
+      {
+        label: "Question 4 — Compression d'image",
+        text: "Pourquoi est-il important de compresser les images avant un upload dans une app mobile ?",
+        code: "// Photo brute : 4032x3024, ~8 MB\n// Apres compression : 1200x900, ~200 KB\n\nconst compressed = await ImageManipulator.manipulateAsync(\n  photo.uri,\n  [{ resize: { width: 1200 } }],\n  { compress: 0.7, format: SaveFormat.JPEG }\n);",
+        options: [
+          "Les serveurs ne supportent pas les images haute resolution",
+          "Reduire la taille (de 8 MB a 200 KB) diminue le temps d'upload, la consommation de bande passante et la memoire utilisee. Une photo brute a 8 MB consomme ~100 MB en memoire decodee.",
+          "Les images JPEG ne supportent que les petites resolutions",
+          "La compression est obligatoire pour utiliser expo-file-system"
+        ],
+        answer: 1,
+        explanation: "Une photo brute de 4032x3024 fait environ 8 MB en JPEG et occupe ~100 MB en memoire une fois decodee (4032*3024*4 octets RGBA). Sur un reseau 3G, l'upload prendrait plus de 30 secondes. La compression a 1200px de large et 70% de qualite JPEG reduit la taille a ~200 KB tout en gardant une qualite suffisante pour la plupart des usages."
+      },
+      {
+        label: "Question 5 — Geolocalisation foreground vs background",
+        text: "Quelle est la difference entre la localisation foreground et background, et pourquoi est-ce important ?",
+        code: "// Foreground\nawait Location.requestForegroundPermissionsAsync();\nawait Location.watchPositionAsync({ accuracy: Accuracy.High }, callback);\n\n// Background\nawait Location.requestBackgroundPermissionsAsync();\nawait Location.startLocationUpdatesAsync(TASK_NAME, {\n  foregroundService: { notificationTitle: 'GPS actif', ... }\n});",
+        options: [
+          "Il n'y a pas de difference, c'est la meme API",
+          "La localisation background necessite une permission supplementaire, affiche une notification permanente (Android) / barre bleue (iOS), et consomme significativement plus de batterie",
+          "La localisation foreground est plus precise que la background",
+          "La localisation background ne fonctionne que sur Android"
+        ],
+        answer: 1,
+        explanation: "La localisation background necessite une permission 'Toujours' (plus intrusive pour l'utilisateur). Sur Android, elle exige un foregroundService avec notification visible. Sur iOS, elle affiche la barre bleue. La consommation batterie est significative car le GPS reste actif meme quand l'app est en arriere-plan. Il faut l'utiliser uniquement quand c'est indispensable (tracking sportif, navigation)."
+      },
+      {
+        label: "Question 6 — expo-file-system repertoires",
+        text: "Quelle est la difference entre documentDirectory et cacheDirectory dans expo-file-system ?",
+        options: [
+          "documentDirectory est plus rapide que cacheDirectory",
+          "documentDirectory est pour les fichiers persistants (sauvegardes iCloud/Google), cacheDirectory est pour les fichiers temporaires que l'OS peut purger en cas de manque d'espace",
+          "cacheDirectory est chiffre, documentDirectory ne l'est pas",
+          "Il n'y a aucune difference, ce sont des alias"
+        ],
+        answer: 1,
+        explanation: "documentDirectory contient les fichiers persistants de l'application (notes, photos de l'utilisateur). Ces fichiers sont inclus dans les sauvegardes iCloud/Google. cacheDirectory contient les fichiers temporaires (images telechargees, cache API) que l'OS peut purger automatiquement si l'appareil manque d'espace. Il faut toujours choisir le bon repertoire selon la nature des donnees."
+      },
+      {
+        label: "Question 7 — Partage multiplateforme",
+        text: "Pourquoi faut-il adapter le payload de partage selon la plateforme (iOS vs Android) ?",
+        code: "// iOS\nShare.share({ title, message, url });\n\n// Android\nShare.share({ title, message: `${message}\\n${url}` });",
+        options: [
+          "Les APIs de partage sont completement differentes sur iOS et Android",
+          "Sur iOS, message et url sont des champs separes. Sur Android, il n'y a pas de champ url separe — il faut combiner le message et l'URL dans le champ message",
+          "Android ne supporte pas le partage de texte",
+          "iOS ne supporte pas le partage d'URLs"
+        ],
+        answer: 1,
+        explanation: "La Share API de React Native a des comportements differents selon la plateforme. Sur iOS, les props title, message et url sont distinctes. Sur Android, il n'existe pas de prop url separee — si on passe url, il est ignore. Il faut donc concatener le message et l'URL dans le champ message pour Android. C'est pourquoi on utilise Platform.select pour adapter le payload."
+      },
+      {
+        label: "Question 8 — Retours haptiques",
+        text: "Quel type de retour haptique est le plus adapte pour confirmer la suppression d'un element ?",
+        code: "// Quel appel utiliser ?\nHaptics.impactAsync(ImpactFeedbackStyle.Light);\nHaptics.impactAsync(ImpactFeedbackStyle.Heavy);\nHaptics.notificationAsync(NotificationFeedbackType.Success);\nHaptics.selectionAsync();",
+        options: [
+          "selectionAsync — c'est le plus discret",
+          "Un Impact Heavy pour marquer l'action destructive, suivi d'une Notification Success apres confirmation pour indiquer que l'operation est terminee",
+          "Light Impact — il ne faut pas deranger l'utilisateur",
+          "Aucun retour haptique, ca consomme de la batterie"
+        ],
+        answer: 1,
+        explanation: "Pour une action destructive (suppression), un Impact Heavy signale physiquement l'importance de l'action au moment du clic. Apres la confirmation et l'execution, une Notification Success indique que l'operation est terminee. Ce pattern est coherent avec les conventions iOS (les suppressions par swipe dans Mail utilisent un retour similaire). Les haptiques consomment negligeablement de batterie."
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function render() {
+      const container = document.getElementById('quizContainer');
+      const q = questions[current];
+      const total = questions.length;
+      document.getElementById('progressBar').style.width = ((current / total) * 100) + '%';
+      document.getElementById('progressText').textContent = `Question ${current + 1} / ${total}`;
+
+      container.innerHTML = `
+        <div class="card">
+          <p class="question-label">${q.label}</p>
+          <p class="question-text">${q.text}</p>
+          ${q.code ? `<pre><code>${q.code}</code></pre>` : ''}
+          <ul class="options">
+            ${q.options.map((opt, i) => `
+              <li>
+                <label>
+                  <input type="radio" name="q${current}" value="${i}">
+                  ${opt}
+                </label>
+              </li>
+            `).join('')}
+          </ul>
+          <button class="btn btn-primary" id="submitBtn" onclick="submit()" disabled>Valider</button>
+          <div class="feedback" id="feedback"></div>
+        </div>
+      `;
+
+      container.querySelectorAll('input[type="radio"]').forEach(r => {
+        r.addEventListener('change', () => {
+          document.getElementById('submitBtn').disabled = false;
+        });
+      });
+    }
+
+    function submit() {
+      const selected = document.querySelector(`input[name="q${current}"]:checked`);
+      if (!selected) return;
+
+      const answer = parseInt(selected.value);
+      const q = questions[current];
+      const fb = document.getElementById('feedback');
+      const btn = document.getElementById('submitBtn');
+
+      document.querySelectorAll(`input[name="q${current}"]`).forEach(r => r.disabled = true);
+      btn.disabled = true;
+
+      if (answer === q.answer) {
+        score++;
+        fb.className = 'feedback correct';
+        fb.innerHTML = `<strong>Correct !</strong> ${q.explanation}`;
+      } else {
+        fb.className = 'feedback wrong';
+        fb.innerHTML = `<strong>Incorrect.</strong> ${q.explanation}`;
+      }
+
+      setTimeout(() => {
+        current++;
+        if (current < questions.length) {
+          render();
+        } else {
+          showScore();
+        }
+      }, 4000);
+    }
+
+    function showScore() {
+      const total = questions.length;
+      document.getElementById('progressBar').style.width = '100%';
+      document.getElementById('progressText').textContent = 'Termine !';
+      document.getElementById('quizContainer').classList.add('hidden');
+
+      const sc = document.getElementById('scoreContainer');
+      sc.classList.remove('hidden');
+
+      const pct = Math.round((score / total) * 100);
+      const emoji = pct === 100 ? '&#127942;' : pct >= 70 ? '&#128077;' : '&#128170;';
+
+      sc.innerHTML = `
+        <div class="score">${score} / ${total}</div>
+        <div class="score-label">${pct}% ${emoji}</div>
+        <p>${pct >= 70 ? 'Bravo ! Vous maitrisez les APIs natives.' : 'Revisez le module 15 et reessayez !'}</p>
+        <button class="btn-restart" onclick="restart()">Recommencer</button>
+      `;
+    }
+
+    function restart() {
+      current = 0;
+      score = 0;
+      document.getElementById('scoreContainer').classList.add('hidden');
+      document.getElementById('quizContainer').classList.remove('hidden');
+      render();
+    }
+
+    render();
+  </script>
+</body>
+</html>

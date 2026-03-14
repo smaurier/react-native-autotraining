@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz 04 — Listes et donnees</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #1a1a2e; color: #e0e0e0; padding: 2rem; max-width: 800px; margin: 0 auto; }
+  h1 { color: #00d4ff; margin-bottom: 2rem; font-size: 1.5rem; }
+  .question { background: #16213e; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #0f3460; }
+  .question h3 { color: #00d4ff; margin-bottom: 1rem; font-size: 1.1rem; }
+  .options label { display: block; padding: 0.75rem 1rem; margin: 0.5rem 0; background: #1a1a2e; border: 1px solid #0f3460; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+  .options label:hover { border-color: #00d4ff; background: #1a2744; }
+  .options input[type="radio"] { margin-right: 0.75rem; accent-color: #00d4ff; }
+  .feedback { display: none; margin-top: 1rem; padding: 1rem; border-radius: 8px; font-weight: 500; }
+  .feedback.correct { display: block; background: #0a3d2a; border: 1px solid #00ff88; color: #00ff88; }
+  .feedback.incorrect { display: block; background: #3d0a0a; border: 1px solid #ff4444; color: #ff4444; }
+  button { background: #00d4ff; color: #1a1a2e; border: none; padding: 0.75rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 1rem; }
+  button:hover { background: #00b8d9; }
+  .score { text-align: center; font-size: 1.5rem; color: #00d4ff; margin-top: 2rem; padding: 2rem; background: #16213e; border-radius: 12px; }
+  code { background: #0f3460; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.9em; }
+  pre { background: #0f3460; padding: 1rem; border-radius: 8px; overflow-x: auto; margin: 0.5rem 0; }
+</style>
+</head>
+<body>
+<h1>Quiz 04 — Listes et donnees</h1>
+<div id="quiz">
+
+<div class="question">
+  <h3>1. Pourquoi preferer <code>FlatList</code> a <code>ScrollView</code> pour afficher une longue liste ?</h3>
+  <div class="options">
+    <label><input type="radio" name="q1" value="a"> ScrollView ne supporte pas le scroll vertical</label>
+    <label><input type="radio" name="q1" value="b"> FlatList virtualise le rendu : seuls les elements visibles (et un buffer) sont montes en memoire</label>
+    <label><input type="radio" name="q1" value="c"> FlatList est plus rapide car il utilise une liste native au lieu de React</label>
+    <label><input type="radio" name="q1" value="d"> ScrollView ne peut contenir que des composants Text</label>
+  </div>
+  <div id="q1-correct" class="feedback correct" style="display:none">Correct ! FlatList ne rend que les elements visibles a l'ecran (plus un buffer configurable via <code>windowSize</code>), ce qui permet d'afficher des milliers d'elements sans surcharger la memoire.</div>
+  <div id="q1-incorrect" class="feedback incorrect" style="display:none">Incorrect. L'avantage principal de FlatList est la virtualisation : il ne monte en memoire que les elements visibles et un buffer autour, contrairement a ScrollView qui rend tous ses enfants.</div>
+</div>
+
+<div class="question">
+  <h3>2. Quel est le role de <code>keyExtractor</code> dans FlatList ?</h3>
+  <div class="options">
+    <label><input type="radio" name="q2" value="a"> Trier les elements de la liste par cle</label>
+    <label><input type="radio" name="q2" value="b"> Fournir une cle unique a chaque element pour le systeme de reconciliation de React</label>
+    <label><input type="radio" name="q2" value="c"> Definir quelle propriete afficher dans chaque cellule</label>
+    <label><input type="radio" name="q2" value="d"> Chiffrer les donnees de la liste pour la securite</label>
+  </div>
+  <div id="q2-correct" class="feedback correct" style="display:none">Correct ! <code>keyExtractor</code> fournit une cle stable et unique a chaque element, permettant a React de suivre efficacement les ajouts, suppressions et reordonnements.</div>
+  <div id="q2-incorrect" class="feedback incorrect" style="display:none">Incorrect. <code>keyExtractor</code> fournit une cle unique a chaque element pour que React puisse identifier correctement chaque composant lors de la reconciliation (ajout, suppression, reordonnement).</div>
+</div>
+
+<div class="question">
+  <h3>3. Quel format de donnees attend la prop <code>sections</code> de SectionList ?</h3>
+  <div class="options">
+    <label><input type="radio" name="q3" value="a"> Un tableau plat d'objets avec une propriete <code>section</code></label>
+    <label><input type="radio" name="q3" value="b"> Un objet dont les cles sont les noms de section et les valeurs des tableaux</label>
+    <label><input type="radio" name="q3" value="c"> Un tableau d'objets <code>{ title: string, data: T[] }</code></label>
+    <label><input type="radio" name="q3" value="d"> Une Map JavaScript avec les sections en cles</label>
+  </div>
+  <div id="q3-correct" class="feedback correct" style="display:none">Correct ! SectionList attend un tableau de sections, chaque section etant un objet avec au minimum une propriete <code>data</code> (tableau d'elements). Le <code>title</code> est optionnel mais conventionnel.</div>
+  <div id="q3-incorrect" class="feedback incorrect" style="display:none">Incorrect. SectionList attend un tableau d'objets <code>{ title: string, data: T[] }</code>. Chaque objet represente une section avec son titre et ses donnees.</div>
+</div>
+
+<div class="question">
+  <h3>4. A quoi sert la prop <code>getItemLayout</code> de FlatList ?</h3>
+  <div class="options">
+    <label><input type="radio" name="q4" value="a"> Definir le nombre de colonnes pour une grille</label>
+    <label><input type="radio" name="q4" value="b"> Fournir la hauteur, l'offset et l'index de chaque element a l'avance, evitant la mesure asynchrone</label>
+    <label><input type="radio" name="q4" value="c"> Specifier le style CSS de chaque element</label>
+    <label><input type="radio" name="q4" value="d"> Definir l'ordre de rendu des elements</label>
+  </div>
+  <div id="q4-correct" class="feedback correct" style="display:none">Correct ! <code>getItemLayout</code> retourne <code>{ length, offset, index }</code> pour chaque element. Cela permet a FlatList de connaitre les positions sans mesurer, rendant <code>scrollToIndex</code> instantane et ameliorant les performances.</div>
+  <div id="q4-incorrect" class="feedback incorrect" style="display:none">Incorrect. <code>getItemLayout</code> fournit la taille et la position de chaque element a l'avance (length, offset, index), ce qui evite la mesure asynchrone et ameliore les performances de scroll et de <code>scrollToIndex</code>.</div>
+</div>
+
+<div class="question">
+  <h3>5. Comment implementer le scroll infini avec FlatList ?</h3>
+  <div class="options">
+    <label><input type="radio" name="q5" value="a"> En utilisant <code>onScroll</code> et en calculant manuellement la position</label>
+    <label><input type="radio" name="q5" value="b"> En utilisant <code>onEndReached</code> (callback) et <code>onEndReachedThreshold</code> (distance de declenchement en proportion du viewport)</label>
+    <label><input type="radio" name="q5" value="c"> En chargeant toutes les donnees d'un coup et en les filtrant</label>
+    <label><input type="radio" name="q5" value="d"> En utilisant <code>pagingEnabled={true}</code></label>
+  </div>
+  <div id="q5-correct" class="feedback correct" style="display:none">Correct ! <code>onEndReached</code> est appele quand l'utilisateur approche de la fin de la liste. <code>onEndReachedThreshold</code> (ex: 0.5 = 50% de la hauteur visible) definit a quelle distance de la fin le callback est declenche.</div>
+  <div id="q5-incorrect" class="feedback incorrect" style="display:none">Incorrect. Le scroll infini s'implemente avec <code>onEndReached</code> (callback declenche pres de la fin) et <code>onEndReachedThreshold</code> (proportion du viewport a laquelle declencher). Il faut aussi proteger contre les appels multiples avec un flag <code>loading</code>.</div>
+</div>
+
+</div>
+
+<button onclick="checkAnswers()">Verifier les reponses</button>
+<div id="score" class="score" style="display:none"></div>
+
+<script>
+const answers = { q1: 'b', q2: 'b', q3: 'c', q4: 'b', q5: 'b' };
+
+function checkAnswers() {
+  let score = 0;
+  for (const [q, correct] of Object.entries(answers)) {
+    const selected = document.querySelector(`input[name="${q}"]:checked`);
+    const correctEl = document.getElementById(`${q}-correct`);
+    const incorrectEl = document.getElementById(`${q}-incorrect`);
+    correctEl.style.display = 'none';
+    incorrectEl.style.display = 'none';
+    if (selected && selected.value === correct) {
+      correctEl.style.display = 'block';
+      score++;
+    } else {
+      incorrectEl.style.display = 'block';
+    }
+  }
+  const scoreEl = document.getElementById('score');
+  scoreEl.style.display = 'block';
+  scoreEl.textContent = `Score : ${score} / ${Object.keys(answers).length}`;
+}
+</script>
+</body>
+</html>

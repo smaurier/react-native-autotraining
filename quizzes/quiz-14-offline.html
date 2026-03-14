@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz 14 — Stockage local et offline-first</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a2e; color: #e0e0e0; min-height: 100vh; padding: 2rem 1rem; }
+    .container { max-width: 800px; margin: 0 auto; }
+    h1 { text-align: center; margin-bottom: 0.5rem; font-size: 1.8rem; color: #ffffff; }
+    .subtitle { text-align: center; color: #8892b0; margin-bottom: 2rem; font-size: 1rem; }
+    .progress-bar-container { background: #0d1117; border-radius: 10px; height: 14px; margin-bottom: 2rem; overflow: hidden; }
+    .progress-bar { background: linear-gradient(90deg, #0d6efd, #4dabf7); height: 100%; width: 0%; border-radius: 10px; transition: width 0.4s ease; }
+    .progress-text { text-align: center; color: #8892b0; margin-bottom: 1rem; font-size: 0.9rem; }
+    .card { background: #16213e; border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .question-label { font-size: 0.85rem; color: #4dabf7; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+    .question-text { font-size: 1.15rem; margin-bottom: 1.2rem; line-height: 1.5; color: #ffffff; }
+    pre { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 1rem; margin-bottom: 1.2rem; overflow-x: auto; font-size: 0.95rem; }
+    code { font-family: 'Consolas', 'Fira Code', 'Courier New', monospace; color: #c9d1d9; }
+    .options { list-style: none; }
+    .options li { margin-bottom: 0.5rem; }
+    .options label { display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1rem; background: #0d1117; border: 2px solid #30363d; border-radius: 8px; cursor: pointer; transition: border-color 0.2s, background 0.2s; font-size: 1rem; }
+    .options label:hover { border-color: #4dabf7; background: #1c2a4a; }
+    .options input[type="radio"] { accent-color: #0d6efd; width: 18px; height: 18px; flex-shrink: 0; }
+    .btn { display: inline-block; padding: 0.7rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+    .btn-primary { background: #0d6efd; color: #fff; }
+    .btn-primary:hover { background: #3b82f6; }
+    .btn-primary:disabled { background: #374151; cursor: not-allowed; }
+    .btn-restart { background: #238636; color: #fff; margin-top: 1rem; padding: 0.7rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+    .btn-restart:hover { background: #2ea043; }
+    .feedback { margin-top: 1rem; padding: 1rem 1.2rem; border-radius: 8px; font-size: 0.95rem; line-height: 1.5; display: none; }
+    .feedback.correct { background: #0f5132; border: 1px solid #198754; color: #d1fae5; display: block; }
+    .feedback.wrong { background: #842029; border: 1px solid #dc3545; color: #fdd; display: block; }
+    .score-card { text-align: center; padding: 3rem 2rem; }
+    .score-card .score { font-size: 3rem; font-weight: 700; color: #4dabf7; margin-bottom: 0.5rem; }
+    .score-card .score-label { font-size: 1.2rem; color: #8892b0; margin-bottom: 1.5rem; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Quiz 14 — Stockage local et offline-first</h1>
+    <p class="subtitle">AsyncStorage, MMKV, SQLite, queue de sync, conflits, background fetch</p>
+    <div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+    <p class="progress-text" id="progressText">Question 1 / 8</p>
+    <div id="quizContainer"></div>
+    <div id="scoreContainer" class="card score-card hidden"></div>
+  </div>
+  <script>
+    const questions = [
+      {
+        label: "Question 1 — AsyncStorage vs MMKV",
+        text: "Pourquoi react-native-mmkv est-il 10 a 30 fois plus rapide qu'AsyncStorage ?",
+        code: "// AsyncStorage\nawait AsyncStorage.setItem('key', 'value');\nconst v = await AsyncStorage.getItem('key');\n\n// MMKV\nstorage.set('key', 'value');\nconst v = storage.getString('key');",
+        options: [
+          "MMKV utilise un thread dedie pour les operations de stockage",
+          "MMKV utilise JSI (JavaScript Interface) pour communiquer directement avec le code natif sans passer par le bridge, et fournit une API synchrone via memory-mapping",
+          "MMKV compresse automatiquement les donnees avant de les stocker",
+          "MMKV stocke les donnees uniquement en memoire RAM, pas sur disque"
+        ],
+        answer: 1,
+        explanation: "MMKV v3+ utilise JSI pour communiquer directement avec le code natif C++, sans serialisation/deserialisation via le bridge. Le memory-mapping (mmap) permet des lectures/ecritures synchrones tres rapides car les donnees sont mappees directement en memoire. AsyncStorage, lui, passe par le bridge asynchrone et utilise SQLite sous le capot, ce qui ajoute de la latence."
+      },
+      {
+        label: "Question 2 — Limite AsyncStorage",
+        text: "Quelle est la principale limite de capacite d'AsyncStorage sur Android ?",
+        options: [
+          "10 MB par cle",
+          "Environ 6 MB au total pour la base SQLite sous-jacente",
+          "1 MB par cle, sans limite totale",
+          "Pas de limite, c'est identique a MMKV"
+        ],
+        answer: 1,
+        explanation: "Sur Android, AsyncStorage utilise une base SQLite dont la taille par defaut est limitee a environ 6 MB. Au-dela, les ecritures echouent silencieusement ou levent une erreur. C'est l'une des raisons principales pour migrer vers MMKV (pas de limite de taille) ou SQLite directement (avec controle de la base)."
+      },
+      {
+        label: "Question 3 — Persistance Zustand avec MMKV",
+        text: "Comment persister un store Zustand avec MMKV ?",
+        code: "const mmkv = new MMKV({ id: 'app-store' });\n\nconst mmkvStorage = {\n  getItem: (name) => mmkv.getString(name) ?? null,\n  setItem: (name, value) => mmkv.set(name, value),\n  removeItem: (name) => mmkv.delete(name),\n};\n\nconst useStore = create(\n  persist(\n    (set) => ({ count: 0, inc: () => set((s) => ({ count: s.count + 1 })) }),\n    { name: 'counter', storage: ??? }\n  )\n);",
+        options: [
+          "storage: mmkvStorage",
+          "storage: createJSONStorage(() => mmkvStorage)",
+          "storage: new MMKV()",
+          "storage: AsyncStorage"
+        ],
+        answer: 1,
+        explanation: "Zustand persist v4 attend un StateStorage (getItem/setItem/removeItem) wrappe dans createJSONStorage(). L'adaptateur MMKV fournit ces 3 methodes synchrones, et createJSONStorage() les encapsule pour gerer la serialisation JSON. C'est le pattern recommande dans la documentation Zustand."
+      },
+      {
+        label: "Question 4 — expo-sqlite transactions",
+        text: "Quel est l'avantage d'utiliser withTransactionAsync pour les ecritures multiples en SQLite ?",
+        code: "await db.withTransactionAsync(async () => {\n  await db.runAsync('INSERT INTO orders (user_id, total) VALUES (?, ?)', userId, total);\n  for (const item of cartItems) {\n    await db.runAsync(\n      'INSERT INTO order_items (order_id, product_id, qty) VALUES (?, ?, ?)',\n      orderId, item.productId, item.qty\n    );\n  }\n  await db.runAsync('UPDATE products SET stock = stock - ? WHERE id = ?', item.qty, item.id);\n});",
+        options: [
+          "Les transactions sont plus rapides car elles desactivent les indexes",
+          "Les transactions garantissent l'atomicite : si une requete echoue, toutes sont annulees (rollback), evitant les etats incoherents",
+          "Les transactions permettent d'executer des requetes en parallele",
+          "Les transactions sont obligatoires pour les INSERT en SQLite"
+        ],
+        answer: 1,
+        explanation: "Les transactions garantissent l'atomicite (ACID) : soit toutes les operations reussissent, soit aucune n'est appliquee. Sans transaction, si une erreur survient au milieu (ex: stock insuffisant), on aurait une commande creee sans tous ses items. Le rollback automatique previent les etats incoherents dans la base."
+      },
+      {
+        label: "Question 5 — Architecture offline-first",
+        text: "Dans une architecture offline-first, quel est le flux correct quand l'utilisateur cree une tache sans connexion ?",
+        options: [
+          "Afficher une erreur et demander a l'utilisateur de reessayer quand il sera en ligne",
+          "Ecrire localement, afficher immediatement, ajouter a la queue de sync, synchroniser quand la connexion revient",
+          "Mettre l'operation en attente sans rien afficher, puis l'executer a la reconnexion",
+          "Envoyer la requete au serveur et attendre indefiniment la reponse"
+        ],
+        answer: 1,
+        explanation: "Le principe offline-first est : ecriture locale d'abord (affichage immediat), puis synchronisation asynchrone. L'utilisateur ne doit jamais etre bloque par l'absence de connexion. La queue de sync stocke les operations en attente et les rejoue automatiquement quand la connexion revient, via NetInfo.addEventListener."
+      },
+      {
+        label: "Question 6 — Resolution de conflits",
+        text: "Quelle strategie de resolution de conflits est la plus adaptee pour un document collaboratif important ?",
+        code: "// Scenario : Alice modifie le titre hors ligne\n// Bob modifie la description en ligne\n// Alice se reconnecte -> conflit sur le meme document",
+        options: [
+          "Last-Write-Wins : le dernier a ecrire ecrase tout",
+          "Resolution manuelle : presenter les deux versions a l'utilisateur pour qu'il choisisse",
+          "Toujours garder la version serveur",
+          "Ignorer les conflits et garder la version locale"
+        ],
+        answer: 1,
+        explanation: "Pour des donnees critiques (documents, contenus collaboratifs), la resolution manuelle est recommandee car elle evite la perte de donnees. L'utilisateur voit les deux versions et decide quoi garder. Pour des donnees moins critiques (preferences, compteurs), Last-Write-Wins ou le merge automatique champ par champ sont acceptables."
+      },
+      {
+        label: "Question 7 — Cache LRU",
+        text: "Comment fonctionne l'eviction dans un cache LRU (Least Recently Used) ?",
+        code: "const cache = new LRUCache(3);\ncache.set('a', 1);\ncache.set('b', 2);\ncache.set('c', 3);\ncache.get('a');    // 'a' devient MRU\ncache.set('d', 4); // Qui est evince ?",
+        options: [
+          "'a' est evince car c'est le premier insere",
+          "'b' est evince car c'est le moins recemment utilise (LRU) — 'a' a ete lu donc il est plus recent que 'b'",
+          "'d' n'est pas insere car le cache est plein",
+          "'c' est evince car c'est le dernier insere avant 'd'"
+        ],
+        answer: 1,
+        explanation: "Dans un cache LRU, chaque acces (get ou set) marque l'element comme recemment utilise. Apres get('a'), l'ordre MRU->LRU est : a, c, b. Quand on insere 'd' et que le cache est plein (max 3), 'b' est evince car c'est le moins recemment utilise. L'ordre devient : d, a, c."
+      },
+      {
+        label: "Question 8 — Background sync",
+        text: "Quelle est la principale contrainte de expo-background-fetch pour la synchronisation en arriere-plan ?",
+        code: "await BackgroundFetch.registerTaskAsync(TASK_NAME, {\n  minimumInterval: 15 * 60, // 15 minutes\n  stopOnTerminate: false,\n  startOnBoot: true,\n});",
+        options: [
+          "La tache ne peut pas acceder au reseau en arriere-plan",
+          "L'OS ne garantit pas l'execution exacte : il peut retarder ou annuler la tache selon l'utilisation de la batterie et les habitudes de l'utilisateur",
+          "La tache s'execute toujours exactement toutes les 15 minutes",
+          "La tache ne fonctionne que sur Android"
+        ],
+        answer: 1,
+        explanation: "Sur iOS comme Android, les taches en arriere-plan sont soumises aux optimisations de batterie de l'OS. Le minimumInterval est un minimum, pas une garantie. iOS utilise l'apprentissage des habitudes utilisateur pour decider quand executer la tache. Android peut la restreindre en mode economie d'energie. La sync au premier plan reste donc la strategie principale."
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function render() {
+      const container = document.getElementById('quizContainer');
+      const q = questions[current];
+      const total = questions.length;
+      document.getElementById('progressBar').style.width = ((current / total) * 100) + '%';
+      document.getElementById('progressText').textContent = `Question ${current + 1} / ${total}`;
+
+      container.innerHTML = `
+        <div class="card">
+          <p class="question-label">${q.label}</p>
+          <p class="question-text">${q.text}</p>
+          ${q.code ? `<pre><code>${q.code}</code></pre>` : ''}
+          <ul class="options">
+            ${q.options.map((opt, i) => `
+              <li>
+                <label>
+                  <input type="radio" name="q${current}" value="${i}">
+                  ${opt}
+                </label>
+              </li>
+            `).join('')}
+          </ul>
+          <button class="btn btn-primary" id="submitBtn" onclick="submit()" disabled>Valider</button>
+          <div class="feedback" id="feedback"></div>
+        </div>
+      `;
+
+      container.querySelectorAll('input[type="radio"]').forEach(r => {
+        r.addEventListener('change', () => {
+          document.getElementById('submitBtn').disabled = false;
+        });
+      });
+    }
+
+    function submit() {
+      const selected = document.querySelector(`input[name="q${current}"]:checked`);
+      if (!selected) return;
+
+      const answer = parseInt(selected.value);
+      const q = questions[current];
+      const fb = document.getElementById('feedback');
+      const btn = document.getElementById('submitBtn');
+
+      document.querySelectorAll(`input[name="q${current}"]`).forEach(r => r.disabled = true);
+      btn.disabled = true;
+
+      if (answer === q.answer) {
+        score++;
+        fb.className = 'feedback correct';
+        fb.innerHTML = `<strong>Correct !</strong> ${q.explanation}`;
+      } else {
+        fb.className = 'feedback wrong';
+        fb.innerHTML = `<strong>Incorrect.</strong> ${q.explanation}`;
+      }
+
+      setTimeout(() => {
+        current++;
+        if (current < questions.length) {
+          render();
+        } else {
+          showScore();
+        }
+      }, 4000);
+    }
+
+    function showScore() {
+      const total = questions.length;
+      document.getElementById('progressBar').style.width = '100%';
+      document.getElementById('progressText').textContent = 'Termine !';
+      document.getElementById('quizContainer').classList.add('hidden');
+
+      const sc = document.getElementById('scoreContainer');
+      sc.classList.remove('hidden');
+
+      const pct = Math.round((score / total) * 100);
+      const emoji = pct === 100 ? '&#127942;' : pct >= 70 ? '&#128077;' : '&#128170;';
+
+      sc.innerHTML = `
+        <div class="score">${score} / ${total}</div>
+        <div class="score-label">${pct}% ${emoji}</div>
+        <p>${pct >= 70 ? 'Bravo ! Vous maitrisez le stockage offline-first.' : 'Revisez le module 14 et reessayez !'}</p>
+        <button class="btn-restart" onclick="restart()">Recommencer</button>
+      `;
+    }
+
+    function restart() {
+      current = 0;
+      score = 0;
+      document.getElementById('scoreContainer').classList.add('hidden');
+      document.getElementById('quizContainer').classList.remove('hidden');
+      render();
+    }
+
+    render();
+  </script>
+</body>
+</html>

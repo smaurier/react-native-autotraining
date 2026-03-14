@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz 05 — StyleSheet et Flexbox</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #1a1a2e; color: #e0e0e0; padding: 2rem; max-width: 800px; margin: 0 auto; }
+  h1 { color: #00d4ff; margin-bottom: 2rem; font-size: 1.5rem; }
+  .question { background: #16213e; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #0f3460; }
+  .question h3 { color: #00d4ff; margin-bottom: 1rem; font-size: 1.1rem; }
+  .options label { display: block; padding: 0.75rem 1rem; margin: 0.5rem 0; background: #1a1a2e; border: 1px solid #0f3460; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+  .options label:hover { border-color: #00d4ff; background: #1a2744; }
+  .options input[type="radio"] { margin-right: 0.75rem; accent-color: #00d4ff; }
+  .feedback { display: none; margin-top: 1rem; padding: 1rem; border-radius: 8px; font-weight: 500; }
+  .feedback.correct { display: block; background: #0a3d2a; border: 1px solid #00ff88; color: #00ff88; }
+  .feedback.incorrect { display: block; background: #3d0a0a; border: 1px solid #ff4444; color: #ff4444; }
+  button { background: #00d4ff; color: #1a1a2e; border: none; padding: 0.75rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 1rem; }
+  button:hover { background: #00b8d9; }
+  .score { text-align: center; font-size: 1.5rem; color: #00d4ff; margin-top: 2rem; padding: 2rem; background: #16213e; border-radius: 12px; }
+  code { background: #0f3460; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.9em; }
+  pre { background: #0f3460; padding: 1rem; border-radius: 8px; overflow-x: auto; margin: 0.5rem 0; }
+</style>
+</head>
+<body>
+<h1>Quiz 05 — StyleSheet et Flexbox</h1>
+<div id="quiz">
+
+<div class="question">
+  <h3>1. Quelle est la valeur par defaut de <code>flexDirection</code> dans React Native ?</h3>
+  <div class="options">
+    <label><input type="radio" name="q1" value="a"> <code>row</code> (comme en CSS web)</label>
+    <label><input type="radio" name="q1" value="b"> <code>column</code></label>
+    <label><input type="radio" name="q1" value="c"> <code>row-reverse</code></label>
+    <label><input type="radio" name="q1" value="d"> Il n'y a pas de valeur par defaut, elle doit etre specifiee</label>
+  </div>
+  <div id="q1-correct" class="feedback correct" style="display:none">Correct ! Contrairement au CSS web ou le defaut est <code>row</code>, React Native utilise <code>column</code> par defaut. Les enfants s'empilent donc verticalement.</div>
+  <div id="q1-incorrect" class="feedback incorrect" style="display:none">Incorrect. En React Native, <code>flexDirection</code> vaut <code>column</code> par defaut (et non <code>row</code> comme en CSS web). Les enfants s'empilent verticalement.</div>
+</div>
+
+<div class="question">
+  <h3>2. Que signifie <code>flex: 1</code> dans React Native ?</h3>
+  <div class="options">
+    <label><input type="radio" name="q2" value="a"> L'element a une largeur fixe de 1 pixel</label>
+    <label><input type="radio" name="q2" value="b"> Equivalent a <code>flexGrow: 1, flexShrink: 1, flexBasis: 0</code> — l'element occupe tout l'espace disponible</label>
+    <label><input type="radio" name="q2" value="c"> L'element est cache (opacity: 0)</label>
+    <label><input type="radio" name="q2" value="d"> Equivalent a <code>flexGrow: 0, flexShrink: 1, flexBasis: auto</code></label>
+  </div>
+  <div id="q2-correct" class="feedback correct" style="display:none">Correct ! <code>flex: 1</code> (avec N > 0) equivaut a <code>flexGrow: 1, flexShrink: 1, flexBasis: 0</code>. L'element prend tout l'espace restant. Avec <code>flex: 2</code>, il en prendrait le double d'un element <code>flex: 1</code>.</div>
+  <div id="q2-incorrect" class="feedback incorrect" style="display:none">Incorrect. <code>flex: 1</code> equivaut a <code>flexGrow: 1, flexShrink: 1, flexBasis: 0</code>. L'element occupe tout l'espace disponible dans son conteneur. C'est le pattern le plus courant pour remplir l'ecran.</div>
+</div>
+
+<div class="question">
+  <h3>3. Comment fonctionne <code>position: 'absolute'</code> dans React Native par rapport au CSS ?</h3>
+  <div class="options">
+    <label><input type="radio" name="q3" value="a"> C'est identique au CSS : l'element se positionne par rapport au premier ancetre avec <code>position: relative</code></label>
+    <label><input type="radio" name="q3" value="b"> L'element se positionne toujours par rapport au parent direct, quel que soit le <code>position</code> du parent</label>
+    <label><input type="radio" name="q3" value="c"> <code>position: absolute</code> n'existe pas en React Native</label>
+    <label><input type="radio" name="q3" value="d"> L'element se positionne par rapport au viewport (comme <code>position: fixed</code>)</label>
+  </div>
+  <div id="q3-correct" class="feedback correct" style="display:none">Correct ! En React Native, un element <code>absolute</code> est toujours positionne par rapport a son parent direct. Il n'y a pas de remontee de l'arbre pour trouver un ancetre positionne. <code>position: fixed</code> n'existe pas non plus.</div>
+  <div id="q3-incorrect" class="feedback incorrect" style="display:none">Incorrect. En React Native, <code>position: absolute</code> positionne toujours l'element par rapport a son parent direct, sans chercher un ancetre avec <code>position: relative</code> comme en CSS.</div>
+</div>
+
+<div class="question">
+  <h3>4. Comment composer plusieurs styles de maniere conditionnelle dans React Native ?</h3>
+  <div class="options">
+    <label><input type="radio" name="q4" value="a"> En utilisant des classes CSS comme <code>className="base active"</code></label>
+    <label><input type="radio" name="q4" value="b"> En passant un tableau de styles : <code>style={[styles.base, isActive && styles.active]}</code></label>
+    <label><input type="radio" name="q4" value="c"> En utilisant <code>style.addCondition()</code></label>
+    <label><input type="radio" name="q4" value="d"> Ce n'est pas possible, il faut creer un style par combinaison</label>
+  </div>
+  <div id="q4-correct" class="feedback correct" style="display:none">Correct ! React Native accepte un tableau de styles. Les valeurs <code>false</code>, <code>undefined</code> et <code>null</code> sont ignorees. Le dernier style defini gagne en cas de conflit (strategie "last-wins").</div>
+  <div id="q4-incorrect" class="feedback incorrect" style="display:none">Incorrect. On compose les styles avec un tableau : <code>style={[styles.base, isActive && styles.active]}</code>. Les valeurs falsy sont ignorees et le dernier style gagne en cas de conflit.</div>
+</div>
+
+<div class="question">
+  <h3>5. Comment creer un layout responsif qui s'adapte a la taille de l'ecran dans React Native ?</h3>
+  <div class="options">
+    <label><input type="radio" name="q5" value="a"> En utilisant des media queries CSS comme <code>@media (min-width: 768px)</code></label>
+    <label><input type="radio" name="q5" value="b"> En utilisant le hook <code>useWindowDimensions</code> pour obtenir la largeur/hauteur et adapter le layout dynamiquement</label>
+    <label><input type="radio" name="q5" value="c"> En utilisant des unites <code>vw</code> et <code>vh</code></label>
+    <label><input type="radio" name="q5" value="d"> Les layouts responsifs ne sont pas possibles en React Native</label>
+  </div>
+  <div id="q5-correct" class="feedback correct" style="display:none">Correct ! <code>useWindowDimensions</code> retourne la largeur et la hauteur de la fenetre et se met a jour automatiquement (rotation, redimensionnement). On peut ensuite calculer le nombre de colonnes, les tailles et les marges en fonction.</div>
+  <div id="q5-incorrect" class="feedback incorrect" style="display:none">Incorrect. React Native n'a pas de media queries CSS. On utilise le hook <code>useWindowDimensions</code> qui fournit la taille de l'ecran et se met a jour automatiquement lors des changements (rotation, etc.).</div>
+</div>
+
+</div>
+
+<button onclick="checkAnswers()">Verifier les reponses</button>
+<div id="score" class="score" style="display:none"></div>
+
+<script>
+const answers = { q1: 'b', q2: 'b', q3: 'b', q4: 'b', q5: 'b' };
+
+function checkAnswers() {
+  let score = 0;
+  for (const [q, correct] of Object.entries(answers)) {
+    const selected = document.querySelector(`input[name="${q}"]:checked`);
+    const correctEl = document.getElementById(`${q}-correct`);
+    const incorrectEl = document.getElementById(`${q}-incorrect`);
+    correctEl.style.display = 'none';
+    incorrectEl.style.display = 'none';
+    if (selected && selected.value === correct) {
+      correctEl.style.display = 'block';
+      score++;
+    } else {
+      incorrectEl.style.display = 'block';
+    }
+  }
+  const scoreEl = document.getElementById('score');
+  scoreEl.style.display = 'block';
+  scoreEl.textContent = `Score : ${score} / ${Object.keys(answers).length}`;
+}
+</script>
+</body>
+</html>

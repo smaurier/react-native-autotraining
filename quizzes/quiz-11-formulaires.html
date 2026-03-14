@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz 11 — Formulaires et validation</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a2e; color: #e0e0e0; min-height: 100vh; padding: 2rem 1rem; }
+    .container { max-width: 800px; margin: 0 auto; }
+    h1 { text-align: center; margin-bottom: 0.5rem; font-size: 1.8rem; color: #ffffff; }
+    .subtitle { text-align: center; color: #8892b0; margin-bottom: 2rem; font-size: 1rem; }
+    .progress-bar-container { background: #0d1117; border-radius: 10px; height: 14px; margin-bottom: 2rem; overflow: hidden; }
+    .progress-bar { background: linear-gradient(90deg, #0d6efd, #4dabf7); height: 100%; width: 0%; border-radius: 10px; transition: width 0.4s ease; }
+    .progress-text { text-align: center; color: #8892b0; margin-bottom: 1rem; font-size: 0.9rem; }
+    .card { background: #16213e; border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .question-label { font-size: 0.85rem; color: #4dabf7; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+    .question-text { font-size: 1.15rem; margin-bottom: 1.2rem; line-height: 1.5; color: #ffffff; }
+    pre { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 1rem; margin-bottom: 1.2rem; overflow-x: auto; font-size: 0.95rem; }
+    code { font-family: 'Consolas', 'Fira Code', 'Courier New', monospace; color: #c9d1d9; }
+    .options { list-style: none; }
+    .options li { margin-bottom: 0.5rem; }
+    .options label { display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1rem; background: #0d1117; border: 2px solid #30363d; border-radius: 8px; cursor: pointer; transition: border-color 0.2s, background 0.2s; font-size: 1rem; }
+    .options label:hover { border-color: #4dabf7; background: #1c2a4a; }
+    .options input[type="radio"] { accent-color: #0d6efd; width: 18px; height: 18px; flex-shrink: 0; }
+    .btn { display: inline-block; padding: 0.7rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+    .btn-primary { background: #0d6efd; color: #fff; }
+    .btn-primary:hover { background: #3b82f6; }
+    .btn-primary:disabled { background: #374151; cursor: not-allowed; }
+    .btn-restart { background: #238636; color: #fff; margin-top: 1rem; padding: 0.7rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+    .btn-restart:hover { background: #2ea043; }
+    .feedback { margin-top: 1rem; padding: 1rem 1.2rem; border-radius: 8px; font-size: 0.95rem; line-height: 1.5; display: none; }
+    .feedback.correct { background: #0f5132; border: 1px solid #198754; color: #d1fae5; display: block; }
+    .feedback.wrong { background: #842029; border: 1px solid #dc3545; color: #fdd; display: block; }
+    .score-card { text-align: center; padding: 3rem 2rem; }
+    .score-card .score { font-size: 3rem; font-weight: 700; color: #4dabf7; margin-bottom: 0.5rem; }
+    .score-card .score-label { font-size: 1.2rem; color: #8892b0; margin-bottom: 1.5rem; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Quiz 11 — Formulaires et validation</h1>
+    <p class="subtitle">React Hook Form, Zod, multi-etapes, clavier, accessibilite</p>
+    <div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+    <p class="progress-text" id="progressText">Question 1 / 5</p>
+    <div id="quizContainer"></div>
+    <div id="scoreContainer" class="card score-card hidden"></div>
+  </div>
+  <script>
+    const questions = [
+      {
+        label: "Question 1 — Controller vs register",
+        text: "Pourquoi doit-on utiliser Controller au lieu de register dans React Native avec React Hook Form ?",
+        code: "// Web (DOM)\n<input {...register('email')} />\n\n// React Native\n<Controller\n  control={control}\n  name=\"email\"\n  render={({ field: { onChange, onBlur, value } }) => (\n    <TextInput onChangeText={onChange} onBlur={onBlur} value={value} />\n  )}\n/>",
+        options: [
+          "Controller est plus performant que register",
+          "register utilise des refs DOM (ref.current.value) pour lire la valeur sans re-render, ce qui n'est pas possible avec les composants React Native qui n'ont pas de propriete value accessible via ref",
+          "register ne fonctionne qu'avec les formulaires HTML natifs",
+          "Il n'y a pas de difference, on peut utiliser les deux"
+        ],
+        answer: 1,
+        explanation: "register fonctionne en mode non-controle : il attache une ref au DOM element et lit directement sa valeur (ref.current.value), evitant les re-renders. En React Native, les composants comme TextInput n'exposent pas leur valeur via ref. Controller est donc necessaire : il gere manuellement value, onChange et onBlur en mode controle. RHF optimise en ne re-rendant que le Controller concerne."
+      },
+      {
+        label: "Question 2 — Validation Zod avec refine",
+        text: "Que fait la methode refine dans ce schema Zod ?",
+        code: "const schema = z.object({\n  password: z.string().min(8),\n  confirmPassword: z.string(),\n}).refine(\n  (data) => data.password === data.confirmPassword,\n  {\n    message: 'Les mots de passe ne correspondent pas',\n    path: ['confirmPassword'],\n  }\n);",
+        options: [
+          "Elle ajoute une validation conditionnelle qui compare deux champs du meme objet, et affiche l'erreur sur le champ confirmPassword grace a path",
+          "Elle remplace la validation min(8) du champ password",
+          "Elle transforme la valeur de confirmPassword",
+          "Elle rend le champ confirmPassword optionnel si password est vide"
+        ],
+        answer: 0,
+        explanation: "refine ajoute une validation transversale au niveau de l'objet entier (pas d'un seul champ). Elle recoit l'objet complet et retourne true/false. L'option path indique sur quel champ afficher le message d'erreur. C'est le pattern standard pour valider que deux champs correspondent (confirmation de mot de passe, dates debut/fin, etc.)."
+      },
+      {
+        label: "Question 3 — Formulaire multi-etapes",
+        text: "Comment valider uniquement les champs de l'etape courante dans un wizard multi-etapes avec React Hook Form ?",
+        code: "const stepFields = {\n  0: ['firstName', 'lastName', 'email'],\n  1: ['street', 'city', 'postalCode'],\n  2: ['cardNumber', 'expiry', 'cvv'],\n};\n\nconst handleNext = async () => {\n  const isValid = await ???;\n  if (isValid) setStep(s => s + 1);\n};",
+        options: [
+          "handleSubmit(onSubmit) qui valide tout le formulaire",
+          "trigger(stepFields[currentStep]) qui valide uniquement les champs passes en parametre et retourne true/false",
+          "validate(stepFields[currentStep]) methode native de RHF",
+          "Il faut creer un useForm separe pour chaque etape"
+        ],
+        answer: 1,
+        explanation: "La methode trigger de React Hook Form permet de declencher la validation sur un ou plusieurs champs specifiques. En passant un tableau de noms de champs, elle ne valide que ceux-ci et retourne une promesse qui resolve a true si tous sont valides. C'est le pattern recommande pour les wizards : un seul useForm pour tout le formulaire, trigger par etape."
+      },
+      {
+        label: "Question 4 — Modes de validation",
+        text: "Quel mode de validation offre le meilleur compromis UX pour un formulaire d'inscription ?",
+        code: "useForm<FormData>({\n  resolver: zodResolver(schema),\n  mode: ???,\n});",
+        options: [
+          "mode: 'onChange' — valide a chaque frappe pour un feedback instantane",
+          "mode: 'onSubmit' — ne valide qu'a la soumission pour ne pas perturber l'utilisateur",
+          "mode: 'onTouched' — ne valide qu'apres le premier blur du champ, puis de facon reactive a chaque changement",
+          "mode: 'all' — valide au blur ET au change pour un maximum de feedback"
+        ],
+        answer: 2,
+        explanation: "Le mode onTouched est le meilleur compromis : l'utilisateur ne voit pas d'erreur tant qu'il n'a pas interagi avec le champ (premier blur). Apres cette premiere interaction, le feedback devient reactif (change). Cela evite les erreurs intrusives pendant la saisie initiale tout en donnant un retour rapide une fois le champ touche. onChange est trop agressif (erreur des la premiere lettre), onSubmit est trop tardif."
+      },
+      {
+        label: "Question 5 — KeyboardAvoidingView",
+        text: "Quelle combinaison est recommandee pour gerer le clavier dans un formulaire React Native ?",
+        code: "<KeyboardAvoidingView\n  behavior={???}\n  style={{ flex: 1 }}\n>\n  <ScrollView keyboardShouldPersistTaps={???}>\n    {/* champs du formulaire */}\n  </ScrollView>\n</KeyboardAvoidingView>",
+        options: [
+          "behavior='height' sur les deux plateformes et keyboardShouldPersistTaps='never'",
+          "behavior conditionnel (Platform.OS === 'ios' ? 'padding' : 'height') et keyboardShouldPersistTaps='handled'",
+          "Pas besoin de KeyboardAvoidingView, ScrollView gere tout seul",
+          "behavior='position' et keyboardShouldPersistTaps='always'"
+        ],
+        answer: 1,
+        explanation: "Sur iOS, behavior='padding' ajoute du padding en bas pour pousser le contenu au-dessus du clavier. Sur Android, behavior='height' reduit la hauteur de la vue. keyboardShouldPersistTaps='handled' est essentiel : il permet de taper sur un bouton (ex: Valider) sans que le clavier se ferme d'abord, tout en fermant le clavier quand on tape sur une zone non-interactive."
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function render() {
+      const container = document.getElementById('quizContainer');
+      const q = questions[current];
+      const total = questions.length;
+      document.getElementById('progressBar').style.width = ((current / total) * 100) + '%';
+      document.getElementById('progressText').textContent = `Question ${current + 1} / ${total}`;
+
+      container.innerHTML = `
+        <div class="card">
+          <p class="question-label">${q.label}</p>
+          <p class="question-text">${q.text}</p>
+          ${q.code ? `<pre><code>${q.code}</code></pre>` : ''}
+          <ul class="options">
+            ${q.options.map((opt, i) => `
+              <li>
+                <label>
+                  <input type="radio" name="q${current}" value="${i}">
+                  ${opt}
+                </label>
+              </li>
+            `).join('')}
+          </ul>
+          <button class="btn btn-primary" id="submitBtn" onclick="submit()" disabled>Valider</button>
+          <div class="feedback" id="feedback"></div>
+        </div>
+      `;
+
+      container.querySelectorAll('input[type="radio"]').forEach(r => {
+        r.addEventListener('change', () => {
+          document.getElementById('submitBtn').disabled = false;
+        });
+      });
+    }
+
+    function submit() {
+      const selected = document.querySelector(`input[name="q${current}"]:checked`);
+      if (!selected) return;
+      const answer = parseInt(selected.value);
+      const q = questions[current];
+      const fb = document.getElementById('feedback');
+      const btn = document.getElementById('submitBtn');
+
+      document.querySelectorAll(`input[name="q${current}"]`).forEach(r => r.disabled = true);
+      btn.disabled = true;
+
+      if (answer === q.answer) {
+        score++;
+        fb.className = 'feedback correct';
+        fb.innerHTML = `<strong>Correct !</strong> ${q.explanation}`;
+      } else {
+        fb.className = 'feedback wrong';
+        fb.innerHTML = `<strong>Incorrect.</strong> ${q.explanation}`;
+      }
+
+      setTimeout(() => {
+        current++;
+        if (current < questions.length) {
+          render();
+        } else {
+          showScore();
+        }
+      }, 4000);
+    }
+
+    function showScore() {
+      document.getElementById('quizContainer').classList.add('hidden');
+      document.getElementById('progressBar').style.width = '100%';
+      document.getElementById('progressText').textContent = 'Termine !';
+      const sc = document.getElementById('scoreContainer');
+      sc.classList.remove('hidden');
+      const pct = Math.round((score / questions.length) * 100);
+      sc.innerHTML = `
+        <div class="score">${score} / ${questions.length}</div>
+        <div class="score-label">${pct}% — ${pct >= 80 ? 'Excellent !' : pct >= 60 ? 'Bien joue !' : 'A revoir...'}</div>
+        <button class="btn-restart" onclick="restart()">Recommencer</button>
+      `;
+    }
+
+    function restart() {
+      current = 0;
+      score = 0;
+      document.getElementById('scoreContainer').classList.add('hidden');
+      document.getElementById('quizContainer').classList.remove('hidden');
+      render();
+    }
+
+    render();
+  </script>
+</body>
+</html>

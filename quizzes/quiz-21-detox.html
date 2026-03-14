@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz 21 — Tests E2E avec Detox</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a2e; color: #e0e0e0; min-height: 100vh; padding: 2rem 1rem; }
+    .container { max-width: 800px; margin: 0 auto; }
+    h1 { text-align: center; margin-bottom: 0.5rem; font-size: 1.8rem; color: #ffffff; }
+    .subtitle { text-align: center; color: #8892b0; margin-bottom: 2rem; font-size: 1rem; }
+    .progress-bar-container { background: #0d1117; border-radius: 10px; height: 14px; margin-bottom: 2rem; overflow: hidden; }
+    .progress-bar { background: linear-gradient(90deg, #0d6efd, #4dabf7); height: 100%; width: 0%; border-radius: 10px; transition: width 0.4s ease; }
+    .progress-text { text-align: center; color: #8892b0; margin-bottom: 1rem; font-size: 0.9rem; }
+    .card { background: #16213e; border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .question-label { font-size: 0.85rem; color: #4dabf7; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+    .question-text { font-size: 1.15rem; margin-bottom: 1.2rem; line-height: 1.5; color: #ffffff; }
+    pre { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 1rem; margin-bottom: 1.2rem; overflow-x: auto; font-size: 0.95rem; }
+    code { font-family: 'Consolas', 'Fira Code', 'Courier New', monospace; color: #c9d1d9; }
+    .options { list-style: none; }
+    .options li { margin-bottom: 0.5rem; }
+    .options label { display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1rem; background: #0d1117; border: 2px solid #30363d; border-radius: 8px; cursor: pointer; transition: border-color 0.2s, background 0.2s; font-size: 1rem; }
+    .options label:hover { border-color: #4dabf7; background: #1c2a4a; }
+    .options input[type="radio"] { accent-color: #0d6efd; width: 18px; height: 18px; flex-shrink: 0; }
+    .btn { display: inline-block; padding: 0.7rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+    .btn-primary { background: #0d6efd; color: #fff; }
+    .btn-primary:hover { background: #3b82f6; }
+    .btn-primary:disabled { background: #374151; cursor: not-allowed; }
+    .btn-restart { background: #238636; color: #fff; margin-top: 1rem; padding: 0.7rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+    .btn-restart:hover { background: #2ea043; }
+    .feedback { margin-top: 1rem; padding: 1rem 1.2rem; border-radius: 8px; font-size: 0.95rem; line-height: 1.5; display: none; }
+    .feedback.correct { background: #0f5132; border: 1px solid #198754; color: #d1fae5; display: block; }
+    .feedback.wrong { background: #842029; border: 1px solid #dc3545; color: #fdd; display: block; }
+    .score-card { text-align: center; padding: 3rem 2rem; }
+    .score-card .score { font-size: 3rem; font-weight: 700; color: #4dabf7; margin-bottom: 0.5rem; }
+    .score-card .score-label { font-size: 1.2rem; color: #8892b0; margin-bottom: 1.5rem; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Quiz 21 — Tests E2E avec Detox</h1>
+    <p class="subtitle">Matchers, actions, assertions, synchronisation, CI, Maestro</p>
+    <div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+    <p class="progress-text" id="progressText">Question 1 / 6</p>
+    <div id="quizContainer"></div>
+    <div id="scoreContainer" class="card score-card hidden"></div>
+  </div>
+  <script>
+    const questions = [
+      {
+        label: "Question 1 — Element matchers",
+        text: "Quel est le matcher le plus fiable pour localiser un element dans Detox ?",
+        code: "// Option A\nelement(by.text('Se connecter'));\n\n// Option B\nelement(by.id('login-btn'));\n\n// Option C\nelement(by.type('RCTButton'));\n\n// Option D\nelement(by.label('Login button'));",
+        options: [
+          "by.text — car il correspond au texte visible par l'utilisateur",
+          "by.id — car testID est stable, independant du texte et de la hierarchie native",
+          "by.type — car il cible directement le composant natif",
+          "by.label — car il utilise l'accessibilite, toujours presente"
+        ],
+        answer: 1,
+        explanation: "by.id (via testID) est le matcher le plus fiable car il ne depend ni du texte affiche (qui peut changer avec les traductions), ni du type natif (qui peut changer entre iOS et Android), ni du label d'accessibilite (optionnel). C'est la methode recommandee par Detox."
+      },
+      {
+        label: "Question 2 — Synchronisation automatique",
+        text: "Detox utilise la synchronisation grey-box. Que signifie concretement ce mecanisme ?",
+        code: "// Scenario : tap sur un bouton qui declenche un appel API\nawait element(by.id('refresh-btn')).tap();\nawait expect(element(by.id('data-list'))).toBeVisible();",
+        options: [
+          "Detox attend un delai fixe (ex: 2 secondes) apres chaque action avant de continuer",
+          "Detox observe le runtime natif et attend que les animations, requetes reseau et timers soient termines avant d'executer l'action suivante",
+          "Detox utilise un polling (boucle d'attente) pour verifier l'etat du DOM toutes les 100ms",
+          "Detox ne gere pas la synchronisation, il faut ajouter des sleep() manuellement"
+        ],
+        answer: 1,
+        explanation: "La synchronisation grey-box de Detox signifie qu'il a acces au runtime natif (d'ou 'grey-box') et surveille activement les animations en cours, les requetes reseau, les timers JavaScript et la boucle d'evenements. Il attend que tout soit 'idle' avant de continuer. C'est ce qui rend Detox plus fiable que les approches black-box qui reposent sur des sleep() ou du polling."
+      },
+      {
+        label: "Question 3 — waitFor avec timeout",
+        text: "Dans quel cas faut-il utiliser waitFor().toBeVisible().withTimeout() au lieu d'un simple expect().toBeVisible() ?",
+        code: "// Approche 1 : assertion directe\nawait expect(element(by.id('success-msg'))).toBeVisible();\n\n// Approche 2 : attente avec timeout\nawait waitFor(element(by.id('success-msg')))\n  .toBeVisible()\n  .withTimeout(5000);",
+        options: [
+          "Toujours utiliser waitFor — c'est une meilleure pratique dans tous les cas",
+          "Quand l'element depend d'une operation asynchrone (API call, animation longue) que la synchronisation automatique ne peut pas detecter",
+          "Uniquement pour les elements en dehors du viewport (il faut scroller)",
+          "Jamais — la synchronisation automatique de Detox gere tous les cas"
+        ],
+        answer: 1,
+        explanation: "La synchronisation automatique de Detox gere la plupart des cas (animations RN, fetch). Mais certaines operations echappent a la synchronisation : WebSockets, animations Lottie, timers tres longs, appels reseau via des librairies non-standard. Dans ces cas, waitFor().withTimeout() est necessaire. Pour les elements hors viewport, on utilise whileElement().scroll()."
+      },
+      {
+        label: "Question 4 — Page Object Pattern",
+        text: "Pourquoi utiliser le Page Object Pattern dans les tests E2E ?",
+        code: "// Sans Page Object\nit('should login', async () => {\n  await element(by.id('login-email')).typeText('a@b.com');\n  await element(by.id('login-pass')).typeText('123');\n  await element(by.id('login-btn')).tap();\n});\n\n// Avec Page Object\nit('should login', async () => {\n  await loginPage.login('a@b.com', '123');\n});",
+        options: [
+          "Pour accelerer l'execution des tests en mettant les selectors en cache",
+          "Pour centraliser les selectors et actions par ecran, facilitant la maintenance quand l'UI change",
+          "Pour pouvoir executer les tests en parallele sur plusieurs devices",
+          "Pour generer automatiquement les testID dans les composants React Native"
+        ],
+        answer: 1,
+        explanation: "Le Page Object Pattern centralise les selectors (by.id, by.text) et les actions (login, navigate) dans des classes dediees par ecran. Si un testID change, on ne modifie qu'un seul endroit au lieu de tous les tests qui l'utilisent. Cela rend les tests plus lisibles et plus maintenables, surtout quand la suite E2E grandit."
+      },
+      {
+        label: "Question 5 — CI avec Detox",
+        text: "Quelle est la principale contrainte pour executer des tests Detox dans un pipeline CI ?",
+        code: "# .github/workflows/e2e.yml\njobs:\n  e2e-ios:\n    runs-on: macos-14\n    steps:\n      - run: npx detox build -c ios.sim.release\n      - run: npx detox test -c ios.sim.release --headless",
+        options: [
+          "Detox ne fonctionne pas du tout en CI, il faut utiliser Maestro",
+          "Les tests necessitent un simulateur/emulateur, ce qui impose un runner macOS (pour iOS) et KVM (pour Android), augmentant le cout et la duree",
+          "Il faut obligatoirement un appareil physique connecte au runner CI",
+          "Les tests E2E ne peuvent s'executer qu'en mode debug, pas en release"
+        ],
+        answer: 1,
+        explanation: "Detox necessite un simulateur iOS ou un emulateur Android. Pour iOS, seul macOS peut executer le simulateur, ce qui impose des runners macos-14 (plus chers que ubuntu-latest). Pour Android sur Linux, il faut activer KVM pour des performances acceptables. Les builds release sont recommandes en CI car plus proches de la production et sans le serveur Metro."
+      },
+      {
+        label: "Question 6 — Detox vs Maestro",
+        text: "Dans quel scenario Maestro serait-il un meilleur choix que Detox ?",
+        code: "# Maestro (YAML)\n- launchApp\n- tapOn:\n    id: 'login-btn'\n- assertVisible:\n    text: 'Bienvenue'\n\n// Detox (TypeScript)\nawait device.launchApp();\nawait element(by.id('login-btn')).tap();\nawait expect(element(by.text('Bienvenue'))).toBeVisible();",
+        options: [
+          "Pour une application avec des animations complexes et des WebSockets",
+          "Pour une petite equipe qui veut des tests E2E rapides a ecrire, sans configuration complexe, et avec la possibilite d'utiliser Maestro Cloud pour la CI",
+          "Pour des tests qui necessitent un controle fin sur les permissions et l'orientation du device",
+          "Pour des applications avec des modules natifs personnalises"
+        ],
+        answer: 1,
+        explanation: "Maestro excelle par sa simplicite : tests en YAML, installation en une commande, Maestro Cloud pour la CI sans gerer de simulateurs. C'est ideal pour les petites equipes ou les tests simples. En revanche, Detox est preferable quand on a besoin de synchronisation grey-box fiable (animations, requetes), de controle fin sur le device, ou de logique conditionnelle complexe dans les tests."
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+    const total = questions.length;
+    const container = document.getElementById('quizContainer');
+
+    function render() {
+      const q = questions[current];
+      document.getElementById('progressBar').style.width = `${((current) / total) * 100}%`;
+      document.getElementById('progressText').textContent = `Question ${current + 1} / ${total}`;
+
+      container.innerHTML = `
+        <div class="card">
+          <p class="question-label">${q.label}</p>
+          <p class="question-text">${q.text}</p>
+          ${q.code ? `<pre><code>${q.code}</code></pre>` : ''}
+          <ul class="options">
+            ${q.options.map((opt, i) => `
+              <li>
+                <label>
+                  <input type="radio" name="q${current}" value="${i}">
+                  ${opt}
+                </label>
+              </li>
+            `).join('')}
+          </ul>
+          <button class="btn btn-primary" id="submitBtn" onclick="submit()" disabled>Valider</button>
+          <div class="feedback" id="feedback"></div>
+        </div>
+      `;
+
+      container.querySelectorAll('input[type="radio"]').forEach(r => {
+        r.addEventListener('change', () => {
+          document.getElementById('submitBtn').disabled = false;
+        });
+      });
+    }
+
+    function submit() {
+      const selected = document.querySelector(`input[name="q${current}"]:checked`);
+      if (!selected) return;
+
+      const answer = parseInt(selected.value);
+      const q = questions[current];
+      const fb = document.getElementById('feedback');
+      const btn = document.getElementById('submitBtn');
+
+      document.querySelectorAll(`input[name="q${current}"]`).forEach(r => r.disabled = true);
+      btn.disabled = true;
+
+      if (answer === q.answer) {
+        score++;
+        fb.className = 'feedback correct';
+        fb.innerHTML = `<strong>Correct !</strong> ${q.explanation}`;
+      } else {
+        fb.className = 'feedback wrong';
+        fb.innerHTML = `<strong>Incorrect.</strong> ${q.explanation}`;
+      }
+
+      setTimeout(() => {
+        current++;
+        if (current < questions.length) {
+          render();
+        } else {
+          showScore();
+        }
+      }, 4000);
+    }
+
+    function showScore() {
+      const total = questions.length;
+      document.getElementById('progressBar').style.width = '100%';
+      document.getElementById('progressText').textContent = 'Termine !';
+      document.getElementById('quizContainer').classList.add('hidden');
+
+      const sc = document.getElementById('scoreContainer');
+      sc.classList.remove('hidden');
+
+      const pct = Math.round((score / total) * 100);
+      const emoji = pct === 100 ? '&#127942;' : pct >= 70 ? '&#128077;' : '&#128170;';
+
+      sc.innerHTML = `
+        <div class="score">${score} / ${total}</div>
+        <div class="score-label">${pct}% ${emoji}</div>
+        <p>${pct >= 70 ? 'Bravo ! Vous maitrisez les tests E2E avec Detox.' : 'Revisez le module 21 et reessayez !'}</p>
+        <button class="btn-restart" onclick="restart()">Recommencer</button>
+      `;
+    }
+
+    function restart() {
+      current = 0;
+      score = 0;
+      document.getElementById('scoreContainer').classList.add('hidden');
+      document.getElementById('quizContainer').classList.remove('hidden');
+      render();
+    }
+
+    render();
+  </script>
+</body>
+</html>
