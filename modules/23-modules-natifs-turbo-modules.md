@@ -16,6 +16,10 @@
 
 ---
 
+:::warning Bienvenue en phase Expert
+Les modules 23 a 26 plongent dans les couches internes de React Native : code natif, moteur JavaScript, architecture du renderer. C'est plus exigeant que tout ce qui precede — vous allez ecrire du C++, du Swift et du Kotlin. C'est aussi ce qui separe un developpeur React Native d'un **expert** React Native. Prenez votre temps, chaque module est independant.
+:::
+
 ## Pourquoi les modules natifs ?
 
 React Native couvre les besoins les plus courants via ses APIs integrees et l'ecosysteme Expo. Mais certaines situations necessitent un acces direct au code natif :

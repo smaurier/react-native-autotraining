@@ -28,11 +28,7 @@
 
 ### 1.1 Pourquoi Reanimated ?
 
-Dans React Native, les animations classiques (`Animated` de RN core) souffrent d'un probleme fondamental : elles transitent par le bridge JavaScript. Chaque frame necessite un aller-retour JS → Native, ce qui provoque des saccades a 60 fps.
-
-> **Ancien Bridge** : les animations `Animated` utilisaient le pont asynchrone JS-Native, provoquant des latences de 1 a 3 frames. Avec la New Architecture (Fabric + JSI), la communication est synchrone, mais Reanimated va encore plus loin.
-
-**Reanimated 3** resout ce probleme en executant le code d'animation directement sur le **UI thread** grace aux **worklets** — de petites fonctions JavaScript compilees et envoyees sur le thread natif.
+L'API `Animated` de React Native core (module 17) fonctionne bien pour des animations simples, mais elle atteint ses limites sur les interactions complexes : les gestes connectes a des animations, les interpolations multi-proprietes, les transitions interruptibles. **Reanimated 3** resout ces limites en executant le code d'animation directement sur le **UI thread** grace aux **worklets** — de petites fonctions JavaScript compilees et envoyees sur le thread natif, garantissant 60 fps sans aucun passage par le thread JS.
 
 ```
 ┌─────────────────────────────────────────────────────────┐

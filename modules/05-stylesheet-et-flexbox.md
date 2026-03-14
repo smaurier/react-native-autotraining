@@ -20,6 +20,10 @@ A la fin de ce module, vous serez capable de :
 
 ---
 
+:::tip Changement de perspective
+Jusqu'ici, vous avez appris a **afficher des donnees** : composants, props, state, listes. A partir de ce module, vous allez apprendre a **disposer ces donnees sur l'ecran**. On passe de "quoi afficher" a "ou et comment l'afficher". C'est un mode de pensee different — plus spatial, plus visuel — mais les concepts sont simples une fois qu'on a compris le modele Flexbox.
+:::
+
 <details>
 <summary>Rappel du module precedent</summary>
 
