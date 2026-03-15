@@ -6,7 +6,7 @@
 |-------|--------|
 | Duree cible | 12-15 min |
 | Module | 24 — New Architecture : Fabric et JSI |
-| Prerequis | Module 23 (Turbo Modules), Xcode, Android Studio |
+| Prérequis | Module 23 (Turbo Modules), Xcode, Android Studio |
 | Fichiers demo | Projet avec Fabric Component custom (CircularProgress) |
 
 ---
@@ -15,13 +15,13 @@
 
 ### Intro (0:00 - 1:00)
 
-"Dans ce screencast, on va creer un Fabric Component de bout en bout : un composant `CircularProgress` natif qui dessine une barre de progression circulaire. C'est un excellent cas d'usage : un rendu de ce type en pur JavaScript serait bien moins performant qu'en natif, surtout avec des animations."
+"Dans ce screencast, on va créer un Fabric Component de bout en bout : un composant `CircularProgress` natif qui dessine une barre de progression circulaire. C'est un excellent cas d'usage : un rendu de ce type en pur JavaScript serait bien moins performant qu'en natif, surtout avec des animations."
 
 "On va voir le workflow complet : component spec avec codegen, implementation iOS avec Core Animation, implementation Android avec Canvas, et utilisation dans un composant React."
 
 ### Partie 1 — Le component spec (1:00 - 3:30)
 
-**Action** : creer `specs/CircularProgressNativeComponent.ts`
+**Action** : créer `specs/CircularProgressNativeComponent.ts`
 
 ```typescript
 import type { ViewProps } from 'react-native';
@@ -41,18 +41,18 @@ export default codegenNativeComponent<NativeProps>('CircularProgress');
 ```
 
 **Points a souligner** :
-- `extends ViewProps` — herite de toutes les props de base (style, testID, etc.)
-- `Float` et `Int32` — types codegen specifiques, pas `number`
+- `extends ViewProps` — hérité de toutes les props de base (style, testID, etc.)
+- `Float` et `Int32` — types codegen spécifiques, pas `number`
 - `WithDefault<Float, 8>` — valeur par defaut cote natif, prop optionnelle cote JS
 - `codegenNativeComponent` au lieu de `codegenNativeModule` — c'est un composant, pas un module
 
-**Action** : montrer la difference avec un module spec
+**Action** : montrer la différence avec un module spec
 
-"Attention a ne pas confondre : `codegenNativeComponent` pour les vues, `TurboModuleRegistry` pour les modules. Ce sont deux systemes differents du codegen."
+"Attention a ne pas confondre : `codegenNativeComponent` pour les vues, `TurboModuleRegistry` pour les modules. Ce sont deux systèmes différents du codegen."
 
 ### Partie 2 — Implementation iOS (3:30 - 7:00)
 
-**Action** : ouvrir Xcode, creer `CircularProgressView.mm`
+**Action** : ouvrir Xcode, créer `CircularProgressView.mm`
 
 "Cote iOS, on va utiliser Core Animation avec deux CAShapeLayer : un pour le track (le fond gris), un pour la progression."
 
@@ -74,7 +74,7 @@ export default codegenNativeComponent<NativeProps>('CircularProgress');
 }
 ```
 
-**Action** : creer le ComponentView (pont Fabric)
+**Action** : créer le ComponentView (pont Fabric)
 
 ```objc
 - (void)updateProps:(Props::Shared const &)props
@@ -95,7 +95,7 @@ export default codegenNativeComponent<NativeProps>('CircularProgress');
 
 ### Partie 3 — Implementation Android (7:00 - 10:00)
 
-**Action** : ouvrir Android Studio, creer `CircularProgressView.kt`
+**Action** : ouvrir Android Studio, créer `CircularProgressView.kt`
 
 ```kotlin
 override fun onDraw(canvas: Canvas) {
@@ -111,9 +111,9 @@ override fun onDraw(canvas: Canvas) {
 }
 ```
 
-"Android utilise `Canvas.drawArc()` pour dessiner l'arc. Meme resultat visuel, API differente."
+"Android utilise `Canvas.drawArc()` pour dessiner l'arc. Même résultat visuel, API différente."
 
-**Action** : creer le ViewManager avec delegate
+**Action** : créer le ViewManager avec delegate
 
 ```kotlin
 @ReactProp(name = "progress")
@@ -122,11 +122,11 @@ override fun setProgress(view: CircularProgressView, progress: Float) {
 }
 ```
 
-"Le ViewManager utilise un delegate genere par codegen. Si on oublie une prop du spec, ca ne compile pas."
+"Le ViewManager utilise un delegate généré par codegen. Si on oublie une prop du spec, ça ne compile pas."
 
 ### Partie 4 — Utilisation React (10:00 - 12:00)
 
-**Action** : creer le wrapper React
+**Action** : créer le wrapper React
 
 ```tsx
 import NativeCircularProgress from '../specs/CircularProgressNativeComponent';
@@ -147,7 +147,7 @@ export function CircularProgress({ progress, size = 100, ...rest }) {
 }
 ```
 
-**Action** : utiliser dans un ecran avec un slider pour modifier la progression en temps reel
+**Action** : utiliser dans un ecran avec un slider pour modifier la progression en temps réel
 
 "Regardez : quand on bouge le slider, la progression se met a jour immediatement. Il n'y a pas de retard visible entre le mouvement du slider et la mise a jour du cercle. C'est le layout synchrone de Fabric."
 
@@ -181,18 +181,18 @@ function handleSlider(value) {
 4. Wrapper React qui rend le composant natif utilisable comme n'importe quel composant JSX
 5. Concurrent rendering avec useTransition
 
-Le point cle : Fabric et JSI eliminent la latence du Bridge. Le layout est synchrone, les props sont comparees en C++, et le concurrent rendering permet de prioriser les interactions utilisateur. C'est ce qui fait que React Native en 2025 peut rivaliser avec le natif pur en termes de performance. A vous de jouer avec le lab !"
+Le point clé : Fabric et JSI eliminent la latence du Bridge. Le layout est synchrone, les props sont comparees en C++, et le concurrent rendering permet de prioriser les interactions utilisateur. C'est ce qui fait que React Native en 2025 peut rivaliser avec le natif pur en termes de performance. A vous de jouer avec le lab !"
 
 ---
 
 ## Points a montrer a l'ecran
 
-- [ ] Component spec vs module spec (la difference)
+- [ ] Component spec vs module spec (la différence)
 - [ ] Types codegen (Float, Int32, WithDefault)
 - [ ] Code iOS : CAShapeLayer + ComponentView
 - [ ] Code Android : Canvas.drawArc + ViewManager
-- [ ] Build et execution sur les deux plateformes
-- [ ] Slider interactif avec mise a jour en temps reel
+- [ ] Build et exécution sur les deux plateformes
+- [ ] Slider interactif avec mise a jour en temps réel
 - [ ] Animation native fluide (pas de frame drop)
 - [ ] useTransition avec liste lourde + composant natif
 
@@ -200,4 +200,4 @@ Le point cle : Fabric et JSI eliminent la latence du Bridge. Le layout est synch
 
 - Utiliser `number` au lieu de `Float` dans le spec → erreur codegen
 - Oublier `extends ViewProps` → les props de base (style, testID) ne marchent pas
-- Nom du composant dans le spec different du ViewManager → "Native component not found"
+- Nom du composant dans le spec différent du ViewManager → "Native component not found"

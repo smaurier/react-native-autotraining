@@ -11,7 +11,7 @@
 - Migrer de FlatList vers FlashList pour des listes ultra-performantes
 - Optimiser le chargement des images avec expo-image
 - Reduire la taille du bundle avec tree-shaking et imports dynamiques
-- Detecter et corriger les fuites memoire
+- Detecter et corriger les fuites mémoire
 - Decharger le JS thread avec des worklets Reanimated
 - Profiler une app avec Flipper et React DevTools
 
@@ -23,10 +23,10 @@ Sur mobile, la performance est directement liee a l'experience utilisateur. Un d
 
 React Native 0.76+ avec la New Architecture (JSI, Fabric, Turbo Modules) ameliore significativement les performances de base en eliminant le bridge asynchrone. Mais cela ne dispense pas d'optimiser le code applicatif.
 
-> **Historique** : L'ancien bridge JSON serialisait chaque appel entre JS et natif de maniere asynchrone. La New Architecture (JSI) utilise des bindings C++ synchrones — le bridge n'existe plus.
+> **Historique** : L'ancien bridge JSON serialisait chaque appel entre JS et natif de manière asynchrone. La New Architecture (JSI) utilise des bindings C++ synchrones — le bridge n'existe plus.
 
 Les trois axes d'optimisation :
-1. **Render** : eviter les re-renders inutiles du Virtual DOM
+1. **Render** : éviter les re-renders inutiles du Virtual DOM
 2. **Layout** : minimiser les recalculs Fabric (anciennement Yoga)
 3. **JS Thread** : ne pas bloquer le thread principal
 
@@ -34,11 +34,11 @@ Les trois axes d'optimisation :
 
 ## React.memo, useMemo, useCallback
 
-### Le probleme des re-renders
+### Le problème des re-renders
 
 En React, un composant re-render quand :
 - Son state change
-- Son parent re-render (meme si les props sont identiques)
+- Son parent re-render (même si les props sont identiques)
 - Le contexte qu'il consomme change
 
 ```tsx
@@ -92,7 +92,7 @@ const ProductCard = React.memo(function ProductCard({
 });
 ```
 
-**Comparaison shallow** : elle compare les references des props, pas leur contenu profond. Pour les objets et tableaux, une nouvelle reference = un re-render.
+**Comparaison shallow** : elle compare les références des props, pas leur contenu profond. Pour les objets et tableaux, une nouvelle référence = un re-render.
 
 ```tsx
 // Comparateur personnalise (rare, pour des cas specifiques)
@@ -110,7 +110,7 @@ const ProductCard = React.memo(
 
 ### useMemo
 
-`useMemo` memorise le resultat d'un calcul couteux :
+`useMemo` memorise le résultat d'un calcul couteux :
 
 ```tsx
 function ProductList({ products, category }: Props) {
@@ -141,7 +141,7 @@ function ProductList({ products, category }: Props) {
 
 ### useCallback
 
-`useCallback` memorise une reference de fonction. Indispensable quand on passe des callbacks a des composants memo :
+`useCallback` memorise une référence de fonction. Indispensable quand on passe des callbacks a des composants memo :
 
 ```tsx
 function ProductList() {
@@ -204,11 +204,11 @@ const Timer = React.memo(function Timer({ time }: { time: number }) {
 
 ### Qu'est-ce que Hermes ?
 
-Hermes est le moteur JavaScript cree par Meta pour React Native. Depuis React Native 0.70, il est active par defaut. Depuis 0.76+, il est le seul moteur officiellement supporte.
+Hermes est le moteur JavaScript créé par Meta pour React Native. Depuis React Native 0.70, il est active par defaut. Depuis 0.76+, il est le seul moteur officiellement supporte.
 
 ### Precompilation en bytecode
 
-La difference fondamentale avec V8 ou JavaScriptCore : Hermes compile le JavaScript en bytecode **au moment du build**, pas au runtime.
+La différence fondamentale avec V8 ou JavaScriptCore : Hermes compile le JavaScript en bytecode **au moment du build**, pas au runtime.
 
 ```
 Code source (.js/.ts)
@@ -227,11 +227,11 @@ Code source (.js/.ts)
 ```
 
 **Avantages** :
-- **Temps de demarrage reduit** : pas de parsing/compilation au lancement
-- **Memoire reduite** : le bytecode est plus compact que le code source + AST
+- **Temps de démarrage reduit** : pas de parsing/compilation au lancement
+- **Mémoire reduite** : le bytecode est plus compact que le code source + AST
 - **TTI (Time to Interactive) reduit** : l'app est interactive plus rapidement
 
-### Verifier que Hermes est actif
+### Vérifier que Hermes est actif
 
 ```tsx
 // Dans un composant ou au demarrage
@@ -266,7 +266,7 @@ Avec Expo SDK 52+, Hermes est le moteur par defaut. Vous n'avez rien a configure
 Hermes ne supporte pas certaines API ES :
 - `Proxy` (supporte depuis Hermes 0.12, mais avec des limitations)
 - `Reflect.construct` (partiel)
-- `eval()` (desactive pour la securite)
+- `eval()` (désactivé pour la sécurité)
 - Certaines fonctionnalites de regex (lookbehind, named groups — ajoutes progressivement)
 
 ```tsx
@@ -278,7 +278,7 @@ if (typeof Proxy !== 'undefined') {
 
 ### Profiling Hermes
 
-Hermes fournit un profiler de sampling integre :
+Hermes fournit un profiler de sampling intégré :
 
 ```tsx
 import { HermesProfiling } from 'react-native';
@@ -298,17 +298,17 @@ const profile = await HermesProfiling.stop();
 
 ## FlashList vs FlatList
 
-### Le probleme de FlatList
+### Le problème de FlatList
 
-`FlatList` est le composant de liste par defaut de React Native. Il virtualise les elements (ne rend que ceux visibles + un buffer), mais il a des problemes :
+`FlatList` est le composant de liste par defaut de React Native. Il virtualise les éléments (ne rend que ceux visibles + un buffer), mais il a des problèmes :
 
 - **Blank frames** : des espaces blancs apparaissent pendant le scroll rapide
-- **Re-renders excessifs** : `renderItem` est appele plus souvent que necessaire
+- **Re-renders excessifs** : `renderItem` est appele plus souvent que nécessaire
 - **Pas de recycling** : les cellules sont demontees puis remontees
 
 ### FlashList de Shopify
 
-FlashList ([@shopify/flash-list](https://shopify.github.io/flash-list/)) utilise le **recycling** : au lieu de demonter une cellule qui sort de l'ecran, elle est reutilisee pour afficher un nouvel element.
+FlashList ([@shopify/flash-list](https://shopify.github.io/flash-list/)) utilise le **recycling** : au lieu de demonter une cellule qui sort de l'ecran, elle est reutilisee pour afficher un nouvel élément.
 
 ```bash
 npx expo install @shopify/flash-list
@@ -339,7 +339,7 @@ import { FlashList } from '@shopify/flash-list';
 
 ### estimatedItemSize
 
-C'est la prop la plus importante. FlashList l'utilise pour precalculer combien d'elements rendre :
+C'est la prop la plus importante. FlashList l'utilise pour precalculer combien d'éléments rendre :
 
 ```tsx
 // Methode pour trouver la bonne valeur :
@@ -379,7 +379,7 @@ Pour des listes avec des tailles variables :
 
 ### getItemType
 
-Optimise le recycling en groupant les elements par type :
+Optimise le recycling en groupant les éléments par type :
 
 ```tsx
 <FlashList
@@ -406,7 +406,7 @@ Optimise le recycling en groupant les elements par type :
 | Metrique | FlatList | FlashList |
 |----------|----------|-----------|
 | Blank frames (scroll rapide) | 20-50% | < 1% |
-| Memoire (1000 items) | ~180 MB | ~90 MB |
+| Mémoire (1000 items) | ~180 MB | ~90 MB |
 | Temps de mount (500 items) | ~800ms | ~200ms |
 | UI thread (60fps) | Drops frequents | Stable |
 
@@ -467,7 +467,7 @@ import { Image } from 'expo-image';
 />
 ```
 
-### Strategie de cache
+### Stratégie de cache
 
 ```tsx
 import { Image } from 'expo-image';
@@ -590,7 +590,7 @@ function AnalyticsScreen() {
 }
 ```
 
-### Strategies pour reduire le bundle
+### Stratégies pour reduire le bundle
 
 ```tsx
 // 1. Utiliser des alternatives legeres
@@ -614,9 +614,9 @@ if (__DEV__) {
 
 ---
 
-## Gestion de la memoire
+## Gestion de la mémoire
 
-### Sources courantes de fuites memoire
+### Sources courantes de fuites mémoire
 
 ```tsx
 // 1. Subscriptions non nettoyees
@@ -756,7 +756,7 @@ function useAsyncEffect(url: string) {
 
 ## Performances du JS Thread
 
-### Le probleme
+### Le problème
 
 Le JS thread est unique. Tout calcul lourd bloque :
 - Les interactions utilisateur
@@ -895,7 +895,7 @@ function DetailScreen() {
 npx react-devtools
 ```
 
-Les etapes de profiling :
+Les étapes de profiling :
 1. Ouvrir React DevTools > onglet **Profiler**
 2. Cliquer **Record** (bouton rond bleu)
 3. Interagir avec l'app (scroller, taper, naviguer)
@@ -919,7 +919,7 @@ Couleurs dans le Profiler :
 - **Gris** : n'a pas re-render
 - **Bleu/vert** : a re-render rapidement
 - **Jaune/orange** : a re-render lentement
-- **Rouge** : re-render tres lent (goulot)
+- **Rouge** : re-render très lent (goulot)
 
 ### Highlight des re-renders
 
@@ -941,8 +941,8 @@ brew install flipper
 ```
 
 Plugins utiles :
-- **React DevTools** : integre dans Flipper
-- **Network** : inspecter les requetes HTTP
+- **React DevTools** : intégré dans Flipper
+- **Network** : inspecter les requêtes HTTP
 - **Databases** : voir SQLite / AsyncStorage
 - **Layout** : inspecter l'arbre des vues natives
 - **Hermes Debugger** : deboguer le code JS avec breakpoints
@@ -980,9 +980,9 @@ console.log(`Computation: ${duration.toFixed(2)}ms`);
 
 ## Pratique : optimiser une app lente
 
-### Scenario : app de e-commerce avec des problemes de performance
+### Scenario : app de e-commerce avec des problèmes de performance
 
-Voici une app avec plusieurs problemes. Identifions-les et corrigeons-les :
+Voici une app avec plusieurs problèmes. Identifions-les et corrigeons-les :
 
 ```tsx
 // AVANT : app lente avec tous les anti-patterns
@@ -1148,33 +1148,33 @@ function ProductListScreen() {
 
 ### Checklist d'optimisation
 
-| Etape | Action | Impact |
+| Étape | Action | Impact |
 |-------|--------|--------|
 | 1 | Profiler avec React DevTools | Identifier les goulots |
-| 2 | `React.memo` sur les items de liste | Eviter les re-renders |
-| 3 | `useCallback` pour les handlers passes en props | Stabiliser les references |
-| 4 | `useMemo` pour les calculs couteux | Eviter les recalculs |
+| 2 | `React.memo` sur les items de liste | Éviter les re-renders |
+| 3 | `useCallback` pour les handlers passes en props | Stabiliser les références |
+| 4 | `useMemo` pour les calculs couteux | Éviter les recalculs |
 | 5 | FlashList au lieu de FlatList | Recycling + perf |
 | 6 | expo-image au lieu de Image | Cache + blurhash |
-| 7 | Cleanup dans les useEffect | Eviter les fuites memoire |
+| 7 | Cleanup dans les useEffect | Éviter les fuites mémoire |
 | 8 | Lazy import des ecrans lourds | Reduire le TTI |
-| 9 | Verifier Hermes actif | Bytecode precompile |
+| 9 | Vérifier Hermes actif | Bytecode precompile |
 | 10 | Analyser le bundle | Trouver les deps lourdes |
 
 ---
 
-## Resume
+## Résumé
 
 | Concept | A retenir |
 |---------|-----------|
 | React.memo | Wrap les composants de liste, PAS tout |
 | useMemo | Pour les calculs couteux, PAS les operations triviales |
-| useCallback | Quand le callback est passe a un composant memo |
-| Hermes | Actif par defaut, bytecode precompile, verifie avec HermesInternal |
+| useCallback | Quand le callback est passe à un composant memo |
+| Hermes | Actif par defaut, bytecode precompile, vérifié avec HermesInternal |
 | FlashList | Remplace FlatList, estimatedItemSize obligatoire, recycling |
 | expo-image | Blurhash, cache, priorite, remplace Image |
 | Bundle | Tree-shaking, imports nommes, lazy import, alternatives legeres |
-| Memoire | Cleanup dans useEffect, AbortController, WeakRef |
+| Mémoire | Cleanup dans useEffect, AbortController, WeakRef |
 | JS Thread | useDeferredValue, worklets Reanimated, InteractionManager |
 | Profiling | React DevTools Profiler, Flipper, console.time |
 
@@ -1183,7 +1183,17 @@ function ProductListScreen() {
 ## Ressources
 
 - [FlashList](https://shopify.github.io/flash-list/) — Documentation officielle
-- [expo-image](https://docs.expo.dev/versions/latest/sdk/image/) — API reference
+- [expo-image](https://docs.expo.dev/versions/latest/sdk/image/) — API référence
 - [Hermes](https://hermesengine.dev/) — Moteur JavaScript optimise pour mobile
 - [React Profiler](https://react.dev/reference/react/Profiler) — Documentation officielle
 - [Reanimated Worklets](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/worklets/) — Offloading sur UI thread
+
+---
+
+<!-- parcours-recommande -->
+
+::: tip Parcours recommandé
+1. **Screencast** : [screencast 19 performance](../screencasts/screencast-19-performance.md)
+2. **Lab** : [lab-19-performance](../labs/lab-19-performance/README)
+3. **Quiz** : [quiz 19 performance](../quizzes/quiz-19-performance.html)
+:::

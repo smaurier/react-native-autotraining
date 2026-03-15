@@ -1,12 +1,12 @@
-# Lab 22 — Deploiement et CI/CD
+# Lab 22 — Déploiement et CI/CD
 
 ## Objectif
 
-Implementer en pur TypeScript les mecanismes de deploiement et CI/CD : gestion de version semver, configuration de build EAS, checklist de release, canaux de mise a jour OTA et pipeline d'integration continue.
+Implementer en pur TypeScript les mécanismes de déploiement et CI/CD : gestion de version semver, configuration de build EAS, checklist de release, canaux de mise a jour OTA et pipeline d'intégration continue.
 
-## Prerequis
+## Prérequis
 
-- Module 22 : Deploiement et CI/CD
+- Module 22 : Déploiement et CI/CD
 - TypeScript : interfaces, Record, enums
 - Concepts : semver, build profiles, OTA updates, CI/CD pipelines
 
@@ -28,21 +28,21 @@ Gerez le versioning semver (MAJOR.MINOR.PATCH) avec bump, build number auto-incr
 
 ### Exercice 2 : createBuildConfig (3 tests)
 
-Generez une configuration de build EAS selon la plateforme (ios/android) et le profil (development/preview/production). Chaque combinaison produit des options specifiques : distribution, channel, variables d'environnement, options plateforme.
+Generez une configuration de build EAS selon la plateforme (ios/android) et le profil (development/preview/production). Chaque combinaison produit des options spécifiques : distribution, channel, variables d'environnement, options plateforme.
 
 ### Exercice 3 : createReleaseChecklist (3 tests)
 
-Gerez une checklist de pre-release avec items bloquants et non-bloquants. La release est "complete" quand tous les items bloquants sont coches, meme si des items non-bloquants restent.
+Gerez une checklist de pre-release avec items bloquants et non-bloquants. La release est "complete" quand tous les items bloquants sont coches, même si des items non-bloquants restent.
 
 ### Exercice 4 : createUpdateChannel (3 tests)
 
-Simulez un canal de mise a jour OTA (EAS Update) avec publication, rollback et historique. Le rollback supprime le dernier update et retourne au precedent.
+Simulez un canal de mise a jour OTA (EAS Update) avec publication, rollback et historique. Le rollback supprime le dernier update et retourne au précédent.
 
 ### Exercice 5 : createCIPipeline (3 tests)
 
 Simulez un pipeline CI/CD sequentiel. Si un stage echoue, les stages suivants sont "skipped". Le pipeline rapporte son status global, sa duree et le stage en echec.
 
-## Evaluation
+## Évaluation
 
 - 15 tests au total
 - Tous les tests doivent passer

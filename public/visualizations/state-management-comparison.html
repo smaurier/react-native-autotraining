@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestion d'état — Comparaison</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh; padding: 20px;
+  }
+  h1 { text-align: center; font-size: 1.5rem; color: #4dabf7; margin-bottom: 4px; }
+  .subtitle { text-align: center; color: #888; font-size: 0.82rem; margin-bottom: 24px; }
+
+  .columns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; max-width: 1100px; margin: 0 auto; }
+  .col {
+    background: #16213e; border: 1px solid #2a2a4a; border-radius: 12px; padding: 16px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .col-header { text-align: center; }
+  .col-header h2 { font-size: 1rem; margin-bottom: 2px; }
+  .col-header .badge { display: inline-block; font-size: 0.65rem; padding: 2px 8px; border-radius: 10px; }
+  .context-col .badge { background: #ffd43b22; color: #ffd43b; }
+  .zustand-col .badge { background: #69db7c22; color: #69db7c; }
+  .redux-col .badge { background: #cc5de822; color: #cc5de8; }
+  .context-col h2 { color: #ffd43b; }
+  .zustand-col h2 { color: #69db7c; }
+  .redux-col h2 { color: #cc5de8; }
+
+  /* Component tree */
+  .tree { display: flex; flex-direction: column; gap: 0; align-items: center; }
+  .comp {
+    width: 100%; border-radius: 8px; padding: 10px; text-align: center; position: relative;
+    transition: background .15s, box-shadow .15s; border: 1px solid transparent;
+  }
+  .comp.flash { animation: flash-anim .5s ease-out; }
+  @keyframes flash-anim {
+    0% { box-shadow: 0 0 0 3px #ff6b6b88; background: #ff6b6b22; }
+    100% { box-shadow: 0 0 0 0px transparent; }
+  }
+  .comp-name { font-size: 0.75rem; font-weight: 600; }
+  .comp-renders { font-size: 0.65rem; color: #888; margin-top: 2px; }
+  .comp-renders span { color: #ff6b6b; font-weight: 700; }
+
+  .comp-parent { background: #1a2744; border-color: #2a2a4a; }
+  .comp-child-a { background: #1a3322; border-color: #2a4a2a; }
+  .comp-child-b { background: #331a1a; border-color: #4a2a2a; }
+
+  .tree-connector { width: 2px; height: 12px; background: #2a2a4a; }
+  .tree-branch { display: flex; gap: 8px; width: 100%; }
+  .tree-branch .comp { flex: 1; }
+
+  /* Counter display */
+  .counter-display {
+    text-align: center; font-size: 2rem; font-weight: 800; color: #4dabf7;
+    padding: 8px; background: #0d6efd11; border-radius: 8px;
+  }
+  .counter-actions { display: flex; gap: 8px; justify-content: center; }
+  .btn {
+    padding: 8px 20px; border-radius: 8px; border: 1px solid #2a2a4a; background: #1a1a2e;
+    color: #e0e0e0; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all .2s;
+  }
+  .btn:hover { border-color: #0d6efd; }
+  .context-col .btn:hover { border-color: #ffd43b; color: #ffd43b; }
+  .zustand-col .btn:hover { border-color: #69db7c; color: #69db7c; }
+  .redux-col .btn:hover { border-color: #cc5de8; color: #cc5de8; }
+
+  .btn-reset { font-size: 0.7rem; padding: 4px 10px; color: #666; }
+
+  /* Explanation */
+  .explanation {
+    font-size: 0.72rem; color: #aaa; background: #0d6efd08; border-radius: 6px;
+    padding: 8px; line-height: 1.5; border: 1px solid #0d6efd15;
+  }
+  .explanation strong { color: #e0e0e0; }
+
+  /* Summary table */
+  .summary { max-width: 1100px; margin: 24px auto 0; background: #16213e; border: 1px solid #2a2a4a; border-radius: 12px; overflow: hidden; }
+  .summary h3 { padding: 14px 16px 10px; font-size: 0.9rem; color: #4dabf7; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+  th { background: #1a2744; padding: 10px 12px; text-align: left; font-weight: 600; border-bottom: 1px solid #2a2a4a; }
+  td { padding: 10px 12px; border-bottom: 1px solid #2a2a4a22; }
+  tr:last-child td { border-bottom: none; }
+  .good { color: #69db7c; }
+  .warn { color: #ffd43b; }
+  .bad { color: #ff6b6b; }
+  .neutral { color: #aaa; }
+
+  .tag-ctx { color: #ffd43b; }
+  .tag-zu { color: #69db7c; }
+  .tag-rx { color: #cc5de8; }
+
+  @media (max-width: 800px) {
+    .columns { grid-template-columns: 1fr; max-width: 400px; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Gestion d'état — Context vs Zustand vs Redux</h1>
+<p class="subtitle">Observez les re-rendus de chaque composant selon la solution utilisée</p>
+
+<div class="columns" id="columns"></div>
+
+<div class="summary">
+  <h3>Tableau comparatif</h3>
+  <table>
+    <thead>
+      <tr><th>Critère</th><th class="tag-ctx">Context</th><th class="tag-zu">Zustand</th><th class="tag-rx">Redux (Toolkit)</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Taille du bundle</td>
+        <td class="good">0 Ko (intégré)</td>
+        <td class="good">~1.1 Ko</td>
+        <td class="warn">~11 Ko</td>
+      </tr>
+      <tr>
+        <td>Boilerplate</td>
+        <td class="good">Minimal</td>
+        <td class="good">Très faible</td>
+        <td class="warn">Modéré (RTK)</td>
+      </tr>
+      <tr>
+        <td>Re-rendus</td>
+        <td class="bad">Tous les consumers</td>
+        <td class="good">Sélecteurs granulaires</td>
+        <td class="good">useSelector optimisé</td>
+      </tr>
+      <tr>
+        <td>DevTools</td>
+        <td class="bad">Aucun dédié</td>
+        <td class="good">Compatible Redux DevTools</td>
+        <td class="good">Redux DevTools</td>
+      </tr>
+      <tr>
+        <td>Middleware / Async</td>
+        <td class="bad">Manuel (useEffect)</td>
+        <td class="good">Intégré (set async)</td>
+        <td class="good">createAsyncThunk</td>
+      </tr>
+      <tr>
+        <td>Courbe d'apprentissage</td>
+        <td class="good">Faible</td>
+        <td class="good">Faible</td>
+        <td class="warn">Moyenne</td>
+      </tr>
+      <tr>
+        <td>Cas d'usage idéal</td>
+        <td class="neutral">Thème, locale, auth</td>
+        <td class="neutral">Apps moyennes à grandes</td>
+        <td class="neutral">Apps complexes, équipe large</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+const configs = [
+  {
+    key: 'context',
+    name: 'Context API',
+    badge: 'React intégré',
+    cssClass: 'context-col',
+    // Context: provider re-renders → all consumers re-render
+    rerenderParent: true,
+    rerenderChildA: true,
+    rerenderChildB: true, // child B re-renders because parent re-renders (even if not consuming)
+    explanation: '<strong>Context</strong> : quand la valeur change, le Provider re-rend, ce qui propage le re-rendu à <strong>tous</strong> les composants enfants, même ceux qui ne consomment pas la valeur. Sans <code>React.memo</code>, Child B re-rend aussi.'
+  },
+  {
+    key: 'zustand',
+    name: 'Zustand',
+    badge: 'Store externe',
+    cssClass: 'zustand-col',
+    rerenderParent: false,
+    rerenderChildA: true, // subscribed via selector
+    rerenderChildB: false, // not subscribed
+    explanation: '<strong>Zustand</strong> : le store est externe à React. Seuls les composants utilisant un <strong>sélecteur</strong> (<code>useStore(s => s.count)</code>) sont notifiés. Parent et Child B ne re-rendent pas.'
+  },
+  {
+    key: 'redux',
+    name: 'Redux Toolkit',
+    badge: 'Flux unidirectionnel',
+    cssClass: 'redux-col',
+    rerenderParent: false,
+    rerenderChildA: true, // useSelector
+    rerenderChildB: false, // no useSelector
+    explanation: '<strong>Redux</strong> : similaire à Zustand, <code>useSelector</code> souscrit uniquement aux parties nécessaires du state. Les composants non-abonnés ne sont pas affectés. Le Provider ne cause pas de re-rendu parasite.'
+  }
+];
+
+let state = {
+  context: { count: 0, renders: { parent: 0, childA: 0, childB: 0 } },
+  zustand: { count: 0, renders: { parent: 0, childA: 0, childB: 0 } },
+  redux: { count: 0, renders: { parent: 0, childA: 0, childB: 0 } },
+};
+
+function buildColumns() {
+  const wrap = document.getElementById('columns');
+  wrap.innerHTML = configs.map(c => `
+    <div class="col ${c.cssClass}" id="col-${c.key}">
+      <div class="col-header">
+        <h2>${c.name}</h2>
+        <span class="badge">${c.badge}</span>
+      </div>
+      <div class="counter-display" id="counter-${c.key}">0</div>
+      <div class="counter-actions">
+        <button class="btn" onclick="increment('${c.key}')">+ Incrémenter</button>
+        <button class="btn btn-reset" onclick="resetCounter('${c.key}')">Reset</button>
+      </div>
+      <div class="tree">
+        <div class="comp comp-parent" id="parent-${c.key}">
+          <div class="comp-name">&lt;Parent /&gt;</div>
+          <div class="comp-renders">Re-rendus : <span id="r-parent-${c.key}">0</span></div>
+        </div>
+        <div class="tree-connector"></div>
+        <div class="tree-branch">
+          <div class="comp comp-child-a" id="childA-${c.key}">
+            <div class="comp-name">&lt;ChildA /&gt;</div>
+            <div style="font-size:0.6rem;color:#69db7c;margin:2px 0">abonné</div>
+            <div class="comp-renders">Re-rendus : <span id="r-childA-${c.key}">0</span></div>
+          </div>
+          <div class="comp comp-child-b" id="childB-${c.key}">
+            <div class="comp-name">&lt;ChildB /&gt;</div>
+            <div style="font-size:0.6rem;color:#ff6b6b;margin:2px 0">non abonné</div>
+            <div class="comp-renders">Re-rendus : <span id="r-childB-${c.key}">0</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="explanation">${c.explanation}</div>
+    </div>
+  `).join('');
+}
+
+function flashEl(id) {
+  const el = document.getElementById(id);
+  el.classList.remove('flash');
+  void el.offsetWidth; // force reflow
+  el.classList.add('flash');
+}
+
+function increment(key) {
+  const cfg = configs.find(c => c.key === key);
+  const s = state[key];
+  s.count++;
+
+  if (cfg.rerenderParent) { s.renders.parent++; flashEl('parent-' + key); }
+  if (cfg.rerenderChildA) { s.renders.childA++; flashEl('childA-' + key); }
+  if (cfg.rerenderChildB) { s.renders.childB++; flashEl('childB-' + key); }
+
+  updateDisplay(key);
+}
+
+function resetCounter(key) {
+  state[key] = { count: 0, renders: { parent: 0, childA: 0, childB: 0 } };
+  updateDisplay(key);
+}
+
+function updateDisplay(key) {
+  const s = state[key];
+  document.getElementById('counter-' + key).textContent = s.count;
+  document.getElementById('r-parent-' + key).textContent = s.renders.parent;
+  document.getElementById('r-childA-' + key).textContent = s.renders.childA;
+  document.getElementById('r-childB-' + key).textContent = s.renders.childB;
+}
+
+buildColumns();
+</script>
+</body>
+</html>

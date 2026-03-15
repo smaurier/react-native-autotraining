@@ -1,9 +1,9 @@
 # Quizzes
 
-Testez vos connaissances apres chaque module. Chaque quiz contient 5 questions interactives avec feedback immediat.
+Testez vos connaissances après chaque module. Chaque quiz contient 5 questions interactives avec feedback immediat.
 
-## Phase 0 — Prerequis
-- [Quiz 00 — Prerequis et introduction](./quiz-00-prerequis.html)
+## Phase 0 — Prérequis
+- [Quiz 00 — Prérequis et introduction](./quiz-00-prerequis.html)
 
 ## Phase 1 — Fondamentaux
 - [Quiz 01 — JSX et premiers composants](./quiz-01-jsx-composants.html)
@@ -19,10 +19,10 @@ Testez vos connaissances apres chaque module. Chaque quiz contient 5 questions i
 ## Phase 3 — Navigation et Architecture
 - [Quiz 08 — React Navigation fondamentaux](./quiz-08-navigation.html)
 - [Quiz 09 — Navigation avancee](./quiz-09-navigation-avancee.html)
-- [Quiz 10 — Gestion d'etat](./quiz-10-etat.html)
+- [Quiz 10 — Gestion d'état](./quiz-10-etat.html)
 - [Quiz 11 — Formulaires et validation](./quiz-11-formulaires.html)
 
-## Phase 4 — Donnees et Reseau
+## Phase 4 — Donnees et Réseau
 - [Quiz 12 — Networking et API](./quiz-12-networking.html)
 - [Quiz 13 — React Query et cache](./quiz-13-react-query.html)
 - [Quiz 14 — Stockage et offline-first](./quiz-14-offline.html)
@@ -37,7 +37,7 @@ Testez vos connaissances apres chaque module. Chaque quiz contient 5 questions i
 - [Quiz 19 — Performance et optimisation](./quiz-19-performance.html)
 - [Quiz 20 — Testing React Native](./quiz-20-testing.html)
 - [Quiz 21 — Tests E2E avec Detox](./quiz-21-detox.html)
-- [Quiz 22 — Deploiement et CI/CD](./quiz-22-deploiement.html)
+- [Quiz 22 — Déploiement et CI/CD](./quiz-22-deploiement.html)
 
 ## Phase 7 — Expert
 - [Quiz 23 — Modules natifs et Turbo Modules](./quiz-23-modules-natifs.html)

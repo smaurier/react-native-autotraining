@@ -4,7 +4,7 @@
 |----------|--------|
 | **Difficulte** | 5/5 |
 | **Duree** | 75 min |
-| **Prerequis** | Modules 01-25, experience pnpm/npm, notions CI/CD |
+| **Prérequis** | Modules 01-25, experience pnpm/npm, notions CI/CD |
 | **Lab** | [Lab 26 — Patterns Monorepo](/labs/lab-26-patterns-monorepo/) |
 | **Quiz** | [Quiz 26 — Patterns Monorepo](/quizzes/quiz-26-patterns.html) |
 
@@ -13,13 +13,13 @@
 ## Objectifs du module
 
 - Structurer un monorepo React Native avec Turborepo et pnpm workspaces
-- Creer des packages partages : UI library, config, utils
+- Créer des packages partages : UI library, config, utils
 - Mettre en place un design system avec tokens, composants et Storybook
-- Gerer plusieurs applications dans un meme depot (main, admin, storybook)
+- Gérer plusieurs applications dans un même depot (main, admin, storybook)
 - Comprendre les patterns de module federation en mobile
 - Partager du code entre React Native et web via react-native-web
 - Configurer une CI/CD optimisee pour monorepos (affected-only builds, caching)
-- Maitriser la gestion des dependances : hoisting, peer deps, resolutions
+- Maîtriser la gestion des dépendances : hoisting, peer deps, resolutions
 
 ---
 
@@ -163,9 +163,9 @@ packages:
 }
 ```
 
-> **`dependsOn: ["^build"]`** signifie : "avant de builder cette tache, builder d'abord toutes les dependances internes". Le `^` indique les dependances upstream (packages dont on depend).
+> **`dependsOn: ["^build"]`** signifie : "avant de builder cette tache, builder d'abord toutes les dépendances internes". Le `^` indique les dépendances upstream (packages dont on depend).
 
-### 2.4 Graphe de dependances
+### 2.4 Graphe de dépendances
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -646,7 +646,7 @@ export type FontSizeToken = keyof typeof tokens.fontSizes;
 export type RadiusToken = keyof typeof tokens.radii;
 ```
 
-### 4.2 Pipeline de generation de tokens
+### 4.2 Pipeline de génération de tokens
 
 ```typescript
 // packages/tokens/scripts/generate-tokens.ts
@@ -811,7 +811,7 @@ apps/
 
 ### 5.2 Configuration Metro pour monorepo
 
-Metro (le bundler RN) doit etre configure pour resoudre les packages du monorepo :
+Metro (le bundler RN) doit etre configure pour résoudre les packages du monorepo :
 
 ```javascript
 // apps/mobile/metro.config.js
@@ -908,7 +908,7 @@ export const linking = {
 
 ### 6.1 Le concept
 
-Le module federation permet a differentes equipes de developper et deployer independamment des parties d'une application :
+Le module federation permet a différentes équipes de développer et déployer independamment des parties d'une application :
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -1019,7 +1019,7 @@ module.exports = (env) => {
 
 ### 7.1 react-native-web
 
-`react-native-web` permet d'executer des composants React Native dans le navigateur :
+`react-native-web` permet d'exécuter des composants React Native dans le navigateur :
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -1123,7 +1123,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-### 7.4 Gestion des differences platform-specific
+### 7.4 Gestion des différences platform-specific
 
 ```typescript
 // packages/utils/src/storage.ts
@@ -1188,7 +1188,7 @@ Le gain principal d'un monorepo en CI est de ne builder/tester que les packages 
 
 ### 8.2 Turborepo Remote Cache
 
-Turborepo peut cacher les resultats des taches dans un cache distant (Vercel, S3, ou custom) :
+Turborepo peut cacher les résultats des taches dans un cache distant (Vercel, S3, ou custom) :
 
 ```bash
 # Authentification au remote cache Vercel
@@ -1310,7 +1310,7 @@ turbo test --filter="@monorepo/ui...[origin/main]"
 
 ---
 
-## 9. Gestion des dependances
+## 9. Gestion des dépendances
 
 ### 9.1 Hoisting et phantom dependencies
 
@@ -1410,7 +1410,7 @@ public-hoist-pattern[]=expo-*
 
 ## 10. Projet pratique : monorepo avec shared UI + 2 apps
 
-### 10.1 Recapitulatif de l'architecture
+### 10.1 Récapitulatif de l'architecture
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -1587,11 +1587,11 @@ pnpm --filter @monorepo/mobile add @monorepo/ui@workspace:*
 
 ---
 
-## 11. Resume et aide-memoire
+## 11. Résumé et aide-mémoire
 
 ### 11.1 Structure type
 
-| Element | Emplacement | Role |
+| Élément | Emplacement | Role |
 |---------|-------------|------|
 | Apps | `apps/` | Applications deployables |
 | Packages | `packages/` | Librairies partagees internes |
@@ -1605,9 +1605,9 @@ pnpm --filter @monorepo/mobile add @monorepo/ui@workspace:*
 | Commande | Action |
 |----------|--------|
 | `turbo build` | Builder tout (avec cache) |
-| `turbo dev --filter=app` | Dev sur une app specifique |
+| `turbo dev --filter=app` | Dev sur une app spécifique |
 | `turbo test --filter="...[origin/main]"` | Tester les packages affectes |
-| `pnpm --filter @pkg add dep` | Ajouter une dependance a un package |
+| `pnpm --filter @pkg add dep` | Ajouter une dépendance à un package |
 | `pnpm install --frozen-lockfile` | Install CI (lockfile strict) |
 
 ### 11.3 Checklist monorepo RN
@@ -1636,4 +1636,14 @@ pnpm --filter @monorepo/mobile add @monorepo/ui@workspace:*
 
 ## Exercices du module
 
-Rendez-vous au [Lab 26](/labs/lab-26-patterns-monorepo/) pour pratiquer les concepts vus dans ce module. Le lab simule en TypeScript pur les mecanismes de resolution de workspaces, de detection des packages affectes, de pipeline de tokens, de publication et de build cache propres aux monorepos.
+Rendez-vous au [Lab 26](/labs/lab-26-patterns-monorepo/) pour pratiquer les concepts vus dans ce module. Le lab simule en TypeScript pur les mécanismes de résolution de workspaces, de detection des packages affectes, de pipeline de tokens, de publication et de build cache propres aux monorepos.
+
+---
+
+<!-- parcours-recommande -->
+
+::: tip Parcours recommandé
+1. **Screencast** : [screencast 26 patterns](../screencasts/screencast-26-patterns.md)
+2. **Lab** : [lab-26-patterns-monorepo](../labs/lab-26-patterns-monorepo/README)
+3. **Quiz** : [quiz 26 patterns](../quizzes/quiz-26-patterns.html)
+:::

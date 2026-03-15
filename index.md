@@ -30,7 +30,7 @@ features:
 
 | # | Module | Phase | Lab |
 |---|--------|-------|-----|
-| 00 | Prerequis et introduction | Prerequis | Lab 00 |
+| 00 | Prérequis et introduction | Prérequis | Lab 00 |
 | 01 | JSX et premiers composants | Fondamentaux | Lab 01 |
 | 02 | Props et communication | Fondamentaux | Lab 02 |
 | 03 | State et cycle de vie | Fondamentaux | Lab 03 |
@@ -40,7 +40,7 @@ features:
 | 07 | Composants UI avances | Interface | Lab 07 |
 | 08 | React Navigation fondamentaux | Navigation | Lab 08 |
 | 09 | Navigation avancee | Navigation | Lab 09 |
-| 10 | Gestion d'etat : Context et Zustand | Architecture | Lab 10 |
+| 10 | Gestion d'état : Context et Zustand | Architecture | Lab 10 |
 | 11 | Formulaires et validation | Architecture | Lab 11 |
 | 12 | Networking et API | Donnees | Lab 12 |
 | 13 | React Query et cache | Donnees | Lab 13 |
@@ -52,7 +52,7 @@ features:
 | 19 | Performance et optimisation | Production | Lab 19 |
 | 20 | Testing React Native | Production | Lab 20 |
 | 21 | Tests E2E avec Detox | Production | Lab 21 |
-| 22 | Deploiement et CI/CD | Production | Lab 22 |
+| 22 | Déploiement et CI/CD | Production | Lab 22 |
 | 23 | Modules natifs et Turbo Modules | Expert | Lab 23 |
 | 24 | New Architecture : Fabric et JSI | Expert | Lab 24 |
 | 25 | Hermes internals et bridgeless | Expert | Lab 25 |

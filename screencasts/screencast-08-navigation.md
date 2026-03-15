@@ -4,11 +4,11 @@
 - **Duree estimee** : 13-15 min
 - **Module** : `modules/08-react-navigation-fondamentaux.md`
 - **Lab associe** : Lab 08
-- **Prerequis** : Screencast 07
+- **Prérequis** : Screencast 07
 
 ## Setup
 - [ ] VS Code ouvert dans un projet Expo ou React Native CLI
-- [ ] Terminal integre ouvert
+- [ ] Terminal intégré ouvert
 - [ ] React Navigation installe (`@react-navigation/native`, `@react-navigation/native-stack`)
 - [ ] Emulateur/simulateur pret
 - [ ] Fichier `modules/08-react-navigation-fondamentaux.md` ouvert
@@ -17,9 +17,9 @@
 
 ### [00:00-01:30] Introduction — Pourquoi une navigation ?
 
-> Sur le web, le navigateur gere la navigation via les URLs. Sur mobile, il n'y a pas de barre d'adresse. L'application doit gerer elle-meme la pile d'ecrans, les transitions et les gestes. React Navigation est la solution standard.
+> Sur le web, le navigateur géré la navigation via les URLs. Sur mobile, il n'y a pas de barre d'adresse. L'application doit gérer elle-même la pile d'ecrans, les transitions et les gestes. React Navigation est la solution standard.
 
-**Action** : Montrer le modele mental.
+**Action** : Montrer le modèle mental.
 
 ```
 NAVIGATION MOBILE = PILE D'ECRANS
@@ -39,7 +39,7 @@ npx expo install @react-navigation/native react-native-screens react-native-safe
 npx expo install @react-navigation/native-stack
 ```
 
-**Action** : Creer le premier navigator dans `App.tsx`.
+**Action** : Créer le premier navigator dans `App.tsx`.
 
 ```tsx
 import { NavigationContainer } from '@react-navigation/native';
@@ -83,9 +83,9 @@ export default function App() {
 
 **Action** : Lancer l'app et montrer la navigation.
 
-> NavigationContainer est obligatoire, c'est le conteneur racine. Le Stack.Navigator gere la pile. Chaque Stack.Screen definit un ecran.
+> NavigationContainer est obligatoire, c'est le conteneur racine. Le Stack.Navigator géré la pile. Chaque Stack.Screen définit un ecran.
 
-### [04:00-06:30] Passer des parametres types
+### [04:00-06:30] Passer des paramètres types
 
 **Action** : Ajouter le typage TypeScript.
 
@@ -98,7 +98,7 @@ type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 ```
 
-> En typant le navigator, TypeScript verifie chaque appel a navigate. Si vous oubliez un parametre ou passez le mauvais type, vous avez une erreur a la compilation.
+> En typant le navigator, TypeScript vérifié chaque appel a navigate. Si vous oubliez un paramètre ou passez le mauvais type, vous avez une erreur à la compilation.
 
 **Action** : Typer les props des ecrans.
 
@@ -126,7 +126,7 @@ function DetailsScreen({ route }: DetailsProps) {
 
 **Action** : Montrer l'autocompletion TypeScript.
 
-> TypeScript est un game changer pour la navigation. Finis les bugs de parametres manquants ou de mauvais noms d'ecrans.
+> TypeScript est un game changer pour la navigation. Finis les bugs de paramètres manquants ou de mauvais noms d'ecrans.
 
 ### [06:30-09:00] Personnaliser le header
 
@@ -162,13 +162,13 @@ function DetailsScreen({ route }: DetailsProps) {
 </Stack.Navigator>
 ```
 
-> screenOptions s'applique a tous les ecrans. options sur un Screen s'applique a un seul. La fonction dans options recoit { route, navigation } pour les titres dynamiques.
+> screenOptions s'applique a tous les ecrans. options sur un Screen s'applique à un seul. La fonction dans options recoit { route, navigation } pour les titres dynamiques.
 
-**Action** : Montrer le resultat sur l'emulateur.
+**Action** : Montrer le résultat sur l'emulateur.
 
 ### [09:00-11:30] Actions de navigation : navigate, push, replace, reset
 
-**Action** : Demontrer la difference navigate vs push.
+**Action** : Demontrer la différence navigate vs push.
 
 ```tsx
 // Pile : Home -> Details(1)
@@ -182,7 +182,7 @@ navigation.push('Details', { itemId: 2 });
 // Pile : Home -> Details(1) -> Details(2)
 ```
 
-> navigate est pour la navigation standard. push est quand vous voulez plusieurs instances du meme ecran.
+> navigate est pour la navigation standard. push est quand vous voulez plusieurs instances du même ecran.
 
 **Action** : Montrer replace et reset.
 
@@ -193,7 +193,7 @@ navigation.replace('Dashboard');  // Login remplace par Dashboard
 navigation.reset({ index: 0, routes: [{ name: 'Home' }] });
 ```
 
-> replace est pour un seul ecran. reset reinitialise toute la pile. Apres un login, on utilise reset pour empecher le retour au login.
+> replace est pour un seul ecran. reset reinitialise toute la pile. Après un login, on utilise reset pour empecher le retour au login.
 
 ### [11:30-13:00] Animations de transition
 
@@ -222,13 +222,13 @@ navigation.reset({ index: 0, routes: [{ name: 'Home' }] });
 />
 ```
 
-> presentation: 'modal' change le comportement de l'ecran. Il glisse du bas au lieu de la droite. transparentModal cree un overlay transparent.
+> présentation: 'modal' change le comportement de l'ecran. Il glisse du bas au lieu de la droite. transparentModal créé un overlay transparent.
 
 **Action** : Montrer chaque animation sur l'emulateur.
 
-### [13:00-14:00] Recapitulatif
+### [13:00-14:00] Récapitulatif
 
-**Action** : Afficher le recapitulatif.
+**Action** : Afficher le récapitulatif.
 
 ```
 CE QU'IL FAUT RETENIR :
@@ -244,7 +244,7 @@ PROCHAINE ETAPE :
 ```
 
 ## Points d'attention pour l'enregistrement
-- L'autocompletion TypeScript est un moment cle — prendre le temps de la montrer
+- L'autocompletion TypeScript est un moment clé — prendre le temps de la montrer
 - Montrer navigate vs push cote a cote avec la pile dans la console
 - Les animations doivent etre montrees sur un emulateur/simulateur, pas en screenshots
 - Le typage RootStackParamList est le concept le plus important — bien insister

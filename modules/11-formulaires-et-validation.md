@@ -6,13 +6,13 @@
 
 ## Objectifs
 
-- Integrer React Hook Form avec React Native via Controller
-- Definir des schemas de validation Zod (string, number, email, custom)
-- Gerer les modes de validation (onBlur, onChange, onSubmit)
-- Implementer un formulaire multi-etapes (wizard pattern)
+- Intégrer React Hook Form avec React Native via Controller
+- Définir des schemas de validation Zod (string, number, email, custom)
+- Gérer les modes de validation (onBlur, onChange, onSubmit)
+- Implementer un formulaire multi-étapes (wizard pattern)
 - Afficher les erreurs (inline, toast, summary)
-- Maitriser les patterns TextInput (secure entry, clavier numerique, masques)
-- Gerer le clavier (KeyboardAvoidingView, dismiss on tap)
+- Maîtriser les patterns TextInput (secure entry, clavier numérique, masques)
+- Gérer le clavier (KeyboardAvoidingView, dismiss on tap)
 
 ---
 
@@ -138,7 +138,7 @@ function LoginScreen() {
 
 | Aspect | `register` (Web) | `Controller` (React Native) |
 |--------|-------------------|----------------------------|
-| Mecanisme | Attache `ref` au DOM element | Wrapper controlant `value`, `onChange`, `onBlur` |
+| Mécanisme | Attache `ref` au DOM élément | Wrapper controlant `value`, `onChange`, `onBlur` |
 | Re-renders | Aucun (non-controle) | Re-rend le Controller quand la valeur change |
 | Usage | `<input {...register('name')} />` | `<Controller render={({ field }) => ...} />` |
 | Obligatoire en RN | Non applicable | Oui, car pas de `ref.current.value` |
@@ -151,7 +151,7 @@ En React Native, `Controller` est le seul choix. Pour optimiser les re-renders, 
 
 ### Pourquoi Zod
 
-Zod permet de definir un schema de validation type-safe. L'integration avec RHF via `@hookform/resolvers` est transparente : le schema Zod devient le `resolver` du formulaire.
+Zod permet de définir un schema de validation type-safe. L'intégration avec RHF via `@hookform/resolvers` est transparente : le schema Zod devient le `resolver` du formulaire.
 
 ### Schema basique
 
@@ -296,8 +296,8 @@ const { control, handleSubmit } = useForm<FormData>({
 | Mode | Quand l'utiliser | Avantages | Inconvenients |
 |------|-----------------|-----------|---------------|
 | `onSubmit` | Formulaires simples, login | Pas de feedback intrusif | Erreurs tardives |
-| `onBlur` | Formulaires moyens | Feedback a la sortie du champ | Delai avant feedback |
-| `onTouched` | Meilleur compromis | Feedback au blur, puis reactif | Leger overhead |
+| `onBlur` | Formulaires moyens | Feedback à la sortie du champ | Delai avant feedback |
+| `onTouched` | Meilleur compromis | Feedback au blur, puis réactif | Leger overhead |
 | `onChange` | Champs critiques | Feedback instantane | Re-renders frequents |
 | `all` | Formulaires complexes | Maximum de feedback | Plus de re-renders |
 
@@ -324,7 +324,7 @@ const validateStep = async () => {
 
 ---
 
-## Formulaire multi-etapes (wizard)
+## Formulaire multi-étapes (wizard)
 
 ### Architecture
 
@@ -440,7 +440,7 @@ function RegistrationWizard() {
 }
 ```
 
-### Composants d'etapes
+### Composants d'étapes
 
 ```tsx
 // Etape 1 : Identite
@@ -505,7 +505,7 @@ function Step1() {
 }
 ```
 
-### Composant FormField reutilisable
+### Composant FormField réutilisable
 
 ```tsx
 interface FormFieldProps {
@@ -625,7 +625,7 @@ function StepIndicator({
 </View>
 ```
 
-### Resume d'erreurs en haut du formulaire
+### Résumé d'erreurs en haut du formulaire
 
 ```tsx
 function ErrorSummary({ errors }: { errors: Record<string, { message?: string }> }) {
@@ -774,7 +774,7 @@ function PasswordStrength({ password }: { password: string }) {
 }
 ```
 
-### Clavier numerique
+### Clavier numérique
 
 ```tsx
 // Telephone
@@ -1262,7 +1262,7 @@ useEffect(() => {
 
 ---
 
-## Accessibilite des formulaires
+## Accessibilité des formulaires
 
 ```tsx
 // Chaque champ doit avoir :
@@ -1311,9 +1311,9 @@ useEffect(() => {
 
 ---
 
-## Formulaire d'inscription complet (multi-etapes)
+## Formulaire d'inscription complet (multi-étapes)
 
-Voici le flux complet d'un formulaire d'inscription en 3 etapes, avec validation Zod, RHF et patterns d'erreurs.
+Voici le flux complet d'un formulaire d'inscription en 3 étapes, avec validation Zod, RHF et patterns d'erreurs.
 
 ```tsx
 // stores/useRegistrationStore.ts
@@ -1438,7 +1438,7 @@ useForm({ resolver: zodResolver(schema) });
 
 ### 2. Mode `onTouched` par defaut
 
-C'est le meilleur compromis : pas d'erreur avant l'interaction, puis reactif.
+C'est le meilleur compromis : pas d'erreur avant l'interaction, puis réactif.
 
 ### 3. `autoComplete` et `textContentType` sur chaque champ
 
@@ -1462,24 +1462,24 @@ Cela active l'auto-remplissage natif (iOS Keychain, Google Autofill).
 
 Sinon, taper sur un bouton pendant que le clavier est visible ferme le clavier au lieu d'activer le bouton.
 
-### 5. Composant FormField reutilisable
+### 5. Composant FormField réutilisable
 
 Ne pas dupliquer le pattern Controller + TextInput + erreur dans chaque formulaire.
 
 ---
 
-## Resume
+## Résumé
 
 | Concept | A retenir |
 |---------|-----------|
 | Controller | Obligatoire en React Native (pas de `register`) |
 | Zod + resolver | Schema type-safe, inference automatique du type |
 | Mode de validation | `onTouched` = meilleur compromis UX |
-| Multi-etapes | `trigger(fieldsOfStep)` pour validation partielle |
+| Multi-étapes | `trigger(fieldsOfStep)` pour validation partielle |
 | Erreurs | Inline sous le champ + `accessibilityRole="alert"` |
 | Masques | Formater dans `onChangeText`, limiter avec `maxLength` |
 | Clavier | `KeyboardAvoidingView` + `keyboardShouldPersistTaps="handled"` |
-| Accessibilite | `accessibilityLabel`, `accessibilityLabelledBy`, `accessibilityRole="alert"` |
+| Accessibilité | `accessibilityLabel`, `accessibilityLabelledBy`, `accessibilityRole="alert"` |
 
 ---
 
@@ -1489,3 +1489,13 @@ Ne pas dupliquer le pattern Controller + TextInput + erreur dans chaque formulai
 - Zod : https://zod.dev/
 - @hookform/resolvers : https://github.com/react-hook-form/resolvers
 - KeyboardAvoidingView : https://reactnative.dev/docs/keyboardavoidingview
+
+---
+
+<!-- parcours-recommande -->
+
+::: tip Parcours recommandé
+1. **Screencast** : [screencast 11 formulaires](../screencasts/screencast-11-formulaires.md)
+2. **Lab** : [lab-11-formulaires-validation](../labs/lab-11-formulaires-validation/README)
+3. **Quiz** : [quiz 11 formulaires](../quizzes/quiz-11-formulaires.html)
+:::

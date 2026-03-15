@@ -7,18 +7,18 @@
 ## Objectifs
 
 - Typer les props avec des interfaces TypeScript
-- Gerer les props requises, optionnelles et les valeurs par defaut
-- Maitriser le `children` prop et le pattern render props
+- Gérer les props requises, optionnelles et les valeurs par defaut
+- Maîtriser le `children` prop et le pattern render props
 - Implementer les callback props pour la communication enfant vers parent
 - Comprendre le props drilling et ses limites
 - Utiliser les discriminated unions pour les variantes de composants
-- Creer des composants generiques avec TypeScript
+- Créer des composants génériques avec TypeScript
 
 ---
 
 ## Les props : canal de communication parent-enfant
 
-En React Native, les **props** (proprietes) sont le mecanisme principal pour passer des donnees d'un composant parent vers un composant enfant. Le flux est **unidirectionnel** : les donnees descendent toujours du parent vers l'enfant.
+En React Native, les **props** (propriétés) sont le mécanisme principal pour passer des donnees d'un composant parent vers un composant enfant. Le flux est **unidirectionnel** : les donnees descendent toujours du parent vers l'enfant.
 
 ```
   Parent
@@ -176,9 +176,9 @@ function Pagination({
 }
 ```
 
-### `defaultProps` : a eviter
+### `defaultProps` : a éviter
 
-L'ancienne methode `Component.defaultProps` est **deprecee** dans React 18+. Utilisez toujours les valeurs par defaut dans la destructuration :
+L'ancienne méthode `Component.defaultProps` est **deprecee** dans React 18+. Utilisez toujours les valeurs par defaut dans la destructuration :
 
 ```tsx
 // MAUVAIS (deprecated)
@@ -195,7 +195,7 @@ function Button({ title, variant = 'primary' }: ButtonProps) { /* ... */ }
 
 ### ReactNode : le type le plus flexible
 
-Le type `ReactNode` accepte tout ce que React peut rendre : elements JSX, strings, numbers, arrays, fragments, null, undefined, booleans.
+Le type `ReactNode` accepte tout ce que React peut rendre : éléments JSX, strings, numbers, arrays, fragments, null, undefined, booleans.
 
 ```tsx
 import { ReactNode } from 'react';
@@ -231,7 +231,7 @@ function Container({ children, padding = 16, backgroundColor = '#fff' }: Contain
 
 ### Composition de composants
 
-Le pattern `children` est la base de la **composition** en React — une alternative puissante a l'heritage :
+Le pattern `children` est la base de la **composition** en React — une alternative puissante a l'héritage :
 
 ```tsx
 interface ScreenLayoutProps {
@@ -339,7 +339,7 @@ function Toggle({ children }: ToggleRenderProps) {
 
 ### Le pattern "data up"
 
-Les donnees descendent via les props, mais les **evenements remontent** via des fonctions callback :
+Les donnees descendent via les props, mais les **événements remontent** via des fonctions callback :
 
 ```tsx
 // ---- SearchBar.tsx ----
@@ -455,9 +455,9 @@ function Rating({ maxStars = 5, initialRating = 0, onRate }: RatingProps) {
 }
 ```
 
-### Pattern : evenements avec identifiant
+### Pattern : événements avec identifiant
 
-Tres utile dans les listes ou chaque element doit remonter son identifiant :
+Très utile dans les listes ou chaque élément doit remonter son identifiant :
 
 ```tsx
 interface TaskItemProps {
@@ -517,9 +517,9 @@ function TaskList() {
 
 ---
 
-## Props drilling : le probleme
+## Props drilling : le problème
 
-Le **props drilling** survient quand on passe des props a travers plusieurs niveaux de composants intermediaires qui n'en ont pas besoin :
+Le **props drilling** survient quand on passe des props a travers plusieurs niveaux de composants intermédiaires qui n'en ont pas besoin :
 
 ```tsx
 // Niveau 0 : App possede le theme
@@ -561,10 +561,10 @@ function ThemeToggle({ theme, onToggleTheme }: { theme: string; onToggleTheme: (
 }
 ```
 
-### Pourquoi c'est un probleme
+### Pourquoi c'est un problème
 
-1. **Maintenance** : ajouter/supprimer un prop oblige a modifier tous les composants intermediaires
-2. **Lisibilite** : les composants intermediaires sont pollues par des props qu'ils n'utilisent pas
+1. **Maintenance** : ajouter/supprimer un prop oblige a modifier tous les composants intermédiaires
+2. **Lisibilite** : les composants intermédiaires sont pollues par des props qu'ils n'utilisent pas
 3. **Re-renders** : chaque changement de prop cause un re-render de toute la chaine
 
 ### Quand c'est acceptable
@@ -576,7 +576,7 @@ Pour 2-3 niveaux, le props drilling est parfaitement acceptable. Au-dela, on uti
 
 ### Solution par composition
 
-Avant de recourir au Context, on peut souvent resoudre le drilling en reorganisant les composants :
+Avant de recourir au Context, on peut souvent résoudre le drilling en reorganisant les composants :
 
 ```tsx
 // Au lieu de passer theme a travers 3 niveaux,
@@ -616,9 +616,9 @@ function MainScreen({ children, headerRight }: { children: ReactNode; headerRigh
 
 ## Discriminated unions pour les variantes
 
-### Le probleme : props mutuellement exclusives
+### Le problème : props mutuellement exclusives
 
-Certains composants ont des variantes ou certaines props ne s'appliquent qu'a un mode specifique. Les discriminated unions resolvent cela proprement :
+Certains composants ont des variantes ou certaines props ne s'appliquent qu'à un mode spécifique. Les discriminated unions resolvent cela proprement :
 
 ```tsx
 // MAUVAIS : tout est optionnel, pas de securite
@@ -782,11 +782,11 @@ function Button(props: ButtonProps) {
 
 ---
 
-## Composants generiques
+## Composants génériques
 
 ### Le pattern List\<T\>
 
-Les generiques TypeScript permettent de creer des composants reutilisables qui conservent le typage :
+Les génériques TypeScript permettent de créer des composants réutilisables qui conservent le typage :
 
 ```tsx
 interface ListProps<T> {
@@ -919,7 +919,7 @@ interface Product {
 />
 ```
 
-### Select generique
+### Select générique
 
 ```tsx
 interface SelectProps<T> {
@@ -996,7 +996,7 @@ const countries: Country[] = [
 
 ## Exemple pratique : DataTable
 
-Un composant generique complet qui combine plusieurs patterns :
+Un composant générique complet qui combine plusieurs patterns :
 
 ```tsx
 interface Column<T> {
@@ -1212,7 +1212,7 @@ interface CustomButtonProps extends ComponentProps<typeof TouchableOpacity> {
 
 ---
 
-## Resume des bonnes pratiques
+## Résumé des bonnes pratiques
 
 | Pratique | Exemple |
 |----------|---------|
@@ -1223,8 +1223,8 @@ interface CustomButtonProps extends ComponentProps<typeof TouchableOpacity> {
 | Callbacks prefixees `on*` | `onPress`, `onChange`, `onSubmit` |
 | Handlers prefixes `handle*` | `handlePress`, `handleChange` |
 | Discriminated unions pour variantes | `type Props = { type: 'a'; ... } \| { type: 'b'; ... }` |
-| Generiques pour composants reutilisables | `function List<T>(props: ListProps<T>)` |
-| Composition plutot qu'heritage | Passer des `children` ou des `slots` |
+| Generiques pour composants réutilisables | `function List<T>(props: ListProps<T>)` |
+| Composition plutot qu'héritage | Passer des `children` ou des `slots` |
 | Props drilling : max 2-3 niveaux | Au-dela, utiliser Context ou composition |
 
 ---
@@ -1267,7 +1267,7 @@ interface CustomButtonProps extends ComponentProps<typeof TouchableOpacity> {
 // Tous partagent : id, onPress?
 ```
 
-### Exercice 4 : Composant generique
+### Exercice 4 : Composant générique
 
 ```tsx
 // Creer un composant Autocomplete<T> avec :
@@ -1281,13 +1281,23 @@ interface CustomButtonProps extends ComponentProps<typeof TouchableOpacity> {
 
 ---
 
-## Points cles a retenir
+## Points clés à retenir
 
 1. **Les props sont le contrat** entre parent et enfant — toujours les typer
-2. **Unidirectionnel** : donnees vers le bas, evenements vers le haut
-3. **Composition > heritage** : utiliser `children` et les render props
+2. **Unidirectionnel** : donnees vers le bas, événements vers le haut
+3. **Composition > héritage** : utiliser `children` et les render props
 4. **Discriminated unions** pour les variantes mutuellement exclusives
-5. **Generiques** pour les composants reutilisables type-safe
+5. **Generiques** pour les composants réutilisables type-safe
 6. **Props drilling** acceptable sur 2-3 niveaux, Context/state manager au-dela
 
-> **Prochain module** : State et cycle de vie — comment gerer l'etat interne des composants avec `useState`, `useEffect`, et les hooks personnalises.
+> **Prochain module** : State et cycle de vie — comment gérer l'état interne des composants avec `useState`, `useEffect`, et les hooks personnalises.
+
+---
+
+<!-- parcours-recommande -->
+
+::: tip Parcours recommandé
+1. **Screencast** : [screencast 02 props](../screencasts/screencast-02-props.md)
+2. **Lab** : [lab-02-props-communication](../labs/lab-02-props-communication/README)
+3. **Quiz** : [quiz 02 props](../quizzes/quiz-02-props.html)
+:::

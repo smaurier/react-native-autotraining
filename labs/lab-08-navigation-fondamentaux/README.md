@@ -2,9 +2,9 @@
 
 ## Objectif
 
-Implementer en pur TypeScript les mecanismes de base d'un systeme de navigation similaire a React Navigation : pile de navigation, routeur type, serialisation d'etat, options d'ecran et resolution de titre.
+Implementer en pur TypeScript les mécanismes de base d'un système de navigation similaire a React Navigation : pile de navigation, routeur type, serialisation d'état, options d'ecran et résolution de titre.
 
-## Prerequis
+## Prérequis
 
 - Module 08 : React Navigation fondamentaux
 - TypeScript : generics, Record, unions
@@ -23,7 +23,7 @@ npx tsx labs/lab-08-navigation-fondamentaux/solution.ts
 
 ### Exercice 1 : createNavigationStack (8 tests)
 
-Implementez une pile de navigation avec les methodes :
+Implementez une pile de navigation avec les méthodes :
 
 - `push(name, params?)` : ajoute un ecran au sommet
 - `pop()` : retire l'ecran au sommet (erreur si un seul ecran)
@@ -35,7 +35,7 @@ Implementez une pile de navigation avec les methodes :
 
 ### Exercice 2 : createTypedRouter (4 tests)
 
-Creez un routeur qui valide les noms de routes et les parametres obligatoires a partir d'une definition :
+Creez un routeur qui valide les noms de routes et les paramètres obligatoires à partir d'une définition :
 
 ```typescript
 const router = createTypedRouter({
@@ -60,7 +60,7 @@ Fusionnez des options par defaut avec des overrides. Les valeurs `undefined` dan
 
 Determinez le titre du header selon la priorite : `options.title` > `options.headerTitle` > `routeName`.
 
-## Evaluation
+## Évaluation
 
 - 15 tests au total
 - Tous les tests doivent passer

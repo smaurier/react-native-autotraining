@@ -6,15 +6,15 @@
 
 ## Objectifs
 
-- Maitriser `Pressable` et ses proprietes avancees
+- Maîtriser `Pressable` et ses propriétés avancees
 - Migrer de `TouchableOpacity` vers `Pressable`
 - Utiliser `Modal` avec les bonnes pratiques
-- Gerer les etats de chargement avec `ActivityIndicator`
+- Gérer les états de chargement avec `ActivityIndicator`
 - Adapter le clavier avec `KeyboardAvoidingView`
-- Construire des composants reutilisables (BottomSheet, Toast, Chip, Badge, Avatar)
+- Construire des composants réutilisables (BottomSheet, Toast, Chip, Badge, Avatar)
 - Implementer le pattern Compound Components
-- Creer un systeme de theme (ThemeProvider, useTheme)
-- Integrer l'accessibilite dans chaque composant
+- Créer un système de theme (ThemeProvider, useTheme)
+- Intégrer l'accessibilité dans chaque composant
 
 ---
 
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
 
 ### hitSlop — zone tactile elargie
 
-`hitSlop` agrandit la zone cliquable sans modifier la taille visuelle du composant. Crucial pour les petits elements (icones, boutons de fermeture) :
+`hitSlop` agrandit la zone cliquable sans modifier la taille visuelle du composant. Crucial pour les petits éléments (icones, boutons de fermeture) :
 
 ```typescript
 // La zone tactile est 20pt plus grande de chaque cote
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
 
 ### pressRetentionOffset — tolerance de glissement
 
-`pressRetentionOffset` definit la distance que le doigt peut parcourir hors du bouton avant d'annuler le press :
+`pressRetentionOffset` définit la distance que le doigt peut parcourir hors du bouton avant d'annuler le press :
 
 ```typescript
 <Pressable
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
 </Pressable>
 ```
 
-Sans cette prop, le moindre mouvement du doigt hors de la zone annule le press. Avec `pressRetentionOffset`, l'utilisateur a une marge de manoeuvre.
+Sans cette prop, le moindre mouvement du doigt hors de la zone annule le press. Avec `pressRetentionOffset`, l'utilisateur à une marge de manoeuvre.
 
 ### android_ripple — effet Material Design
 
@@ -124,7 +124,7 @@ Sans cette prop, le moindre mouvement du doigt hors de la zone annule le press. 
 </Pressable>
 ```
 
-### Evenements de Pressable
+### Événements de Pressable
 
 ```typescript
 <Pressable
@@ -139,7 +139,7 @@ Sans cette prop, le moindre mouvement du doigt hors de la zone annule le press. 
 </Pressable>
 ```
 
-Chronologie des evenements :
+Chronologie des événements :
 
 ```
 Doigt pose → onPressIn → (maintien) → onLongPress
@@ -356,7 +356,7 @@ function LoadingScreen() {
 }
 ```
 
-### Pattern de chargement reutilisable
+### Pattern de chargement réutilisable
 
 ```typescript
 interface LoadingState<T> {
@@ -476,7 +476,7 @@ function SkeletonCard() {
 
 ## KeyboardAvoidingView
 
-### Le probleme
+### Le problème
 
 Quand le clavier s'ouvre, il recouvre les champs de saisie en bas de l'ecran. `KeyboardAvoidingView` ajuste automatiquement le layout :
 
@@ -509,7 +509,7 @@ function LoginForm() {
 |--------|-------|----------------------|
 | `padding` | Ajoute du padding en bas | iOS |
 | `height` | Reduit la hauteur du conteneur | Android |
-| `position` | Change la position du conteneur | Cas specifiques |
+| `position` | Change la position du conteneur | Cas spécifiques |
 
 ```typescript
 // Pattern recommande
@@ -570,7 +570,7 @@ import { Keyboard, Pressable } from 'react-native';
 
 ---
 
-## Composants reutilisables
+## Composants réutilisables
 
 ### Chip (etiquette)
 
@@ -966,9 +966,9 @@ const styles = StyleSheet.create({
 
 ## Pattern Compound Components
 
-### Le probleme
+### Le problème
 
-Comment creer un composant `Select` avec des options qui communiquent implicitement avec le parent ?
+Comment créer un composant `Select` avec des options qui communiquent implicitement avec le parent ?
 
 ```typescript
 // ❌ API classique : tout passe en props
@@ -1103,14 +1103,14 @@ function CountryPicker() {
 
 | Aspect | Props array | Compound Components |
 |--------|-------------|---------------------|
-| Flexibilite | Limitee a la forme des donnees | Totale (custom rendering) |
+| Flexibilite | Limitee à la forme des donnees | Totale (custom rendering) |
 | Lisibilite | Donnees mixees avec le JSX | Structure claire et declarative |
 | Extensibilite | Modifier l'interface de l'objet | Ajouter des sous-composants |
 | Separation | Tout dans le parent | Logique distribuee |
 
 ---
 
-## Systeme de theme
+## Système de theme
 
 ### Design tokens
 
@@ -1282,11 +1282,11 @@ const brandTheme = mergeThemes(lightTheme, {
 
 ---
 
-## Accessibilite
+## Accessibilité
 
 ### Proprietes essentielles
 
-React Native fournit un ensemble riche de proprietes d'accessibilite :
+React Native fournit un ensemble riche de propriétés d'accessibilité :
 
 ```typescript
 <Pressable
@@ -1321,7 +1321,7 @@ React Native fournit un ensemble riche de proprietes d'accessibilite :
 
 | Role | Usage | Equivalent web |
 |------|-------|----------------|
-| `button` | Element cliquable | `<button>` |
+| `button` | Élément cliquable | `<button>` |
 | `link` | Navigation | `<a>` |
 | `search` | Champ de recherche | `<input type="search">` |
 | `image` | Image | `<img>` |
@@ -1366,7 +1366,7 @@ function AccessibleToggle({
 }
 ```
 
-### Regrouper les elements
+### Regrouper les éléments
 
 ```typescript
 // Grouper plusieurs elements en une seule annonce
@@ -1396,7 +1396,7 @@ function AccessibleToggle({
 // 'assertive' : interrompt l'annonce en cours (erreurs critiques)
 ```
 
-### Tester l'accessibilite
+### Tester l'accessibilité
 
 ```bash
 # iOS Simulator : Cmd+Shift+A pour ouvrir Accessibility Inspector
@@ -1409,33 +1409,43 @@ function AccessibleToggle({
 
 ---
 
-## Recapitulatif
+## Récapitulatif
 
-| Composant | Usage | Points cles |
+| Composant | Usage | Points clés |
 |-----------|-------|-------------|
 | `Pressable` | Toute interaction tactile | hitSlop, android_ripple, style function |
 | `Modal` | Contenu superpose | onRequestClose obligatoire (Android) |
-| `ActivityIndicator` | Spinner de chargement | Pattern LoadingWrapper reutilisable |
+| `ActivityIndicator` | Spinner de chargement | Pattern LoadingWrapper réutilisable |
 | `KeyboardAvoidingView` | Adapter au clavier | behavior varie par plateforme |
 | Compound Components | API composant flexible | Context interne, sous-composants attaches |
 | Theme system | Design coherent | ThemeProvider + useTheme + tokens |
-| Accessibilite | Inclusivite | Role, label, state sur chaque element interactif |
+| Accessibilité | Inclusivite | Role, label, state sur chaque élément interactif |
 
 ---
 
 ## Bonnes pratiques
 
 1. **Utilisez `Pressable`** au lieu de `TouchableOpacity` pour les nouveaux composants
-2. **Toujours definir `onRequestClose`** sur les `Modal` (bouton retour Android)
+2. **Toujours définir `onRequestClose`** sur les `Modal` (bouton retour Android)
 3. **hitSlop >= 44pt** pour les petites cibles tactiles
-4. **Un `accessibilityLabel`** sur chaque element interactif
-5. **Le pattern Compound Components** pour les composants complexes avec sous-elements
+4. **Un `accessibilityLabel`** sur chaque élément interactif
+5. **Le pattern Compound Components** pour les composants complexes avec sous-éléments
 6. **Design tokens** plutot que des valeurs en dur dans les styles
-7. **LoadingWrapper** pour gerer uniformement les 3 etats : loading, error, data
+7. **LoadingWrapper** pour gérer uniformement les 3 états : loading, error, data
 8. **Testez avec VoiceOver/TalkBack** au moins une fois par ecran
 
 ---
 
 ## Exercices
 
-Passez au [Lab 07](../labs/lab-07-composants-ui-avances/) pour implementer un systeme de theme, une file de toasts, des props d'accessibilite et un arbre de compound components en TypeScript pur.
+Passez au [Lab 07](../labs/lab-07-composants-ui-avances/) pour implementer un système de theme, une file de toasts, des props d'accessibilité et un arbre de compound components en TypeScript pur.
+
+---
+
+<!-- parcours-recommande -->
+
+::: tip Parcours recommandé
+1. **Screencast** : [screencast 07 composants ui](../screencasts/screencast-07-composants-ui.md)
+2. **Lab** : [lab-07-composants-ui-avances](../labs/lab-07-composants-ui-avances/README)
+3. **Quiz** : [quiz 07 composants ui](../quizzes/quiz-07-composants-ui.html)
+:::

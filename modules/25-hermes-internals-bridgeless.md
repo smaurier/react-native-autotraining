@@ -4,7 +4,7 @@
 |----------|--------|
 | **Difficulte** | 5/5 |
 | **Duree** | 75 min |
-| **Prerequis** | Modules 01-18, notions JS engine, base performance mobile |
+| **Prérequis** | Modules 01-18, notions JS engine, base performance mobile |
 | **Lab** | [Lab 25 — Hermes & Bridgeless](/labs/lab-25-hermes-bridgeless/) |
 | **Quiz** | [Quiz 25 — Hermes](/quizzes/quiz-25-hermes.html) |
 
@@ -13,14 +13,14 @@
 ## Objectifs du module
 
 - Comprendre l'architecture interne du moteur Hermes et ses optimisations
-- Maitriser la compilation en bytecode (hbc) et son impact sur le startup time
+- Maîtriser la compilation en bytecode (hbc) et son impact sur le startup time
 - Comparer Hermes, V8 et JavaScriptCore sur des criteres concrets
 - Analyser un bundle bytecode avec les outils CLI Hermes
-- Comprendre le garbage collector GenGC et ses strategies de collecte
+- Comprendre le garbage collector GenGC et ses stratégies de collecte
 - Activer et exploiter le mode Bridgeless (New Architecture)
 - Profiler une application avec le sampling profiler Hermes
-- Detecter et resoudre les fuites memoire via heap snapshots
-- Optimiser le temps de demarrage d'une application React Native
+- Detecter et résoudre les fuites mémoire via heap snapshots
+- Optimiser le temps de démarrage d'une application React Native
 
 ---
 
@@ -28,7 +28,7 @@
 
 ### 1.1 Qu'est-ce que Hermes ?
 
-Hermes est un moteur JavaScript open-source developpe par Meta, optimise specifiquement pour React Native. Contrairement aux moteurs traditionnels (V8, JavaScriptCore), Hermes a ete concu des le depart pour les contraintes mobiles : demarrage rapide, faible consommation memoire, et taille binaire reduite.
+Hermes est un moteur JavaScript open-source développé par Meta, optimise specifiquement pour React Native. Contrairement aux moteurs traditionnels (V8, JavaScriptCore), Hermes a ete concu des le depart pour les contraintes mobiles : démarrage rapide, faible consommation mémoire, et taille binaire reduite.
 
 > **Depuis React Native 0.70+**, Hermes est le moteur par defaut. Avec la New Architecture (0.74+), Hermes est indissociable du mode Bridgeless et de JSI (JavaScript Interface).
 
@@ -52,20 +52,20 @@ Hermes est un moteur JavaScript open-source developpe par Meta, optimise specifi
 
 ### 1.2 Pourquoi un moteur dedie ?
 
-Les moteurs JavaScript classiques (V8, JSC) sont optimises pour les navigateurs web, ou le **throughput** (vitesse d'execution continue) est prioritaire. Sur mobile, les contraintes sont differentes :
+Les moteurs JavaScript classiques (V8, JSC) sont optimises pour les navigateurs web, ou le **throughput** (vitesse d'exécution continue) est prioritaire. Sur mobile, les contraintes sont différentes :
 
 | Critere | Web (V8/JSC) | Mobile (Hermes) |
 |---------|-------------|-----------------|
 | Priorite | Throughput maximal | Startup rapide |
 | Compilation | JIT (Just-In-Time) | AOT (Ahead-Of-Time) → bytecode |
-| Memoire | Abondante (Go) | Limitee (centaines de Mo) |
+| Mémoire | Abondante (Go) | Limitee (centaines de Mo) |
 | CPU | Multi-core puissant | Efficience energetique |
-| Cold start | Secondaire | Critique (premiere impression) |
+| Cold start | Secondaire | Critique (première impression) |
 | Taille binaire | Non critique | Chaque Mo compte |
 
 ### 1.3 Activation de Hermes
 
-Depuis React Native 0.74+ et Expo SDK 51+, Hermes est active par defaut. Pour verifier :
+Depuis React Native 0.74+ et Expo SDK 51+, Hermes est active par defaut. Pour vérifier :
 
 ```typescript
 // Verifier a l'execution
@@ -105,7 +105,7 @@ hermesEnabled=true
 
 ### 2.1 Le principe de la compilation AOT
 
-Contrairement a V8 qui compile le JavaScript en code machine au moment de l'execution (JIT), Hermes **precompile** le JavaScript en bytecode pendant le build. Ce bytecode est ensuite interprete directement par la VM Hermes au demarrage.
+Contrairement a V8 qui compile le JavaScript en code machine au moment de l'exécution (JIT), Hermes **precompile** le JavaScript en bytecode pendant le build. Ce bytecode est ensuite interprete directement par la VM Hermes au démarrage.
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
@@ -185,12 +185,12 @@ Function<global>(1 params, 15 registers, 0 symbols):
 
 ### 2.4 Impact sur la taille du bundle
 
-La compilation en bytecode reduit generalement la taille du bundle de 30 a 50% par rapport au JavaScript source, car :
+La compilation en bytecode reduit généralement la taille du bundle de 30 a 50% par rapport au JavaScript source, car :
 
 - Les commentaires et whitespace sont elimines
 - Les identifiants sont dedupliques dans la string table
 - Les constantes sont optimisees
-- Les instructions sont encodees de maniere compacte
+- Les instructions sont encodees de manière compacte
 
 ```
 ┌──────────────────────────────────────────────────────┐
@@ -206,19 +206,19 @@ La compilation en bytecode reduit generalement la taille du bundle de 30 a 50% p
 
 ## 3. Hermes vs V8 vs JavaScriptCore
 
-### 3.1 Comparatif detaille
+### 3.1 Comparatif détaillé
 
 | Critere | Hermes | V8 (via jsc-android) | JavaScriptCore |
 |---------|--------|---------------------|----------------|
 | **Compilation** | AOT → bytecode | JIT (multi-tier) | JIT (DFG + FTL) |
 | **Startup time** | Excellent (50-150ms) | Lent (200-600ms) | Moyen (150-400ms) |
-| **Throughput** | Bon | Excellent | Tres bon |
-| **Memoire idle** | ~30 Mo | ~60 Mo | ~45 Mo |
+| **Throughput** | Bon | Excellent | Très bon |
+| **Mémoire idle** | ~30 Mo | ~60 Mo | ~45 Mo |
 | **Taille binaire** | ~3 Mo | ~8 Mo | ~4 Mo (iOS inclus) |
 | **GC** | GenGC (generationnel) | Orinoco (concurrent) | Riptide (concurrent) |
 | **Source maps** | Oui | Oui | Oui |
 | **Chrome DevTools** | Oui (CDP) | Natif | Safari DevTools |
-| **Platformes RN** | iOS + Android | Android (non officiel) | iOS (systeme) |
+| **Platformes RN** | iOS + Android | Android (non officiel) | iOS (système) |
 | **Proxy/Reflect** | Complet (0.70+) | Complet | Complet |
 | **Intl** | Partiel (polyfill) | Complet | Complet |
 
@@ -253,9 +253,9 @@ La compilation en bytecode reduit generalement la taille du bundle de 30 a 50% p
 
 Hermes fait des compromis deliberes :
 
-1. **Pas de JIT** : le throughput pur est inferieur a V8 pour les calculs intensifs (10-30% plus lent en boucles numeriques)
+1. **Pas de JIT** : le throughput pur est inferieur a V8 pour les calculs intensifs (10-30% plus lent en boucles numériques)
 2. **Intl partiel** : `Intl.DateTimeFormat`, `Intl.NumberFormat` necessitent des polyfills (fournis par Expo)
-3. **eval() desactive** : `eval()` et `new Function()` ne sont pas supportes par defaut (securite)
+3. **eval() désactivé** : `eval()` et `new Function()` ne sont pas supportes par defaut (sécurité)
 4. **ES2024 partiel** : certaines fonctionnalites recentes arrivent avec du retard
 
 ```typescript
@@ -309,19 +309,19 @@ Hermes utilise **GenGC** (Generational Garbage Collector), un collecteur generat
 
 ### 4.2 Les deux generations
 
-**Young Generation (YG)** :
+**Young Génération (YG)** :
 - Utilise un algorithme de copie (semi-space copying GC)
 - La plupart des objets meurent jeunes ("hypothese generationnelle")
-- Collecte tres rapide (< 5ms), frequente
+- Collecte très rapide (< 5ms), frequente
 - Taille typique : 8-32 Mo
 
-**Old Generation (OG)** :
+**Old Génération (OG)** :
 - Recoit les objets qui survivent a plusieurs collectes YG
-- Algorithme mark-compact (compaction pour eviter la fragmentation)
+- Algorithme mark-compact (compaction pour éviter la fragmentation)
 - Collecte plus lente mais moins frequente (< 30ms)
 - Taille configurable selon les ressources de l'appareil
 
-### 4.3 Strategies de collecte
+### 4.3 Stratégies de collecte
 
 ```typescript
 // Les differents types de collecte
@@ -348,7 +348,7 @@ Hermes utilise **GenGC** (Generational Garbage Collector), un collecteur generat
 // --gc-sanitize-rate=0        (desactiver sanitize en prod)
 ```
 
-### 4.4 Monitorer le GC en developpement
+### 4.4 Monitorer le GC en développement
 
 ```typescript
 // Obtenir des statistiques GC
@@ -729,7 +729,7 @@ perf.measure('Total TTI', 'app_init', 'interactive');
 
 ---
 
-## 8. Detection de fuites memoire
+## 8. Detection de fuites mémoire
 
 ### 8.1 Sources courantes de fuites
 
@@ -865,9 +865,9 @@ class LRUCache<K, V> {
 
 ---
 
-## 9. Optimiser le temps de demarrage
+## 9. Optimiser le temps de démarrage
 
-### 9.1 Les phases du demarrage
+### 9.1 Les phases du démarrage
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -1040,7 +1040,7 @@ npx react-native-bundle-visualizer
 
 On dispose d'une application avec un startup lent (2.5 secondes). L'objectif est d'identifier les goulots d'etranglement et de reduire le TTI sous 800ms.
 
-### 10.2 Etape 1 : Mesurer la baseline
+### 10.2 Étape 1 : Mesurer la baseline
 
 ```typescript
 // index.ts — Point d'entree de l'app
@@ -1074,7 +1074,7 @@ performance.measure('Register', 'register_start', 'register_done');
 // Register: 12ms
 ```
 
-### 10.3 Etape 2 : Identifier les problemes
+### 10.3 Étape 2 : Identifier les problèmes
 
 ```typescript
 // Profiler les require avec le sampling profiler
@@ -1089,7 +1089,7 @@ performance.measure('Register', 'register_start', 'register_done');
 //  └── analytics.init (190ms) ← PROBLEME : synchrone
 ```
 
-### 10.4 Etape 3 : Appliquer les optimisations
+### 10.4 Étape 3 : Appliquer les optimisations
 
 ```typescript
 // APRES optimisation — index.ts
@@ -1121,7 +1121,7 @@ performance.measure('Imports', 'js_start', 'imports_done');
 // Resultat : Imports: 95ms (vs 890ms avant = -89%)
 ```
 
-### 10.5 Etape 4 : Verifier les resultats
+### 10.5 Étape 4 : Vérifier les résultats
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -1141,26 +1141,26 @@ performance.measure('Imports', 'js_start', 'imports_done');
 
 ---
 
-## 11. Resume et aide-memoire
+## 11. Résumé et aide-mémoire
 
-### 11.1 Hermes — points cles
+### 11.1 Hermes — points clés
 
 | Concept | Description |
 |---------|-------------|
-| Compilation AOT | JS → bytecode (.hbc) au build, pas de JIT a l'execution |
+| Compilation AOT | JS → bytecode (.hbc) au build, pas de JIT a l'exécution |
 | GenGC | GC generationnel : young gen (copy) + old gen (mark-compact) |
 | CDP | Chrome DevTools Protocol pour debugging natif |
 | Source maps | Mapping bytecode → source TypeScript pour le debugging |
-| Pas de eval() | Securite : eval/Function constructor desactives |
+| Pas de eval() | Sécurité : eval/Function constructor desactives |
 
-### 11.2 Mode Bridgeless — points cles
+### 11.2 Mode Bridgeless — points clés
 
 | Concept | Description |
 |---------|-------------|
 | JSI | Interface C++ directe entre JS et Native, zero serialisation |
 | Fabric | Nouveau renderer concurrent, shadow tree en C++ |
 | Turbo Modules | Modules natifs lazy-loaded, appels synchrones |
-| Codegen | Generation automatique des bindings types |
+| Codegen | Génération automatique des bindings types |
 
 ### 11.3 Performance — checklist rapide
 
@@ -1186,4 +1186,16 @@ performance.measure('Imports', 'js_start', 'imports_done');
 
 ## Exercices du module
 
-Rendez-vous au [Lab 25](/labs/lab-25-hermes-bridgeless/) pour pratiquer les concepts vus dans ce module. Le lab simule en TypeScript pur les mecanismes de profiling, d'analyse bytecode, de detection de fuites memoire, de GC et de suivi de startup propres a Hermes et au mode Bridgeless.
+Rendez-vous au [Lab 25](/labs/lab-25-hermes-bridgeless/) pour pratiquer les concepts vus dans ce module. Le lab simule en TypeScript pur les mécanismes de profiling, d'analyse bytecode, de detection de fuites mémoire, de GC et de suivi de startup propres a Hermes et au mode Bridgeless.
+
+---
+
+<!-- parcours-recommande -->
+
+::: tip Parcours recommandé
+1. **Screencast** : [screencast 25 hermes](../screencasts/screencast-25-hermes.md)
+2. **Lab** : [lab-25-hermes-bridgeless](../labs/lab-25-hermes-bridgeless/README)
+3. **Visualisation** : [Bridge vs JSI](../visualizations/bridge-vs-jsi.html)
+4. **Visualisation** : [Bundle Analyzer](../visualizations/bundle-analyzer.html)
+5. **Quiz** : [quiz 25 hermes](../quizzes/quiz-25-hermes.html)
+:::

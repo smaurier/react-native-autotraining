@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Navigation Flow — React Native</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh; padding: 20px; overflow-x: hidden;
+  }
+  h1 { text-align: center; font-size: 1.5rem; color: #4dabf7; margin-bottom: 4px; }
+  .subtitle { text-align: center; color: #888; font-size: 0.82rem; margin-bottom: 20px; }
+
+  .main { display: flex; gap: 20px; max-width: 1100px; margin: 0 auto; }
+  .phone-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .state-col { width: 360px; flex-shrink: 0; }
+
+  /* Phone frame */
+  .phone {
+    width: 300px; height: 520px; background: #0d0d1a; border: 3px solid #333; border-radius: 28px;
+    overflow: hidden; display: flex; flex-direction: column; position: relative;
+  }
+  .phone-status { height: 28px; background: #111; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: #555; }
+  .phone-header {
+    height: 44px; background: #16213e; display: flex; align-items: center; padding: 0 12px;
+    border-bottom: 1px solid #2a2a4a; gap: 8px; flex-shrink: 0;
+  }
+  .phone-header .back { cursor: pointer; color: #4dabf7; font-size: 1.1rem; width: 28px; text-align: center; }
+  .phone-header .back:hover { color: #fff; }
+  .phone-header .title { font-size: 0.85rem; font-weight: 600; }
+  .phone-body { flex: 1; position: relative; overflow: hidden; }
+
+  /* Screen cards (stacked) */
+  .screen-card {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 16px;
+    display: flex; flex-direction: column; gap: 8px;
+    transition: transform .35s cubic-bezier(.4,0,.2,1), opacity .35s;
+  }
+  .screen-card.hidden-right { transform: translateX(100%); opacity: 0; }
+  .screen-card.hidden-left { transform: translateX(-30%); opacity: 0.3; }
+  .screen-card .screen-title { font-size: 1rem; font-weight: 700; }
+  .screen-card .screen-content { font-size: 0.8rem; color: #aaa; flex: 1; }
+  .screen-card .params { background: #0d6efd11; border: 1px solid #0d6efd33; border-radius: 6px; padding: 8px; font-size: 0.72rem; font-family: monospace; color: #4dabf7; }
+
+  /* Tab bar */
+  .tab-bar {
+    display: flex; height: 52px; background: #16213e; border-top: 1px solid #2a2a4a; flex-shrink: 0;
+  }
+  .tab {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 2px; cursor: pointer; transition: all .2s; font-size: 0.65rem; color: #666;
+  }
+  .tab.active { color: #4dabf7; }
+  .tab:hover { color: #aaa; }
+  .tab .tab-icon { font-size: 1.1rem; }
+
+  /* Action buttons */
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .btn {
+    padding: 8px 16px; border-radius: 8px; border: 1px solid #2a2a4a; background: #16213e;
+    color: #e0e0e0; cursor: pointer; font-size: 0.8rem; transition: all .2s;
+  }
+  .btn:hover { border-color: #0d6efd; background: #1a2744; }
+  .btn.push { border-color: #69db7c44; color: #69db7c; }
+  .btn.push:hover { background: #69db7c15; }
+  .btn.pop { border-color: #ff6b6b44; color: #ff6b6b; }
+  .btn.pop:hover { background: #ff6b6b15; }
+  .btn.replace { border-color: #ffd43b44; color: #ffd43b; }
+  .btn.replace:hover { background: #ffd43b15; }
+  .btn.reset { border-color: #cc5de844; color: #cc5de8; }
+  .btn.reset:hover { background: #cc5de815; }
+
+  /* State panel */
+  .card { background: #16213e; border: 1px solid #2a2a4a; border-radius: 10px; padding: 14px; }
+  .card h3 { font-size: 0.85rem; color: #4dabf7; margin-bottom: 10px; }
+  .state-json {
+    background: #0d1117; border-radius: 8px; padding: 12px; font-family: 'Cascadia Code', monospace;
+    font-size: 0.72rem; line-height: 1.6; overflow-y: auto; max-height: 420px; color: #c9d1d9;
+    white-space: pre-wrap; word-break: break-all;
+  }
+  .json-key { color: #d2a8ff; }
+  .json-str { color: #a5d6ff; }
+  .json-num { color: #ffd43b; }
+  .json-bracket { color: #666; }
+  .json-active { background: #0d6efd22; border-radius: 3px; padding: 1px 2px; }
+
+  .screen-colors-0 { background: #1a2744; }
+  .screen-colors-1 { background: #1a3333; }
+  .screen-colors-2 { background: #2a1a33; }
+  .screen-colors-3 { background: #332a1a; }
+  .screen-colors-4 { background: #1a331a; }
+
+  .legend { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
+  .legend-item { font-size: 0.7rem; color: #888; display: flex; align-items: center; gap: 4px; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  @media (max-width: 800px) {
+    .main { flex-direction: column; align-items: center; }
+    .state-col { width: 100%; max-width: 400px; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Navigation Flow — React Native</h1>
+<p class="subtitle">Visualisez la pile de navigation, les onglets et l'état JSON en temps réel</p>
+
+<div class="main">
+  <div class="phone-col">
+    <div class="phone" id="phone">
+      <div class="phone-status">React Navigation</div>
+      <div class="phone-header">
+        <div class="back" id="back-btn" onclick="pop()" style="visibility:hidden">&#8249;</div>
+        <span class="title" id="header-title">Accueil</span>
+      </div>
+      <div class="phone-body" id="phone-body"></div>
+      <div class="tab-bar" id="tab-bar"></div>
+    </div>
+    <div class="actions">
+      <button class="btn push" onclick="push()">Push</button>
+      <button class="btn pop" onclick="pop()">Pop</button>
+      <button class="btn replace" onclick="replace()">Replace</button>
+      <button class="btn reset" onclick="reset()">Reset</button>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#69db7c"></div> Push</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ff6b6b"></div> Pop</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ffd43b"></div> Replace</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#cc5de8"></div> Reset</div>
+    </div>
+  </div>
+
+  <div class="state-col">
+    <div class="card">
+      <h3>État de navigation (JSON)</h3>
+      <div class="state-json" id="state-json"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const tabs = [
+  { key: 'home', label: 'Accueil', icon: '&#9750;' },
+  { key: 'search', label: 'Recherche', icon: '&#9906;' },
+  { key: 'profile', label: 'Profil', icon: '&#9787;' },
+];
+
+const screenNames = {
+  home: ['Accueil', 'Détails Produit', 'Avis', 'Commande', 'Confirmation'],
+  search: ['Recherche', 'Résultats', 'Filtre Avancé', 'Détail Résultat'],
+  profile: ['Mon Profil', 'Paramètres', 'Éditer Profil', 'Historique'],
+};
+
+let activeTab = 'home';
+let stacks = {
+  home: [{ name: 'Accueil', params: { userId: 42 } }],
+  search: [{ name: 'Recherche', params: {} }],
+  profile: [{ name: 'Mon Profil', params: { userId: 42, role: 'admin' } }],
+};
+let screenId = 1;
+
+function getStack() { return stacks[activeTab]; }
+function currentScreen() { const s = getStack(); return s[s.length - 1]; }
+
+function randomParams() {
+  const all = [
+    { itemId: Math.floor(Math.random()*900)+100 },
+    { query: 'react native', page: 1 },
+    { from: 'listing', category: 'tech' },
+    { userId: 42, edit: true },
+    { orderId: 'ORD-' + Math.floor(Math.random()*9000+1000) },
+  ];
+  return all[Math.floor(Math.random()*all.length)];
+}
+
+function push() {
+  const stack = getStack();
+  const names = screenNames[activeTab];
+  const nextIdx = Math.min(stack.length, names.length - 1);
+  stack.push({ name: names[nextIdx], params: randomParams() });
+  renderPhone();
+}
+
+function pop() {
+  const stack = getStack();
+  if (stack.length <= 1) return;
+  stack.pop();
+  renderPhone();
+}
+
+function replace() {
+  const stack = getStack();
+  const names = screenNames[activeTab];
+  const rnd = names[Math.floor(Math.random()*names.length)];
+  stack[stack.length - 1] = { name: rnd, params: randomParams() };
+  renderPhone();
+}
+
+function reset() {
+  const names = screenNames[activeTab];
+  stacks[activeTab] = [{ name: names[0], params: activeTab === 'search' ? {} : { userId: 42 } }];
+  renderPhone();
+}
+
+function switchTab(key) {
+  activeTab = key;
+  renderPhone();
+}
+
+function renderPhone() {
+  // Tab bar
+  const tabBar = document.getElementById('tab-bar');
+  tabBar.innerHTML = tabs.map(t =>
+    `<div class="tab ${t.key === activeTab ? 'active' : ''}" onclick="switchTab('${t.key}')">
+      <span class="tab-icon">${t.icon}</span>${t.label}
+    </div>`
+  ).join('');
+
+  // Header
+  const stack = getStack();
+  const cur = currentScreen();
+  document.getElementById('header-title').textContent = cur.name;
+  document.getElementById('back-btn').style.visibility = stack.length > 1 ? 'visible' : 'hidden';
+
+  // Screens
+  const body = document.getElementById('phone-body');
+  body.innerHTML = '';
+  stack.forEach((s, i) => {
+    const card = document.createElement('div');
+    const isTop = i === stack.length - 1;
+    card.className = `screen-card screen-colors-${i % 5}`;
+    if (!isTop) card.classList.add('hidden-left');
+    const paramsStr = Object.keys(s.params).length ? JSON.stringify(s.params, null, 2) : 'Aucun paramètre';
+    card.innerHTML = `
+      <div class="screen-title">${s.name}</div>
+      <div class="screen-content">Écran ${i + 1} / ${stack.length} dans la pile</div>
+      <div class="params">params: ${paramsStr}</div>
+    `;
+    body.appendChild(card);
+    if (isTop) {
+      // animate entrance
+      requestAnimationFrame(() => {
+        card.style.transform = 'translateX(0)';
+        card.style.opacity = '1';
+      });
+    }
+  });
+
+  renderState();
+}
+
+function renderState() {
+  const state = {
+    type: 'tab',
+    index: tabs.findIndex(t => t.key === activeTab),
+    routes: tabs.map(t => ({
+      key: t.key,
+      name: t.label,
+      state: {
+        type: 'stack',
+        index: stacks[t.key].length - 1,
+        routes: stacks[t.key].map((s, i) => ({
+          key: `${s.name}-${i}`,
+          name: s.name,
+          params: s.params,
+        })),
+      }
+    }))
+  };
+
+  const json = document.getElementById('state-json');
+  json.innerHTML = syntaxHighlight(JSON.stringify(state, null, 2));
+}
+
+function syntaxHighlight(jsonStr) {
+  return jsonStr
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"([^"]+)":/g, '<span class="json-key">"$1"</span>:')
+    .replace(/: "([^"]*)"/g, ': <span class="json-str">"$1"</span>')
+    .replace(/: (\d+)/g, ': <span class="json-num">$1</span>')
+    .replace(/[{}\[\]]/g, '<span class="json-bracket">$&</span>');
+}
+
+renderPhone();
+</script>
+</body>
+</html>

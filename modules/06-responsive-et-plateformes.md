@@ -8,11 +8,11 @@
 
 - Recuperer les dimensions de l'ecran avec `Dimensions` et `useWindowDimensions`
 - Adapter le layout en fonction de la plateforme avec `Platform`
-- Gerer les zones securisees avec `SafeAreaView`
+- Gérer les zones securisees avec `SafeAreaView`
 - Personnaliser la barre de statut
-- Creer un systeme de breakpoints responsive
+- Créer un système de breakpoints responsive
 - Comprendre le pixel ratio et le scaling de polices
-- Gerer les changements d'orientation
+- Gérer les changements d'orientation
 
 ---
 
@@ -20,7 +20,7 @@
 
 ### Recuperer les dimensions
 
-React Native fournit l'API `Dimensions` pour obtenir la taille de l'ecran ou de la fenetre :
+React Native fournit l'API `Dimensions` pour obtenir la taille de l'ecran ou de la fenêtre :
 
 ```typescript
 import { Dimensions } from 'react-native';
@@ -35,17 +35,17 @@ console.log(`Fenetre: ${width}x${height}`);
 console.log(`Ecran: ${screenWidth}x${screenHeight}`);
 ```
 
-### Difference entre 'window' et 'screen'
+### Différence entre 'window' et 'screen'
 
-| Propriete | `window` | `screen` |
+| Propriété | `window` | `screen` |
 |-----------|----------|----------|
 | iOS | Identique a screen | Taille physique de l'ecran |
-| Android | Exclut la barre de statut et la barre de navigation | Inclut toutes les barres systeme |
-| Utilisation | Layout de l'app | Calculs de resolution |
+| Android | Exclut la barre de statut et la barre de navigation | Inclut toutes les barres système |
+| Utilisation | Layout de l'app | Calculs de résolution |
 
 ### Ecouter les changements de dimensions
 
-Quand l'utilisateur fait pivoter l'appareil, les dimensions changent. `Dimensions` emet un evenement :
+Quand l'utilisateur fait pivoter l'appareil, les dimensions changent. `Dimensions` emet un événement :
 
 ```typescript
 import { Dimensions } from 'react-native';
@@ -77,13 +77,13 @@ function MyComponent() {
 }
 ```
 
-> **Attention** : `Dimensions.get()` retourne la valeur au moment de l'appel. Si vous l'appelez au top level d'un module, la valeur ne sera pas mise a jour apres rotation. Utilisez toujours `addEventListener` ou le hook `useWindowDimensions`.
+> **Attention** : `Dimensions.get()` retourne la valeur au moment de l'appel. Si vous l'appelez au top level d'un module, la valeur ne sera pas mise a jour après rotation. Utilisez toujours `addEventListener` ou le hook `useWindowDimensions`.
 
 ---
 
 ## useWindowDimensions hook
 
-React Native fournit un hook integre plus pratique que `Dimensions` :
+React Native fournit un hook intégré plus pratique que `Dimensions` :
 
 ```typescript
 import { useWindowDimensions } from 'react-native';
@@ -108,14 +108,14 @@ function ResponsiveComponent() {
 
 ### Proprietes retournees
 
-| Propriete | Type | Description |
+| Propriété | Type | Description |
 |-----------|------|-------------|
-| `width` | number | Largeur de la fenetre en points |
-| `height` | number | Hauteur de la fenetre en points |
+| `width` | number | Largeur de la fenêtre en points |
+| `height` | number | Hauteur de la fenêtre en points |
 | `scale` | number | Ratio pixels physiques / points logiques |
-| `fontScale` | number | Facteur d'echelle des polices (accessibilite) |
+| `fontScale` | number | Facteur d'echelle des polices (accessibilité) |
 
-### Pourquoi preferer useWindowDimensions a Dimensions ?
+### Pourquoi préférer useWindowDimensions a Dimensions ?
 
 ```typescript
 // ❌ Mauvais : valeur statique, pas reactive
@@ -138,8 +138,8 @@ function GoodComponent() {
 |---------|--------------------|-----------------------|
 | Reactif | Non (valeur ponctuelle) | Oui (re-render auto) |
 | Usage dans un composant | Necessite addEventListener | Direct |
-| Rotation | Doit etre gere manuellement | Automatique |
-| Disponibilite | Partout (meme hors composant) | Uniquement dans un composant |
+| Rotation | Doit etre géré manuellement | Automatique |
+| Disponibilité | Partout (même hors composant) | Uniquement dans un composant |
 
 ---
 
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
 
 ### Platform.select
 
-`Platform.select` est une methode plus elegante pour du code conditionnel multi-plateforme :
+`Platform.select` est une méthode plus elegante pour du code conditionnel multi-plateforme :
 
 ```typescript
 import { Platform, StyleSheet } from 'react-native';
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-La cle `default` est utilisee comme fallback si la plateforme n'est pas listee (utile pour le web).
+La clé `default` est utilisee comme fallback si la plateforme n'est pas listee (utile pour le web).
 
 ### Platform.Version
 
@@ -219,7 +219,7 @@ if (Platform.OS === 'ios') {
 }
 ```
 
-### Fichiers specifiques a la plateforme
+### Fichiers spécifiques à la plateforme
 
 React Native resout automatiquement les fichiers selon la plateforme :
 
@@ -243,9 +243,9 @@ import Button from './components/Button';
 
 ## SafeAreaView et zones securisees
 
-### Le probleme
+### Le problème
 
-Les appareils modernes ont des encoches, des barres de statut dynamiques, des coins arrondis et des barres de navigation gestuelles. Le contenu peut se retrouver cache derriere ces elements :
+Les appareils modernes ont des encoches, des barres de statut dynamiques, des coins arrondis et des barres de navigation gestuelles. Le contenu peut se retrouver cache derriere ces éléments :
 
 ```
 ┌──────────────────────┐
@@ -398,7 +398,7 @@ StatusBar.setTranslucent(true);
 
 ### StatusBar par ecran (avec React Navigation)
 
-Chaque ecran peut definir son propre style de StatusBar :
+Chaque ecran peut définir son propre style de StatusBar :
 
 ```typescript
 function HomeScreen() {
@@ -428,7 +428,7 @@ function ProfileScreen() {
 
 ## Breakpoints responsive
 
-### Definir un systeme de breakpoints
+### Définir un système de breakpoints
 
 ```typescript
 // utils/responsive.ts
@@ -601,9 +601,9 @@ const styles = StyleSheet.create({
 // Pixel 7 (2.625x): hairlineWidth = 0.380...
 ```
 
-### Font scaling (accessibilite)
+### Font scaling (accessibilité)
 
-Les utilisateurs peuvent changer la taille des polices dans les reglages de leur appareil. React Native respecte ce parametre par defaut :
+Les utilisateurs peuvent changer la taille des polices dans les reglages de leur appareil. React Native respecte ce paramètre par defaut :
 
 ```typescript
 import { PixelRatio, useWindowDimensions } from 'react-native';
@@ -639,9 +639,9 @@ function HeaderTitle({ text }: { text: string }) {
 }
 ```
 
-> **Bonne pratique** : Limitez le scaling pour les elements de layout (headers, badges), mais laissez-le libre pour le texte de contenu (articles, descriptions) afin de respecter l'accessibilite.
+> **Bonne pratique** : Limitez le scaling pour les éléments de layout (headers, badges), mais laissez-le libre pour le texte de contenu (articles, descriptions) afin de respecter l'accessibilité.
 
-### Propriete maxFontSizeMultiplier
+### Propriété maxFontSizeMultiplier
 
 React Native fournit aussi une prop directe sur `<Text>` :
 
@@ -858,7 +858,7 @@ function ResponsiveGrid<T>({
 }
 ```
 
-### UI specifique par plateforme
+### UI spécifique par plateforme
 
 ```typescript
 function PlatformButton({
@@ -919,35 +919,45 @@ const styles = StyleSheet.create({
 
 ---
 
-## Recapitulatif
+## Récapitulatif
 
 | Concept | API / Outil | Quand l'utiliser |
 |---------|-------------|------------------|
-| Dimensions | `useWindowDimensions` | Layout reactif, calculs de taille |
+| Dimensions | `useWindowDimensions` | Layout réactif, calculs de taille |
 | Plateforme | `Platform.OS`, `Platform.select` | Code conditionnel par OS |
-| Fichiers plateforme | `.ios.tsx`, `.android.tsx` | Composants entierement differents par OS |
-| Zone securisee | `react-native-safe-area-context` | Eviter les encoches et barres systeme |
-| Barre de statut | `StatusBar` | Style et couleur de la barre systeme |
+| Fichiers plateforme | `.ios.tsx`, `.android.tsx` | Composants entièrement différents par OS |
+| Zone securisee | `react-native-safe-area-context` | Éviter les encoches et barres système |
+| Barre de statut | `StatusBar` | Style et couleur de la barre système |
 | Breakpoints | `getBreakpoint(width)` | Phone / tablet / desktop adaptatif |
-| Pixel ratio | `PixelRatio` | Bordures fines, images haute resolution |
-| Font scaling | `fontScale`, `maxFontSizeMultiplier` | Accessibilite et controle des polices |
+| Pixel ratio | `PixelRatio` | Bordures fines, images haute résolution |
+| Font scaling | `fontScale`, `maxFontSizeMultiplier` | Accessibilité et controle des polices |
 | Orientation | `width > height` | Layout portrait vs paysage |
 
 ---
 
 ## Bonnes pratiques
 
-1. **Preferez `useWindowDimensions`** a `Dimensions.get()` pour la reactivite
+1. **Preferez `useWindowDimensions`** a `Dimensions.get()` pour la réactivité
 2. **Utilisez `Platform.select`** au lieu de ternaires multiples pour du code lisible
-3. **Testez sur les deux plateformes** : des differences subtiles existent toujours
+3. **Testez sur les deux plateformes** : des différences subtiles existent toujours
 4. **N'ignorez pas le font scaling** : beaucoup d'utilisateurs augmentent la taille des polices
 5. **Utilisez `react-native-safe-area-context`** au lieu du `SafeAreaView` natif
 6. **Evitez les dimensions absolues en pixels** : preferez les pourcentages et flex
-7. **Testez en mode paysage** : beaucoup de developpeurs l'oublient et le layout casse
-8. **Definissez un systeme de breakpoints clair** des le debut du projet
+7. **Testez en mode paysage** : beaucoup de développeurs l'oublient et le layout casse
+8. **Definissez un système de breakpoints clair** des le debut du projet
 
 ---
 
 ## Exercices
 
-Passez au [Lab 06](../labs/lab-06-responsive-plateformes/) pour implementer un systeme de breakpoints, du font scaling adaptatif et du code platform-specific en TypeScript pur.
+Passez au [Lab 06](../labs/lab-06-responsive-plateformes/) pour implementer un système de breakpoints, du font scaling adaptatif et du code platform-specific en TypeScript pur.
+
+---
+
+<!-- parcours-recommande -->
+
+::: tip Parcours recommandé
+1. **Screencast** : [screencast 06 responsive](../screencasts/screencast-06-responsive.md)
+2. **Lab** : [lab-06-responsive-plateformes](../labs/lab-06-responsive-plateformes/README)
+3. **Quiz** : [quiz 06 responsive](../quizzes/quiz-06-responsive.html)
+:::

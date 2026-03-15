@@ -7,12 +7,12 @@
 ## Objectifs
 
 - Comprendre les solutions de stockage local disponibles dans l'ecosysteme React Native
-- Utiliser AsyncStorage pour des donnees simples et connaitre ses limites
-- Adopter MMKV pour un stockage cle-valeur haute performance avec chiffrement
-- Integrer expo-sqlite pour les donnees relationnelles avec migrations
+- Utiliser AsyncStorage pour des donnees simples et connaître ses limites
+- Adopter MMKV pour un stockage clé-valeur haute performance avec chiffrement
+- Intégrer expo-sqlite pour les donnees relationnelles avec migrations
 - Concevoir une architecture offline-first avec queue de synchronisation
-- Implementer des strategies de resolution de conflits
-- Detecter l'etat reseau et synchroniser en arriere-plan
+- Implementer des stratégies de résolution de conflits
+- Detecter l'état réseau et synchroniser en arriere-plan
 
 ---
 
@@ -20,19 +20,19 @@
 
 ### Pourquoi stocker localement ?
 
-Une application mobile performante doit fonctionner meme sans connexion. Le stockage local permet :
+Une application mobile performante doit fonctionner même sans connexion. Le stockage local permet :
 
-1. **Performance** : les donnees locales s'affichent instantanement, pas de latence reseau
+1. **Performance** : les donnees locales s'affichent instantanement, pas de latence réseau
 2. **Fiabilite** : l'application reste fonctionnelle en mode avion, dans un tunnel, en zone blanche
-3. **UX fluide** : l'utilisateur ne voit jamais de spinner de chargement pour les donnees deja consultees
-4. **Economie de bande passante** : on ne retelecharge pas les donnees deja presentes
+3. **UX fluide** : l'utilisateur ne voit jamais de spinner de chargement pour les donnees déjà consultees
+4. **Economie de bande passante** : on ne retelecharge pas les donnees déjà presentes
 
 ### Les solutions principales
 
-| Solution | Type | Performance | Capacite | Chiffrement | Cas d'usage |
+| Solution | Type | Performance | Capacité | Chiffrement | Cas d'usage |
 |----------|------|-------------|----------|-------------|-------------|
 | AsyncStorage | Cle-valeur async | Lente | ~6 MB (Android) | Non | Preferences simples |
-| MMKV | Cle-valeur sync | Tres rapide | Illimitee | Oui | Tokens, settings, cache |
+| MMKV | Cle-valeur sync | Très rapide | Illimitee | Oui | Tokens, settings, cache |
 | expo-sqlite | Relationnel | Rapide | Illimitee | Via extension | Donnees structurees |
 | expo-file-system | Fichiers | Variable | Illimitee | Non | Images, documents |
 
@@ -42,7 +42,7 @@ Une application mobile performante doit fonctionner meme sans connexion. Le stoc
 
 ### Qu'est-ce que AsyncStorage ?
 
-AsyncStorage est le stockage cle-valeur le plus simple de l'ecosysteme React Native. C'est l'equivalent de `localStorage` dans un navigateur, mais **asynchrone**.
+AsyncStorage est le stockage clé-valeur le plus simple de l'ecosysteme React Native. C'est l'équivalent de `localStorage` dans un navigateur, mais **asynchrone**.
 
 > **Note historique** : AsyncStorage etait inclus dans React Native core jusqu'en 2019. Il a ete extrait dans `@react-native-async-storage/async-storage` et est desormais un package communautaire.
 
@@ -148,7 +148,7 @@ function useAsyncStorage<T>(key: string, initialValue: T) {
 | **Pas de chiffrement** | Les donnees sont stockees en clair sur le disque |
 | **Tout est string** | Serialisation/deserialisation manuelle obligatoire |
 | **Asynchrone uniquement** | Chaque lecture passe par le bridge (latence) |
-| **Pas de requetes** | Impossible de filtrer, trier ou paginer |
+| **Pas de requêtes** | Impossible de filtrer, trier ou paginer |
 | **Pas de schema** | Aucune validation de structure |
 
 > **Verdict** : AsyncStorage convient pour des preferences simples (theme, langue, onboarding flag). Pour tout le reste, preferez MMKV ou SQLite.
@@ -159,12 +159,12 @@ function useAsyncStorage<T>(key: string, initialValue: T) {
 
 ### Pourquoi MMKV ?
 
-MMKV (Memory-Mapped Key-Value) est une bibliotheque de stockage cle-valeur developpee par WeChat (Tencent). Elle est **10 a 30 fois plus rapide** qu'AsyncStorage grace au memory-mapping.
+MMKV (Memory-Mapped Key-Value) est une bibliotheque de stockage clé-valeur developpee par WeChat (Tencent). Elle est **10 a 30 fois plus rapide** qu'AsyncStorage grace au memory-mapping.
 
 | Caracteristique | AsyncStorage | MMKV |
 |----------------|--------------|------|
 | Lecture 1000 items | ~600 ms | ~20 ms |
-| Ecriture 1000 items | ~800 ms | ~15 ms |
+| Écriture 1000 items | ~800 ms | ~15 ms |
 | API | Asynchrone | **Synchrone** |
 | Chiffrement | Non | **AES-256** |
 | Multi-process | Non | **Oui** |
@@ -242,9 +242,9 @@ userStorage.set('profile', JSON.stringify(profile));
 cacheStorage.set('api-response-/users', JSON.stringify(response));
 ```
 
-### Integration avec Zustand
+### Intégration avec Zustand
 
-L'un des avantages majeurs de MMKV est son integration native avec Zustand pour la persistance d'etat :
+L'un des avantages majeurs de MMKV est son intégration native avec Zustand pour la persistance d'état :
 
 ```tsx
 import { create } from 'zustand';
@@ -330,12 +330,12 @@ function SettingsScreen() {
 
 ### Quand utiliser SQLite ?
 
-SQLite convient quand les donnees sont **structurees** et necessitent des **requetes complexes** :
+SQLite convient quand les donnees sont **structurees** et necessitent des **requêtes complexes** :
 
 - Listes d'articles avec filtrage, tri et pagination
 - Historique de transactions
 - Donnees relationnelles (utilisateurs, commandes, produits)
-- Cache de reponses API avec expiration
+- Cache de réponses API avec expiration
 - File d'attente d'operations offline
 
 ### Installation
@@ -425,7 +425,7 @@ await db.withTransactionAsync(async () => {
 // Si une erreur survient, tout est annule (rollback)
 ```
 
-### Systeme de migrations
+### Système de migrations
 
 Les migrations permettent de faire evoluer le schema de la base sans perdre de donnees :
 
@@ -931,13 +931,13 @@ function TodoScreen() {
 
 ## Resolution de conflits
 
-### Le probleme
+### Le problème
 
-Quand deux appareils (ou un appareil et le serveur) modifient la meme donnee en meme temps, il y a un **conflit**. Trois strategies principales existent :
+Quand deux appareils (où un appareil et le serveur) modifient la même donnee en même temps, il y à un **conflit**. Trois stratégies principales existent :
 
 ### 1. Last-Write-Wins (LWW)
 
-La strategie la plus simple : le dernier a ecrire ecrase les autres.
+La stratégie la plus simple : le dernier à écrire ecrase les autres.
 
 ```tsx
 interface VersionedRecord {
@@ -959,7 +959,7 @@ function resolveLastWriteWins(
 }
 ```
 
-**Avantage** : Simple, deterministe, pas d'intervention utilisateur.
+**Avantage** : Simple, déterministe, pas d'intervention utilisateur.
 **Inconvenient** : Perte de donnees possible (les modifications du perdant sont ecrasees).
 
 ### 2. Merge automatique (champ par champ)
@@ -1014,11 +1014,11 @@ function resolveFieldMerge(
 ```
 
 **Avantage** : Preserve le maximum de modifications des deux cotes.
-**Inconvenient** : Peut creer des etats incoherents si les champs sont interdependants.
+**Inconvenient** : Peut créer des états incoherents si les champs sont interdependants.
 
 ### 3. Resolution manuelle
 
-On presente les deux versions a l'utilisateur qui choisit.
+On présenté les deux versions a l'utilisateur qui choisit.
 
 ```tsx
 interface ConflictResolution<T> {
@@ -1084,9 +1084,9 @@ function ConflictModal<T extends Record<string, unknown>>({
 }
 ```
 
-### Quand utiliser quelle strategie ?
+### Quand utiliser quelle stratégie ?
 
-| Strategie | Cas d'usage |
+| Stratégie | Cas d'usage |
 |-----------|------------|
 | Last-Write-Wins | Preferences, settings, donnees non critiques |
 | Merge champ par champ | Formulaires complexes, profils utilisateur |
@@ -1094,7 +1094,7 @@ function ConflictModal<T extends Record<string, unknown>>({
 
 ---
 
-## Detection reseau : NetInfo
+## Detection réseau : NetInfo
 
 ### Installation
 
@@ -1203,7 +1203,7 @@ const styles = StyleSheet.create({
 
 ### expo-background-fetch
 
-`expo-background-fetch` permet d'executer du code periodiquement en arriere-plan, meme quand l'application est fermee.
+`expo-background-fetch` permet d'exécuter du code periodiquement en arriere-plan, même quand l'application est fermee.
 
 ```bash
 npx expo install expo-background-fetch expo-task-manager
@@ -1261,11 +1261,11 @@ async function registerBackgroundSync() {
 
 | Plateforme | Limite |
 |------------|--------|
-| iOS | L'OS decide quand executer la tache (apprentissage des habitudes utilisateur). Minimum ~15 min. |
+| iOS | L'OS decide quand exécuter la tache (apprentissage des habitudes utilisateur). Minimum ~15 min. |
 | Android | Egalement soumis aux optimisations batterie. Peut etre restreint par les modes economie d'energie. |
-| Les deux | Pas de garantie d'execution exacte. La tache peut etre retardee ou annulee. |
+| Les deux | Pas de garantie d'exécution exacte. La tache peut etre retardee ou annulee. |
 
-> **Important** : La synchronisation en arriere-plan est un complement, pas une garantie. La sync au premier plan (quand l'app est ouverte et en ligne) reste la strategie principale.
+> **Important** : La synchronisation en arriere-plan est un complement, pas une garantie. La sync au premier plan (quand l'app est ouverte et en ligne) reste la stratégie principale.
 
 ---
 
@@ -1273,7 +1273,7 @@ async function registerBackgroundSync() {
 
 ### Principe du cache LRU
 
-Un cache **LRU (Least Recently Used)** garde les N elements les plus recemment utilises. Quand le cache est plein, l'element le moins recemment utilise est evince.
+Un cache **LRU (Least Recently Used)** garde les N éléments les plus recemment utilises. Quand le cache est plein, l'élément le moins recemment utilise est evince.
 
 ```tsx
 class LRUCache<T> {
@@ -1523,10 +1523,10 @@ function SyncStatusIndicator() {
 
 1. **MMKV pour les donnees simples** : tokens, preferences, flags — acces synchrone sans latence
 2. **SQLite pour les donnees structurees** : utilisez des index sur les colonnes de filtre/tri
-3. **Cache LRU en memoire** : evitez les lectures SQLite repetees pour les memes donnees
+3. **Cache LRU en mémoire** : evitez les lectures SQLite repetees pour les memes donnees
 4. **Batch les operations** : groupez les ecritures dans des transactions SQLite
 
-### Securite
+### Sécurité
 
 1. **Chiffrez les donnees sensibles** : tokens, infos personnelles via MMKV chiffre
 2. **Ne stockez jamais de mots de passe** en clair — utilisez `expo-secure-store` pour les credentials
@@ -1535,28 +1535,38 @@ function SyncStatusIndicator() {
 ### Offline-first
 
 1. **Ecrivez localement d'abord** : l'affichage est immediat, la sync est secondaire
-2. **Gerez les conflits explicitement** : ne les ignorez pas, choisissez une strategie
-3. **Montrez l'etat de sync** : l'utilisateur doit savoir ce qui est synchronise ou non
+2. **Gerez les conflits explicitement** : ne les ignorez pas, choisissez une stratégie
+3. **Montrez l'état de sync** : l'utilisateur doit savoir ce qui est synchronise ou non
 4. **Limitez la taille de la queue** : purgez les operations trop anciennes
 5. **Testez en mode avion** : c'est le seul moyen de valider le comportement offline
 
 ---
 
-## Recapitulatif
+## Récapitulatif
 
 | Concept | Outil | Quand l'utiliser |
 |---------|-------|-----------------|
 | Cle-valeur simple | AsyncStorage | Prototypage, preferences basiques |
 | Cle-valeur performant | MMKV | Tokens, settings, cache rapide |
-| Donnees relationnelles | expo-sqlite | Listes, historiques, requetes complexes |
-| Persistance Zustand | MMKV + persist middleware | Etat applicatif persiste |
+| Donnees relationnelles | expo-sqlite | Listes, historiques, requêtes complexes |
+| Persistance Zustand | MMKV + persist middleware | État applicatif persiste |
 | Queue de sync | SQLite + SyncQueue | Operations offline |
-| Detection reseau | NetInfo | Adapter le comportement en/hors ligne |
-| Sync arriere-plan | expo-background-fetch | Sync periodique meme app fermee |
+| Detection réseau | NetInfo | Adapter le comportement en/hors ligne |
+| Sync arriere-plan | expo-background-fetch | Sync periodique même app fermee |
 | Resolution conflits | LWW / Merge / Manuel | Selon la criticite des donnees |
 
 ---
 
 ## Exercice pratique
 
-Rendez-vous au [Lab 14](../labs/lab-14-stockage-offline/) pour implementer une queue offline, un sync manager, un resolveur de conflits, un systeme de migrations et un cache LRU en pur TypeScript.
+Rendez-vous au [Lab 14](../labs/lab-14-stockage-offline/) pour implementer une queue offline, un sync manager, un resolveur de conflits, un système de migrations et un cache LRU en pur TypeScript.
+
+---
+
+<!-- parcours-recommande -->
+
+::: tip Parcours recommandé
+1. **Screencast** : [screencast 14 offline](../screencasts/screencast-14-offline.md)
+2. **Lab** : [lab-14-stockage-offline](../labs/lab-14-stockage-offline/README)
+3. **Quiz** : [quiz 14 offline](../quizzes/quiz-14-offline.html)
+:::

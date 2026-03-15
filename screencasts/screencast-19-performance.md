@@ -11,21 +11,21 @@
 |--------|---------|-------|
 | 0:00-0:30 | Introduction : pourquoi la performance mobile est critique (60fps) | Slides |
 | 0:30-2:00 | React DevTools Profiler : identifier les composants qui re-rendent trop | VS Code + emulateur + DevTools |
-| 2:00-3:30 | React.memo sur les items de liste : avant/apres dans le Profiler | VS Code + DevTools |
-| 3:30-5:00 | useMemo et useCallback : stabiliser les references, eviter les pieges | VS Code |
+| 2:00-3:30 | React.memo sur les items de liste : avant/après dans le Profiler | VS Code + DevTools |
+| 3:30-5:00 | useMemo et useCallback : stabiliser les références, éviter les pieges | VS Code |
 | 5:00-6:30 | Quand NE PAS optimiser : exemples de memo inutile | VS Code |
 | 6:30-8:00 | FlashList : migration depuis FlatList, estimatedItemSize, getItemType | VS Code + emulateur |
 | 8:00-9:30 | expo-image : blurhash, priorite, cache, comparaison avec Image | VS Code + emulateur |
 | 9:30-11:00 | Bundle analysis : source-map-explorer, imports nommes vs defaut | Terminal + navigateur |
-| 11:00-12:00 | Hermes : verifier qu'il est actif, profiler avec HermesProfiling | VS Code + terminal |
-| 12:00-13:00 | Fuites memoire : pattern de cleanup dans useEffect | VS Code |
-| 13:00-14:00 | Recapitulatif : checklist d'optimisation en 10 etapes | Slides |
+| 11:00-12:00 | Hermes : vérifier qu'il est actif, profiler avec HermesProfiling | VS Code + terminal |
+| 12:00-13:00 | Fuites mémoire : pattern de cleanup dans useEffect | VS Code |
+| 13:00-14:00 | Récapitulatif : checklist d'optimisation en 10 étapes | Slides |
 
-## Points cles a montrer
+## Points clés a montrer
 - Le flame chart du Profiler avec les composants en rouge/orange
-- La difference de blank frames entre FlatList et FlashList en scroll rapide
+- La différence de blank frames entre FlatList et FlashList en scroll rapide
 - Le blurhash qui s'affiche pendant le chargement de l'image
-- La difference de taille du bundle avant/apres tree-shaking (lodash vs lodash-es)
+- La différence de taille du bundle avant/après tree-shaking (lodash vs lodash-es)
 - Un useEffect sans cleanup qui cause un warning "setState on unmounted component"
 
 ## Ressources

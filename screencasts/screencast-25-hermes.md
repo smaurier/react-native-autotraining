@@ -15,9 +15,9 @@
 - Montrer l'app avant optimisation : ecran blanc pendant 2+ secondes
 - "On va utiliser le sampling profiler Hermes, les heap snapshots, et appliquer les techniques d'optimisation vues dans le module."
 
-### Partie 1 — Verifier la config Hermes et Bridgeless (0:40 - 1:40)
+### Partie 1 — Vérifier la config Hermes et Bridgeless (0:40 - 1:40)
 - Ouvrir le projet Expo
-- Verifier `app.json` :
+- Vérifier `app.json` :
   ```json
   {
     "expo": {
@@ -31,7 +31,7 @@
   console.log('Hermes:', !!(global as any).HermesInternal);
   console.log('Bridgeless:', !!(global as any).__turboModuleProxy);
   ```
-- "On confirme que Hermes et le mode Bridgeless sont actifs. C'est la base — sans ca, on ne peut pas profiler correctement."
+- "On confirme que Hermes et le mode Bridgeless sont actifs. C'est la base — sans ça, on ne peut pas profiler correctement."
 
 ### Partie 2 — Mesurer la baseline avec performance.mark (1:40 - 3:30)
 - Ajouter des marks dans index.ts :
@@ -72,13 +72,13 @@
     - analytics init synchrone : "190ms bloque le startup"
 - "Au total, les imports prennent 890ms — c'est notre goulot principal."
 
-### Partie 4 — Analyser la memoire avec un heap snapshot (6:00 - 7:30)
+### Partie 4 — Analyser la mémoire avec un heap snapshot (6:00 - 7:30)
 - Capturer un heap snapshot :
   ```typescript
   (global as any).HermesInternal.createHeapSnapshot('snapshot.heapsnapshot');
   ```
 - Ouvrir dans Chrome DevTools → Memory → Load
-- "On cherche les objets Detached (elements DOM detaches) et les gros objets avec beaucoup de retainers."
+- "On cherche les objets Detached (éléments DOM detaches) et les gros objets avec beaucoup de retainers."
 - Montrer un exemple : "Cet EventListener n'est jamais nettoye — c'est une fuite."
 - Montrer le pattern corriger :
   ```typescript
@@ -94,7 +94,7 @@
   pnpm remove moment
   pnpm add dayjs
   ```
-  - "287 Ko → 2 Ko. dayjs a la meme API que moment."
+  - "287 Ko → 2 Ko. dayjs à la même API que moment."
 - Remplacer lodash barrel par imports directs :
   ```typescript
   // Avant : import _ from 'lodash';
@@ -118,7 +118,7 @@
     initAnalytics();
   });
   ```
-  - "runAfterInteractions attend que les animations de demarrage soient terminees."
+  - "runAfterInteractions attend que les animations de démarrage soient terminees."
 
 ### Partie 6 — Activer les inline requires (10:00 - 11:00)
 - Configurer Metro :
@@ -132,9 +132,9 @@
     },
   };
   ```
-- "Inline requires deplace les require() au point d'utilisation. Un module n'est charge que quand il est reellement appele, pas au demarrage."
+- "Inline requires deplace les require() au point d'utilisation. Un module n'est charge que quand il est réellement appele, pas au démarrage."
 
-### Partie 7 — Mesurer les resultats (11:00 - 12:30)
+### Partie 7 — Mesurer les résultats (11:00 - 12:30)
 - Relancer l'app avec les optimisations
 - Montrer les nouveaux logs :
   ```
@@ -147,9 +147,9 @@
   ```
   Avant: 4.2 Mo → Apres: 2.1 Mo (-50%)
   ```
-- "L'app demarre maintenant en moins d'une seconde, meme sur un appareil milieu de gamme."
+- "L'app demarre maintenant en moins d'une seconde, même sur un appareil milieu de gamme."
 
-### Partie 8 — Recapitulatif et checklist (12:30 - 14:00)
+### Partie 8 — Récapitulatif et checklist (12:30 - 14:00)
 - Afficher la checklist sur l'ecran :
   - Hermes + Bridgeless actifs
   - Inline requires actives
@@ -159,5 +159,5 @@
   - Analytics/tracking differes
   - Cleanup dans tous les useEffect
   - Profiling regulier
-- "Le profiling devrait faire partie de votre workflow regulier — pas seulement quand ca rame. Un check toutes les 2 semaines, et vous gardez un startup sous la seconde."
-- Mentionner le lab 25 pour pratiquer les mecanismes sous-jacents
+- "Le profiling devrait faire partie de votre workflow regulier — pas seulement quand ça rame. Un check toutes les 2 semaines, et vous gardez un startup sous la seconde."
+- Mentionner le lab 25 pour pratiquer les mécanismes sous-jacents

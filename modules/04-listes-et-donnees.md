@@ -14,7 +14,7 @@ A la fin de ce module, vous serez capable de :
 - Implementer le pull-to-refresh et le scroll infini (pagination)
 - Optimiser les performances de rendu avec `getItemLayout`, `windowSize` et `maxToRenderPerBatch`
 - Comprendre le fonctionnement interne de `VirtualizedList`
-- Connaitre `FlashList` comme alternative performante
+- Connaître `FlashList` comme alternative performante
 
 ---
 
@@ -23,7 +23,7 @@ A la fin de ce module, vous serez capable de :
 
 - **Composants de base** : `View`, `Text`, `Image`, `TextInput`, `Pressable`, `ScrollView`
 - **Props communes** : `style`, `onPress`, `onChangeText`, `source`
-- **Gestion des evenements** : `onPress`, `onLongPress`, `onPressIn`, `onPressOut`
+- **Gestion des événements** : `onPress`, `onLongPress`, `onPressIn`, `onPressOut`
 - **ScrollView** : pour les contenus courts et de taille connue
 - **SafeAreaView** : gestion des zones securisees (notch, barre de statut)
 
@@ -31,7 +31,7 @@ A la fin de ce module, vous serez capable de :
 
 ---
 
-## Le probleme : ScrollView ne passe pas a l'echelle
+## Le problème : ScrollView ne passe pas a l'echelle
 
 Avant de plonger dans les listes, comprenons pourquoi `ScrollView` ne suffit pas :
 
@@ -57,20 +57,20 @@ function BadList() {
 }
 ```
 
-**Probleme** : `ScrollView` rend **tous** les enfants d'un coup, meme ceux hors ecran. Avec 10 000 elements, cela signifie :
-- 10 000 composants montes en memoire
-- Un temps de premier rendu tres long
-- Une consommation memoire elevee
+**Problème** : `ScrollView` rend **tous** les enfants d'un coup, même ceux hors ecran. Avec 10 000 éléments, cela signifie :
+- 10 000 composants montes en mémoire
+- Un temps de premier rendu très long
+- Une consommation mémoire elevee
 
 :::tip Regle d'or
-Utilisez `ScrollView` pour des listes **courtes** (moins de ~50 elements simples). Au-dela, passez a `FlatList` ou `SectionList`.
+Utilisez `ScrollView` pour des listes **courtes** (moins de ~50 éléments simples). Au-dela, passez a `FlatList` ou `SectionList`.
 :::
 
 ---
 
 ## FlatList : la liste virtualisee standard
 
-`FlatList` est le composant de liste principal de React Native. Il ne rend que les elements visibles a l'ecran (plus quelques elements de marge), ce qui permet d'afficher des milliers d'elements sans probleme de performance.
+`FlatList` est le composant de liste principal de React Native. Il ne rend que les éléments visibles a l'ecran (plus quelques éléments de marge), ce qui permet d'afficher des milliers d'éléments sans problème de performance.
 
 ### Anatomie de base
 
@@ -124,8 +124,8 @@ const styles = StyleSheet.create({
 | Prop | Type | Description |
 |------|------|-------------|
 | `data` | `T[]` | Le tableau de donnees a afficher |
-| `renderItem` | `({ item, index, separators }) => ReactElement` | Fonction qui rend chaque element |
-| `keyExtractor` | `(item, index) => string` | Fonction qui extrait une cle unique |
+| `renderItem` | `({ item, index, separators }) => ReactElement` | Fonction qui rend chaque élément |
+| `keyExtractor` | `(item, index) => string` | Fonction qui extrait une clé unique |
 
 ### renderItem en detail
 
@@ -144,7 +144,7 @@ renderItem={({ item, index, separators }) => {
 
 ### keyExtractor : pourquoi c'est crucial
 
-La `keyExtractor` fournit une cle unique a chaque element pour le systeme de reconciliation de React :
+La `keyExtractor` fournit une clé unique à chaque élément pour le système de reconciliation de React :
 
 ```tsx
 // ✅ Bonne pratique : utiliser un ID unique
@@ -157,8 +157,8 @@ keyExtractor={(item) => `${item.name}-${item.createdAt}`}
 keyExtractor={(_, index) => String(index)}
 ```
 
-:::warning Attention aux cles basees sur l'index
-Si vous utilisez l'index comme cle et que la liste est reordonnee, les composants ne seront pas re-rendus correctement. Les etats internes des composants seront associes aux mauvais elements.
+:::warning Attention aux clés basees sur l'index
+Si vous utilisez l'index comme clé et que la liste est reordonnee, les composants ne seront pas re-rendus correctement. Les états internes des composants seront associes aux mauvais éléments.
 :::
 
 ---
@@ -188,7 +188,7 @@ Affiche un composant quand la liste est vide :
 
 ### ListHeaderComponent
 
-Un composant affiche **avant** le premier element (scrolle avec la liste) :
+Un composant affiche **avant** le premier élément (scrolle avec la liste) :
 
 ```tsx
 <FlatList
@@ -208,7 +208,7 @@ Un composant affiche **avant** le premier element (scrolle avec la liste) :
 
 ### ListFooterComponent
 
-Un composant affiche **apres** le dernier element :
+Un composant affiche **après** le dernier élément :
 
 ```tsx
 <FlatList
@@ -229,7 +229,7 @@ Un composant affiche **apres** le dernier element :
 
 ### ItemSeparatorComponent
 
-Un separateur entre chaque element (pas avant le premier ni apres le dernier) :
+Un separateur entre chaque élément (pas avant le premier ni après le dernier) :
 
 ```tsx
 <FlatList
@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
 
 ## SectionList : listes avec sections
 
-`SectionList` organise les donnees en groupes avec des en-tetes de section. C'est ideal pour les listes de contacts, les menus de restaurant, les parametres, etc.
+`SectionList` organise les donnees en groupes avec des en-tetes de section. C'est ideal pour les listes de contacts, les menus de restaurant, les paramètres, etc.
 
 ### Structure des sections
 
@@ -476,7 +476,7 @@ function groupContactsByLetter(contacts: Contact[]): Section[] {
 | Prop | Type | Description |
 |------|------|-------------|
 | `sections` | `{ title, data }[]` | Tableau de sections |
-| `renderItem` | Comme FlatList | Rend chaque element |
+| `renderItem` | Comme FlatList | Rend chaque élément |
 | `renderSectionHeader` | `({ section }) => ReactElement` | En-tete de section |
 | `renderSectionFooter` | `({ section }) => ReactElement` | Pied de section |
 | `stickySectionHeadersEnabled` | `boolean` | En-tetes fixes lors du scroll |
@@ -486,7 +486,7 @@ function groupContactsByLetter(contacts: Contact[]): Section[] {
 
 ## Pull-to-refresh
 
-Le "tirer pour rafraichir" est un pattern mobile tres courant. `FlatList` et `SectionList` le supportent nativement :
+Le "tirer pour rafraichir" est un pattern mobile très courant. `FlatList` et `SectionList` le supportent nativement :
 
 ```tsx
 function RefreshableList() {
@@ -541,7 +541,7 @@ import { RefreshControl } from 'react-native';
 />
 ```
 
-### Les deux props cles
+### Les deux props clés
 
 | Prop | Type | Description |
 |------|------|-------------|
@@ -549,7 +549,7 @@ import { RefreshControl } from 'react-native';
 | `refreshing` | `boolean` | Si `true`, l'indicateur de chargement est visible |
 
 :::warning Important
-`onRefresh` ne sera pas actif si `refreshing` n'est pas defini. Les deux props vont ensemble.
+`onRefresh` ne sera pas actif si `refreshing` n'est pas défini. Les deux props vont ensemble.
 :::
 
 ---
@@ -670,9 +670,9 @@ const result = paginateData(allProducts, 1, 20);
 
 ## Optimisation des performances
 
-### getItemLayout : eviter la mesure dynamique
+### getItemLayout : éviter la mesure dynamique
 
-Par defaut, `FlatList` doit mesurer chaque element pour calculer les positions de scroll. Si tous vos elements ont la meme hauteur, vous pouvez fournir `getItemLayout` pour eviter cette mesure :
+Par defaut, `FlatList` doit mesurer chaque élément pour calculer les positions de scroll. Si tous vos éléments ont la même hauteur, vous pouvez fournir `getItemLayout` pour éviter cette mesure :
 
 ```tsx
 const ITEM_HEIGHT = 72;
@@ -698,7 +698,7 @@ const SEPARATOR_HEIGHT = 1;
 - Meilleures performances de scroll car pas de calcul de layout asynchrone
 - `initialScrollIndex` utilisable directement
 
-### windowSize : la fenetre de rendu
+### windowSize : la fenêtre de rendu
 
 `windowSize` controle combien d'ecrans au-dessus et en dessous du viewport sont rendus :
 
@@ -728,14 +728,14 @@ windowSize = 5 signifie :
 ```
 
 :::tip Compromis windowSize
-- **Petit windowSize** (ex: 3) : moins de memoire, mais risque de "blancs" si scroll rapide
-- **Grand windowSize** (ex: 21 defaut) : plus de memoire, scroll fluide sans blanc
+- **Petit windowSize** (ex: 3) : moins de mémoire, mais risque de "blancs" si scroll rapide
+- **Grand windowSize** (ex: 21 defaut) : plus de mémoire, scroll fluide sans blanc
 - Un bon compromis est entre 5 et 11
 :::
 
 ### maxToRenderPerBatch
 
-Nombre d'elements rendus par cycle de rendu lors du scroll :
+Nombre d'éléments rendus par cycle de rendu lors du scroll :
 
 ```tsx
 <FlatList
@@ -746,12 +746,12 @@ Nombre d'elements rendus par cycle de rendu lors du scroll :
 />
 ```
 
-- **Plus petit** : meilleure reactivite mais plus de cycles de rendu
+- **Plus petit** : meilleure réactivité mais plus de cycles de rendu
 - **Plus grand** : moins de cycles mais chaque cycle prend plus de temps
 
 ### initialNumToRender
 
-Nombre d'elements rendus lors du montage initial :
+Nombre d'éléments rendus lors du montage initial :
 
 ```tsx
 <FlatList
@@ -763,12 +763,12 @@ Nombre d'elements rendus lors du montage initial :
 ```
 
 :::tip Bonne pratique
-Mettez `initialNumToRender` au nombre d'elements qui remplissent l'ecran + 1 ou 2 de marge. Pas plus — le surplus serait invisible et ralentirait le premier rendu.
+Mettez `initialNumToRender` au nombre d'éléments qui remplissent l'ecran + 1 ou 2 de marge. Pas plus — le surplus serait invisible et ralentirait le premier rendu.
 :::
 
 ### removeClippedSubviews
 
-Active le retrait du DOM natif des elements hors ecran (Android surtout) :
+Active le retrait du DOM natif des éléments hors ecran (Android surtout) :
 
 ```tsx
 <FlatList
@@ -779,22 +779,22 @@ Active le retrait du DOM natif des elements hors ecran (Android surtout) :
 />
 ```
 
-### Recapitulatif des props de performance
+### Récapitulatif des props de performance
 
 | Prop | Defaut | Recommandation | Impact |
 |------|--------|----------------|--------|
-| `windowSize` | 21 | 5-11 | Memoire |
+| `windowSize` | 21 | 5-11 | Mémoire |
 | `maxToRenderPerBatch` | 10 | 5-15 | Fluidite scroll |
-| `initialNumToRender` | 10 | Elements visibles + 2 | Temps premier rendu |
-| `removeClippedSubviews` | false | true (Android) | Memoire native |
+| `initialNumToRender` | 10 | Éléments visibles + 2 | Temps premier rendu |
+| `removeClippedSubviews` | false | true (Android) | Mémoire native |
 | `getItemLayout` | undefined | Fournir si hauteur fixe | Evite la mesure |
 | `updateCellsBatchingPeriod` | 50 | 50-100 | Frequence de mise a jour |
 
 ---
 
-## VirtualizedList : comment ca marche
+## VirtualizedList : comment ça marche
 
-`FlatList` et `SectionList` sont construits au-dessus de `VirtualizedList`. Comprendre son fonctionnement aide a diagnostiquer les problemes de performance.
+`FlatList` et `SectionList` sont construits au-dessus de `VirtualizedList`. Comprendre son fonctionnement aide a diagnostiquer les problèmes de performance.
 
 ### Le principe de la virtualisation
 
@@ -811,16 +811,16 @@ Les ░ sont remplaces par des View vides de la bonne hauteur
 (spacers) pour maintenir la position de scroll correcte.
 ```
 
-### Cycle de vie d'un element
+### Cycle de vie d'un élément
 
-1. **Element entre dans la fenetre** : React cree le composant via `renderItem`
-2. **Element est visible** : le composant est dans l'arbre de rendu natif
-3. **Element sort de la fenetre** : le composant est demonte (ou cache si `removeClippedSubviews`)
+1. **Élément entre dans la fenêtre** : React créé le composant via `renderItem`
+2. **Élément est visible** : le composant est dans l'arbre de rendu natif
+3. **Élément sort de la fenêtre** : le composant est demonte (où cache si `removeClippedSubviews`)
 4. **Spacer** : un `View` vide de la bonne hauteur remplace le composant
 
 ### CellRendererComponent
 
-`VirtualizedList` rend chaque element dans un wrapper appele "cell renderer" :
+`VirtualizedList` rend chaque élément dans un wrapper appele "cell renderer" :
 
 ```tsx
 // Structure interne simplifiee
@@ -840,9 +840,9 @@ Les ░ sont remplaces par des View vides de la bonne hauteur
 </ScrollView>
 ```
 
-### Le probleme des re-rendus
+### Le problème des re-rendus
 
-Un piege courant est de creer des fonctions anonymes dans `renderItem`, ce qui force un re-rendu a chaque cycle :
+Un piege courant est de créer des fonctions anonymes dans `renderItem`, ce qui force un re-rendu à chaque cycle :
 
 ```tsx
 // ❌ Nouvelle reference a chaque rendu
@@ -916,26 +916,26 @@ function FastProductList() {
 }
 ```
 
-### Differences cles avec FlatList
+### Differences clés avec FlatList
 
 | Aspect | FlatList | FlashList |
 |--------|----------|-----------|
-| Strategie | Monte/Demonte les composants | Recycle les composants |
+| Stratégie | Monte/Demonte les composants | Recycle les composants |
 | Performance | Bonne | Excellente (2-5x) |
 | `estimatedItemSize` | Non requis | **Obligatoire** |
-| Blank areas | Possibles | Tres rares |
+| Blank areas | Possibles | Très rares |
 | Installation | Inclus dans RN | Package externe |
 | `getItemLayout` | Optionnel | Remplace par `estimatedItemSize` |
 
 ### Quand utiliser FlashList ?
 
-- Listes de plus de 100 elements
+- Listes de plus de 100 éléments
 - Animations de scroll complexes
-- Elements de taille variable
-- Applications exigeantes en performance (e-commerce, reseaux sociaux)
+- Éléments de taille variable
+- Applications exigeantes en performance (e-commerce, réseaux sociaux)
 
 :::tip Migration facile
-`FlashList` a une API quasi-identique a `FlatList`. La migration est souvent aussi simple que de changer l'import et ajouter `estimatedItemSize`.
+`FlashList` à une API quasi-identique a `FlatList`. La migration est souvent aussi simple que de changer l'import et ajouter `estimatedItemSize`.
 :::
 
 ---
@@ -997,7 +997,7 @@ const styles = StyleSheet.create({
 ```
 
 :::warning numColumns et keyExtractor
-Quand vous changez `numColumns` dynamiquement, React Native demande un `key` different sur le `FlatList` lui-meme pour forcer le remontage :
+Quand vous changez `numColumns` dynamiquement, React Native demandé un `key` différent sur le `FlatList` lui-même pour forcer le remontage :
 ```tsx
 <FlatList key={`grid-${numColumns}`} numColumns={numColumns} ... />
 ```
@@ -1400,7 +1400,7 @@ const styles = StyleSheet.create({
 
 ## Astuces et patterns courants
 
-### Scroll vers un element
+### Scroll vers un élément
 
 ```tsx
 const flatListRef = useRef<FlatList>(null);
@@ -1521,7 +1521,7 @@ function sortMultiCriteria<T>(
 />
 ```
 
-### 2. Fonction renderItem recree a chaque rendu
+### 2. Fonction renderItem recree à chaque rendu
 
 ```tsx
 // ❌ Nouvelle reference a chaque rendu du parent
@@ -1544,7 +1544,7 @@ function Parent() {
 }
 ```
 
-### 3. Modifier data sans creer un nouveau tableau
+### 3. Modifier data sans créer un nouveau tableau
 
 ```tsx
 // ❌ Mutation en place — FlatList ne detecte pas le changement
@@ -1574,14 +1574,14 @@ const onEndReached = useCallback(async () => {
 
 ---
 
-## Resume
+## Résumé
 
-| Composant | Cas d'usage | Props cles |
+| Composant | Cas d'usage | Props clés |
 |-----------|-------------|------------|
 | `ScrollView` | Contenu court, taille connue | `contentContainerStyle` |
 | `FlatList` | Listes longues, homogenes | `data`, `renderItem`, `keyExtractor` |
 | `SectionList` | Listes groupees avec en-tetes | `sections`, `renderSectionHeader` |
-| `FlashList` | Listes tres longues, performance critique | `estimatedItemSize` |
+| `FlashList` | Listes très longues, performance critique | `estimatedItemSize` |
 
 ### Checklist performance
 
@@ -1590,7 +1590,7 @@ const onEndReached = useCallback(async () => {
 - [ ] Les composants enfants utilisent `React.memo`
 - [ ] `getItemLayout` est fourni si hauteur fixe
 - [ ] `windowSize` est ajuste (pas 21 si inutile)
-- [ ] Les fonctions passees en props ne sont pas recrees a chaque rendu
+- [ ] Les fonctions passees en props ne sont pas recrees à chaque rendu
 - [ ] `onEndReached` est protege contre les appels multiples
 - [ ] `removeClippedSubviews={true}` sur Android
 
@@ -1609,3 +1609,13 @@ Rendez-vous dans le [Lab 04](../labs/lab-04-listes-donnees/) pour implementer :
 cd labs/lab-04-listes-donnees
 npx tsx exercise.ts
 ```
+
+---
+
+<!-- parcours-recommande -->
+
+::: tip Parcours recommandé
+1. **Screencast** : [screencast 04 listes](../screencasts/screencast-04-listes.md)
+2. **Lab** : [lab-04-listes-donnees](../labs/lab-04-listes-donnees/README)
+3. **Quiz** : [quiz 04 listes](../quizzes/quiz-04-listes.html)
+:::

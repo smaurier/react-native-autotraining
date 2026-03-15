@@ -1,4 +1,4 @@
-# Module 10 — Gestion de l'etat : Context et Zustand
+# Module 10 — Gestion de l'état : Context et Zustand
 
 | Difficulte | Duree estimee | Lab | Quiz |
 |------------|---------------|-----|------|
@@ -6,20 +6,20 @@
 
 ## Objectifs
 
-- Comprendre quand React Context + useReducer suffit pour l'etat global
+- Comprendre quand React Context + useReducer suffit pour l'état global
 - Identifier les pieges de Context : re-renders inutiles, provider hell
-- Creer des stores Zustand avec selectors, middleware et persistence
+- Créer des stores Zustand avec selectors, middleware et persistence
 - Appliquer le slice pattern pour structurer un store complexe
 - Comparer Context, Zustand, Redux et Jotai pour choisir l'outil adapte
 - Implementer un auth store, un cart store et un preferences store
 
 ---
 
-## React Context + useReducer : quand ca suffit
+## React Context + useReducer : quand ça suffit
 
 ### Le cas d'usage
 
-Context est integre a React. Pour un etat global simple (theme, locale, utilisateur connecte) partage entre quelques composants, il fait le travail sans dependance externe.
+Context est intégré a React. Pour un état global simple (theme, locale, utilisateur connecte) partage entre quelques composants, il fait le travail sans dépendance externe.
 
 ```tsx
 import { createContext, useContext, useReducer, type ReactNode } from 'react';
@@ -127,7 +127,7 @@ function ProfileScreen() {
 
 ### Separer state et dispatch
 
-Un pattern ameliore : deux contextes distincts. Les composants qui ne font que lire l'etat ne se re-rendent pas quand seul `dispatch` change.
+Un pattern ameliore : deux contextes distincts. Les composants qui ne font que lire l'état ne se re-rendent pas quand seul `dispatch` change.
 
 ```tsx
 const AuthStateContext = createContext<AuthState | null>(null);
@@ -164,7 +164,7 @@ export function useAuthDispatch() {
 
 ### Piege 1 : re-renders en cascade
 
-Quand la valeur du Context change, **tous** les composants qui appellent `useContext` se re-rendent, meme s'ils n'utilisent qu'une partie de la valeur.
+Quand la valeur du Context change, **tous** les composants qui appellent `useContext` se re-rendent, même s'ils n'utilisent qu'une partie de la valeur.
 
 ```tsx
 // PROBLEME : chaque mise a jour de n'importe quelle propriete
@@ -226,7 +226,7 @@ function App() {
 }
 ```
 
-On peut composer les providers, mais le probleme fondamental reste : Context n'a pas de selecteurs natifs.
+On peut composer les providers, mais le problème fondamental reste : Context n'a pas de selecteurs natifs.
 
 ```tsx
 // Helper pour reduire l'imbrication
@@ -262,7 +262,7 @@ function App() {
 
 ### Piege 3 : pas de selecteurs
 
-Avec Context, on ne peut pas s'abonner a un sous-ensemble de l'etat. Chaque consommateur recoit l'objet complet et se re-rend a chaque changement.
+Avec Context, on ne peut pas s'abonner à un sous-ensemble de l'état. Chaque consommateur recoit l'objet complet et se re-rend à chaque changement.
 
 ```tsx
 // Impossible de faire ca nativement avec Context :
@@ -281,12 +281,12 @@ const MemoizedCartIcon = React.memo(function CartIcon() {
 
 | Critere | Context OK | Besoin d'un store |
 |---------|-----------|-------------------|
-| Nombre de domaines d'etat | 1-3 | > 3 |
+| Nombre de domaines d'état | 1-3 | > 3 |
 | Frequence de mise a jour | Rare (theme, locale) | Frequent (cart, notifs) |
 | Nombre de consommateurs | < 10 composants | Beaucoup |
 | Besoin de selecteurs fins | Non | Oui |
 | Persistence / middleware | Non | Oui |
-| Etat hors composants | Non | Oui |
+| État hors composants | Non | Oui |
 
 ---
 
@@ -294,7 +294,7 @@ const MemoizedCartIcon = React.memo(function CartIcon() {
 
 ### Pourquoi Zustand
 
-Zustand est une solution de gestion d'etat legere (< 2 kB) qui resout les problemes de Context :
+Zustand est une solution de gestion d'état legere (< 2 kB) qui resout les problèmes de Context :
 
 - **Selecteurs natifs** : les composants ne se re-rendent que si la valeur selectionnee change
 - **Pas de Provider** : le store vit hors de l'arbre React
@@ -308,7 +308,7 @@ Zustand est une solution de gestion d'etat legere (< 2 kB) qui resout les proble
 npx expo install zustand
 ```
 
-### Creer un store basique
+### Créer un store basique
 
 ```tsx
 import { create } from 'zustand';
@@ -368,7 +368,7 @@ function CartTotal() {
 
 ### Selecteurs stables avec `useShallow`
 
-Quand on selectionne un objet ou un tableau, il faut eviter de creer une nouvelle reference a chaque render.
+Quand on selectionne un objet ou un tableau, il faut éviter de créer une nouvelle référence à chaque render.
 
 ```tsx
 import { useShallow } from 'zustand/react/shallow';
@@ -622,7 +622,7 @@ const useCartStore = create<CartStore>((set, get) => ({
 }));
 ```
 
-### Selecteurs derives pour le cart
+### Selecteurs dérivés pour le cart
 
 ```tsx
 // Badge sur l'icone du panier - ne se re-rend que quand le nombre change
@@ -840,7 +840,7 @@ function useHydration() {
 
 ### Devtools
 
-En developpement, le middleware devtools permet d'inspecter le store dans React DevTools ou Flipper.
+En développement, le middleware devtools permet d'inspecter le store dans React DevTools ou Flipper.
 
 ```tsx
 import { create } from 'zustand';
@@ -868,7 +868,7 @@ const useCartStore = create<CartStore>()(
 
 ### Immer middleware
 
-Immer permet d'ecrire des mutations "immutables" avec une syntaxe mutable. Particulierement utile pour les etats imbriques.
+Immer permet d'écrire des mutations "immutables" avec une syntaxe mutable. Particulierement utile pour les états imbriques.
 
 ```bash
 npx expo install immer
@@ -936,7 +936,7 @@ const useTodoStore = create<TodoStore>()(
 
 ### Combiner les middlewares
 
-L'ordre d'imbrication compte : le middleware le plus externe s'execute en premier.
+L'ordre d'imbrication compte : le middleware le plus externe s'exécuté en premier.
 
 ```tsx
 import { create } from 'zustand';
@@ -980,9 +980,9 @@ const useCartStore = create<CartStore>()(
 
 ## Le slice pattern
 
-Pour les stores complexes, le slice pattern permet de decouper le store en modules independants.
+Pour les stores complexes, le slice pattern permet de découper le store en modules independants.
 
-### Definir les slices
+### Définir les slices
 
 ```tsx
 import { type StateCreator } from 'zustand';
@@ -1083,7 +1083,7 @@ const useAppStore = create<AppStore>()(
 
 ### Communication inter-slices
 
-Un slice peut acceder a l'etat d'un autre slice via `get()`.
+Un slice peut acceder a l'état d'un autre slice via `get()`.
 
 ```tsx
 const createCartSlice: StateCreator<
@@ -1110,7 +1110,7 @@ const createCartSlice: StateCreator<
 
 ## Actions asynchrones
 
-Zustand gere naturellement les actions async dans le store.
+Zustand géré naturellement les actions async dans le store.
 
 ```tsx
 interface ProductStore {
@@ -1218,9 +1218,9 @@ const unsubscribe = useAuthStore.subscribe(
 
 | Critere | Context + useReducer | Zustand | Redux Toolkit | Jotai |
 |---------|---------------------|---------|---------------|-------|
-| **Taille du bundle** | 0 kB (integre) | ~1.5 kB | ~12 kB | ~3.5 kB |
+| **Taille du bundle** | 0 kB (intégré) | ~1.5 kB | ~12 kB | ~3.5 kB |
 | **Boilerplate** | Moyen | Minimal | Moyen (ameliore vs Redux) | Minimal |
-| **Selecteurs** | Non natif | Oui (`useShallow`) | Oui (`useSelector`) | Oui (atoms derives) |
+| **Selecteurs** | Non natif | Oui (`useShallow`) | Oui (`useSelector`) | Oui (atoms dérivés) |
 | **Re-renders** | Tous les consommateurs | Selectif | Selectif | Selectif |
 | **Provider requis** | Oui | Non | Oui | Oui |
 | **Middleware** | Non | Oui (persist, devtools, immer) | Oui (RTK middleware) | Via extensions |
@@ -1229,7 +1229,7 @@ const unsubscribe = useAuthStore.subscribe(
 | **Courbe d'apprentissage** | Faible | Faible | Moyenne | Faible |
 | **TypeScript** | Manuel | Excellent | Bon | Excellent |
 | **Async** | Dispatch + thunk | Natif dans les actions | Thunks / RTK Query | Via atoms async |
-| **Ideal pour** | Theme, locale | General, store moyen-gros | Tres gros projets, equipe | UI atomique, composants |
+| **Ideal pour** | Theme, locale | General, store moyen-gros | Très gros projets, équipe | UI atomique, composants |
 
 ### Quand utiliser quoi
 
@@ -1244,7 +1244,7 @@ Etat granulaire, bottom-up     -> Jotai
 
 ### Recommandation pour React Native en 2027
 
-**Zustand est le choix par defaut.** Il combine simplicite, performance et flexibilite. Context reste pertinent pour l'etat rare (theme, locale). Redux Toolkit est justifie uniquement pour les tres grosses equipes qui ont besoin d'un cadre strict. Jotai est excellent pour les UIs tres reactives avec beaucoup de petits etats independants.
+**Zustand est le choix par defaut.** Il combine simplicite, performance et flexibilite. Context reste pertinent pour l'état rare (theme, locale). Redux Toolkit est justifie uniquement pour les très grosses équipes qui ont besoin d'un cadre strict. Jotai est excellent pour les UIs très réactives avec beaucoup de petits états independants.
 
 ---
 
@@ -1407,7 +1407,7 @@ function SettingsScreen() {
 
 ## Patterns avances
 
-### Reset de tous les stores a la deconnexion
+### Reset de tous les stores à la deconnexion
 
 ```tsx
 // Centraliser le reset
@@ -1436,7 +1436,7 @@ useAuthStore.subscribe(
 
 ### Store temporaire (non persiste)
 
-Pour un flux en cours (wizard, formulaire multi-etapes) :
+Pour un flux en cours (wizard, formulaire multi-étapes) :
 
 ```tsx
 const useCheckoutStore = create<CheckoutStore>((set) => ({
@@ -1513,7 +1513,7 @@ const items = useCartStore((s) => s.items);
 useCartStore.setState({ items: [...items, product] });
 ```
 
-### 4. Typer le store completement
+### 4. Typer le store complètement
 
 ```tsx
 // Toujours definir l'interface avant le create
@@ -1552,15 +1552,15 @@ describe('useAuthStore', () => {
 
 ---
 
-## Resume
+## Résumé
 
 | Concept | A retenir |
 |---------|-----------|
-| Context | Suffisant pour theme, locale, 1-3 domaines d'etat rares |
+| Context | Suffisant pour theme, locale, 1-3 domaines d'état rares |
 | Selecteurs | Cle de la performance : ne re-rend que ce qui change |
 | Zustand | Store minimal, pas de Provider, selecteurs natifs |
 | Persist | MMKV (synchrone, rapide) > AsyncStorage (async) |
-| Immer | Syntaxe mutable pour les etats profondement imbriques |
+| Immer | Syntaxe mutable pour les états profondement imbriques |
 | Slice pattern | Decouper un gros store en modules independants |
 | Hors React | `getState()` pour les intercepteurs API, services, etc. |
 
@@ -1573,3 +1573,14 @@ describe('useAuthStore', () => {
 - MMKV : https://github.com/mrousavy/react-native-mmkv
 - Jotai : https://jotai.org/
 - Redux Toolkit : https://redux-toolkit.js.org/
+
+---
+
+<!-- parcours-recommande -->
+
+::: tip Parcours recommandé
+1. **Screencast** : [screencast 10 état](../screencasts/screencast-10-etat.md)
+2. **Lab** : [lab-10-gestion-detat](../labs/lab-10-gestion-detat/README)
+3. **Visualisation** : [State Management](../visualizations/state-management-comparison.html)
+4. **Quiz** : [quiz 10 état](../quizzes/quiz-10-etat.html)
+:::

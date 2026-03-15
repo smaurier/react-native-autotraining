@@ -3,7 +3,7 @@
 | Metadata | Valeur |
 |----------|--------|
 | **Duree** | ~10 min |
-| **Module** | [00 — Prerequis et introduction](/modules/00-prerequis-et-introduction) |
+| **Module** | [00 — Prérequis et introduction](/modules/00-prerequis-et-introduction) |
 | **Outils** | Terminal, VS Code, Expo Go (telephone) |
 
 ---
@@ -11,27 +11,27 @@
 ## Plan de tournage
 
 ### Intro (0:00 - 0:30)
-- "Dans ce screencast, on va installer tout l'environnement React Native avec Expo et lancer notre premiere application sur un emulateur et un telephone physique."
+- "Dans ce screencast, on va installer tout l'environnement React Native avec Expo et lancer notre première application sur un emulateur et un telephone physique."
 - Afficher le plan du screencast a l'ecran
 
-### Partie 1 — Verifier les prerequis (0:30 - 2:00)
+### Partie 1 — Vérifier les prérequis (0:30 - 2:00)
 - Ouvrir un terminal
-- Verifier Node.js : `node --version` (montrer qu'il faut >= 18)
-- Verifier npm : `npm --version`
+- Vérifier Node.js : `node --version` (montrer qu'il faut >= 18)
+- Vérifier npm : `npm --version`
 - Si Node.js manque, montrer rapidement le site nodejs.org
-- Verifier que `npx` fonctionne : `npx --version`
+- Vérifier que `npx` fonctionne : `npx --version`
 - Installer Watchman si macOS : `brew install watchman`
 
-### Partie 2 — Creer le projet (2:00 - 4:00)
-- Executer `npx create-expo-app@latest MonApp --template blank-typescript`
-- Pendant que ca installe, expliquer :
-  - "Expo cree un projet React Native pre-configure avec TypeScript"
+### Partie 2 — Créer le projet (2:00 - 4:00)
+- Exécuter `npx create-expo-app@latest MonApp --template blank-typescript`
+- Pendant que ça installe, expliquer :
+  - "Expo créé un projet React Native pre-configure avec TypeScript"
   - "Pas besoin d'Android Studio ou Xcode pour commencer"
 - `cd MonApp`
 - Explorer la structure dans VS Code :
   - `App.tsx` — point d'entree, montrer le code
   - `app.json` — configuration Expo
-  - `package.json` — dependances (react, react-native, expo)
+  - `package.json` — dépendances (react, react-native, expo)
   - `tsconfig.json` — configuration TypeScript
 
 ### Partie 3 — Lancer sur emulateur (4:00 - 6:30)
@@ -50,7 +50,7 @@
 - Modifier le texte a nouveau pour montrer le Fast Refresh sur device
 
 ### Partie 5 — Explorer et modifier (8:00 - 9:30)
-- Modifier `App.tsx` pour creer une mini carte :
+- Modifier `App.tsx` pour créer une mini carte :
   ```tsx
   <View style={styles.container}>
     <View style={styles.card}>
@@ -63,16 +63,16 @@
   - `card` : backgroundColor, borderRadius, padding
   - `title` : fontSize, fontWeight, color
   - `subtitle` : fontSize, color
-- Montrer le resultat en temps reel
+- Montrer le résultat en temps réel
 
 ### Partie 6 — Debug basique (9:30 - 10:00)
 - Ajouter un `console.log('Hello depuis RN')` dans App.tsx
 - Montrer le log dans le terminal
-- Appuyer sur `m` dans l'app pour le menu developpeur
+- Appuyer sur `m` dans l'app pour le menu développeur
 - Mentionner React DevTools pour plus tard
 
 ### Outro (10:00)
-- "Vous avez maintenant un environnement fonctionnel. Dans le prochain module, on va decouvrir JSX et les composants de base."
+- "Vous avez maintenant un environnement fonctionnel. Dans le prochain module, on va découvrir JSX et les composants de base."
 - Rappeler de faire le Lab 00 et le Quiz 00
 
 ---
@@ -88,6 +88,6 @@
 ## Erreurs courantes a anticiper
 
 - Node.js trop ancien → montrer comment mettre a jour
-- Port 8081 deja utilise → `npx expo start --port 8082`
-- Emulateur non detecte → verifier ANDROID_HOME
+- Port 8081 déjà utilise → `npx expo start --port 8082`
+- Emulateur non détecté → vérifier ANDROID_HOME
 - Expo Go version incompatible → mettre a jour l'app

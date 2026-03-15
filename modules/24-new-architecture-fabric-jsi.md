@@ -6,10 +6,10 @@
 
 ## Objectifs
 
-- Comprendre JSI en profondeur : host objects, memoire partagee, appels synchrones
-- Maitriser le Fabric renderer : shadow tree, rendering concurrent, layout synchrone
-- Creer un Fabric Component (vue native custom)
-- Ecrire un component spec et generer le code natif via codegen
+- Comprendre JSI en profondeur : host objects, mémoire partagee, appels synchrones
+- Maîtriser le Fabric renderer : shadow tree, rendering concurrent, layout synchrone
+- Créer un Fabric Component (vue native custom)
+- Écrire un component spec et générer le code natif via codegen
 - Utiliser les fonctionnalites concurrentes (useTransition, useDeferredValue) en contexte React Native
 - Migrer un projet vers la New Architecture
 - Comparer les performances Bridge vs JSI
@@ -22,7 +22,7 @@ JSI est la couche fondamentale de la New Architecture. C'est une interface C++ q
 
 ### Qu'est-ce qu'un Host Object ?
 
-Un Host Object est un objet C++ expose directement dans l'environnement JavaScript. Contrairement au Bridge (serialisation JSON), l'objet natif est accessible en memoire partagee.
+Un Host Object est un objet C++ expose directement dans l'environnement JavaScript. Contrairement au Bridge (serialisation JSON), l'objet natif est accessible en mémoire partagee.
 
 ```
 ┌──────────────────────────────────────────────────────┐
@@ -166,9 +166,9 @@ const details = global.BatteryModule.getDetails();
 | `Function::createFromHostFunction(...)` | `function` | Fonction |
 | `Object::createFromHostObject(...)` | Proxy objet | Host object |
 
-### Gestion memoire JSI
+### Gestion mémoire JSI
 
-JSI utilise un systeme de gestion memoire specifique :
+JSI utilise un système de gestion mémoire spécifique :
 
 ```cpp
 // Les Value sont des valeurs temporaires sur la stack
@@ -195,7 +195,7 @@ auto hostObj = std::make_shared<MyHostObject>();
 
 ## Fabric Renderer
 
-Fabric est le nouveau systeme de rendu de React Native. Il remplace le Bridge-based renderer par un renderer C++ integre.
+Fabric est le nouveau système de rendu de React Native. Il remplace le Bridge-based renderer par un renderer C++ intégré.
 
 ### Architecture du renderer Fabric
 
@@ -238,7 +238,7 @@ Fabric est le nouveau systeme de rendu de React Native. Il remplace le Bridge-ba
 
 ### Shadow Tree en detail
 
-Le Shadow Tree est une representation intermediaire en C++ de l'arbre de composants :
+Le Shadow Tree est une representation intermédiaire en C++ de l'arbre de composants :
 
 ```
 Etape 1 : React reconcile (JS)
@@ -264,20 +264,20 @@ Etape 4 : Mounting (main thread natif)
 |--------|----------------|-------------------|
 | Communication | Bridge asynchrone (JSON) | JSI synchrone (C++) |
 | Layout | Calcule en JS, transmis via bridge | Calcule en C++ (Yoga), acces synchrone |
-| Thread model | 3 threads separes, communication async | Execution sur n'importe quel thread |
+| Thread model | 3 threads separes, communication async | Exécution sur n'importe quel thread |
 | Mounting | Asynchrone (batched) | Synchrone possible (priorite) |
 | Concurrent rendering | Non supporte | Supporte (useTransition, Suspense) |
 | Layout flash | Possible (1 frame de retard) | Elimine (layout synchrone) |
 
 ---
 
-## Creer un Fabric Component
+## Créer un Fabric Component
 
 ### Exemple : CircularProgress
 
 Un composant natif qui dessine une barre de progression circulaire — impossible a realiser en pur JS avec les memes performances.
 
-### Etape 1 : le component spec
+### Étape 1 : le component spec
 
 ```typescript
 // specs/CircularProgressNativeComponent.ts
@@ -334,7 +334,7 @@ import type {
 } from 'react-native/Libraries/Types/CodegenTypes';
 ```
 
-### Etape 2 : Implementation iOS (Objective-C++)
+### Étape 2 : Implementation iOS (Objective-C++)
 
 ```objc
 // ios/CircularProgressView.h
@@ -523,7 +523,7 @@ Class<RCTComponentViewProtocol> CircularProgressCls(void) {
 }
 ```
 
-### Etape 3 : Implementation Android (Kotlin)
+### Étape 3 : Implementation Android (Kotlin)
 
 ```kotlin
 // android/.../CircularProgressView.kt
@@ -759,9 +759,9 @@ const styles = StyleSheet.create({
 
 ---
 
-## Fabric Component avec evenements
+## Fabric Component avec événements
 
-### Spec avec evenements
+### Spec avec événements
 
 ```typescript
 // specs/CircularProgressNativeComponent.ts (version avec events)
@@ -801,7 +801,7 @@ interface NativeProps extends ViewProps {
 export default codegenNativeComponent<NativeProps>('CircularProgress');
 ```
 
-### Emission d'evenements cote iOS
+### Emission d'événements cote iOS
 
 ```objc
 // Emettre un evenement depuis le composant natif iOS
@@ -829,7 +829,7 @@ export default codegenNativeComponent<NativeProps>('CircularProgress');
 }
 ```
 
-### Consommation des evenements en JS
+### Consommation des événements en JS
 
 ```tsx
 <CircularProgress
@@ -976,7 +976,7 @@ ENV['RCT_NEW_ARCH_ENABLED'] = '1'
 newArchEnabled=true
 ```
 
-### Verifier la compatibilite des librairies
+### Vérifier la compatibilite des librairies
 
 ```bash
 # Outil de verification de compatibilite
@@ -1014,7 +1014,7 @@ L'interop layer est transparent mais implique un cout de performance (conversion
 
 ### Pitfalls courants de migration
 
-| Probleme | Symptome | Solution |
+| Problème | Symptome | Solution |
 |----------|----------|----------|
 | `requireNativeComponent` deprecated | Warning au runtime | Migrer vers `codegenNativeComponent` |
 | `UIManager.dispatchViewManagerCommand` | Crash | Utiliser les refs et les commandes natives |
@@ -1022,7 +1022,7 @@ L'interop layer est transparent mais implique un cout de performance (conversion
 | `setNativeProps` supprime | Props ne se mettent pas a jour | Utiliser `useState` + re-render |
 | `findNodeHandle` deprecated | Warning | Utiliser les refs directement |
 
-### Avant / Apres
+### Avant / Après
 
 ```typescript
 // AVANT (Paper / Bridge)
@@ -1061,7 +1061,7 @@ Commands.reset(ref.current);
 
 ## Benchmarks : Bridge vs JSI
 
-### Methodologie de mesure
+### Méthodologie de mesure
 
 ```typescript
 // benchmark.ts — mesure de latence
@@ -1085,12 +1085,12 @@ function benchmarkModuleCall(iterations: number) {
 // JSI:    ~0.005ms par appel (100x plus rapide)
 ```
 
-### Comparaison sur des cas reels
+### Comparaison sur des cas réels
 
 | Operation | Bridge (ms) | JSI (ms) | Speedup |
 |-----------|------------|----------|---------|
 | Lecture d'une valeur | 0.5 | 0.005 | 100x |
-| Appel de methode sans args | 0.8 | 0.01 | 80x |
+| Appel de méthode sans args | 0.8 | 0.01 | 80x |
 | Passage d'un objet (10 props) | 1.2 | 0.03 | 40x |
 | Passage d'un tableau (100 items) | 3.5 | 0.15 | 23x |
 | Event natif → JS | 1.0 | 0.02 | 50x |
@@ -1111,9 +1111,9 @@ Fabric rendering :
 
 ---
 
-## Ecrire un module JSI pur (sans Turbo Module)
+## Écrire un module JSI pur (sans Turbo Module)
 
-Pour les cas ou les performances sont critiques (>10 000 appels/s), on peut ecrire un module JSI pur en C++ :
+Pour les cas où les performances sont critiques (>10 000 appels/s), on peut écrire un module JSI pur en C++ :
 
 ```cpp
 // jsi/MathModule.cpp
@@ -1211,7 +1211,7 @@ const dist = global.NativeMath.fastDistance(0, 0, 3, 4); // 5
 
 ---
 
-## Checklist de creation d'un Fabric Component
+## Checklist de création d'un Fabric Component
 
 ```
 [ ] 1. Component spec (codegenNativeComponent)
@@ -1232,23 +1232,23 @@ const dist = global.NativeMath.fastDistance(0, 0, 3, 4); // 5
 
 | Erreur | Cause | Solution |
 |--------|-------|----------|
-| `Invariant: Native component not found` | Spec name ≠ natif name | Verifier le name dans le spec et le ViewManager |
+| `Invariant: Native component not found` | Spec name ≠ natif name | Vérifier le name dans le spec et le ViewManager |
 | `Props type mismatch` | Type codegen incorrect | Utiliser les bons types (`Float` vs `Double`, `Int32`) |
-| `Cannot read property of null (shadowNode)` | Composant pas encore monte | Verifier le lifecycle, utiliser `useLayoutEffect` |
+| `Cannot read property of null (shadowNode)` | Composant pas encore monte | Vérifier le lifecycle, utiliser `useLayoutEffect` |
 | `Thread assertion failed` | Acces UI depuis le wrong thread | Dispatcher sur le main thread |
 | `Codegen error: unknown type` | Type non supporte | Utiliser les types primitifs ou des interfaces plates |
 | `Interop layer crash` | Librairie ancienne incompatible | Mettre a jour la librairie ou contribuer la migration |
 
 ---
 
-## Points cles a retenir
+## Points clés à retenir
 
 1. **JSI = C++ direct** : pas de serialisation, pas de bridge, appels synchrones possibles
 2. **Host Objects** : objets C++ exposes directement dans le runtime JavaScript
 3. **Fabric = rendering C++** : shadow tree, layout Yoga, diffing et mutations en C++
-4. **Layout synchrone** : plus de "layout flash", le layout est calcule et applique dans le meme frame
-5. **Concurrent rendering** : `useTransition` et `useDeferredValue` fonctionnent grace a Fabric
-6. **Codegen** : le spec TypeScript genere automatiquement les interfaces natives
+4. **Layout synchrone** : plus de "layout flash", le layout est calcule et applique dans le même frame
+5. **Concurrent rendering** : `useTransition` et `useDeferredValue` fonctionnent grâce à Fabric
+6. **Codegen** : le spec TypeScript généré automatiquement les interfaces natives
 7. **Interop layer** : les anciennes librairies fonctionnent via un wrapper automatique
 8. **Performances** : JSI est 20 a 100x plus rapide que le Bridge selon l'operation
 
@@ -1263,3 +1263,14 @@ const dist = global.NativeMath.fastDistance(0, 0, 3, 4); // 5
 - [React Native New Architecture Working Group](https://github.com/reactwg/react-native-new-architecture)
 - [Yoga Layout Engine](https://yogalayout.dev/)
 - [Software Mansion — Fabric Components Guide](https://blog.swmansion.com/)
+
+---
+
+<!-- parcours-recommande -->
+
+::: tip Parcours recommandé
+1. **Screencast** : [screencast 24 fabric](../screencasts/screencast-24-fabric.md)
+2. **Lab** : [lab-24-fabric-jsi](../labs/lab-24-fabric-jsi/README)
+3. **Visualisation** : [Bridge vs JSI](../visualizations/bridge-vs-jsi.html)
+4. **Quiz** : [quiz 24 fabric](../quizzes/quiz-24-fabric.html)
+:::

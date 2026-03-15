@@ -4,11 +4,11 @@
 - **Duree estimee** : 14-16 min
 - **Module** : `modules/07-composants-ui-avances.md`
 - **Lab associe** : Lab 07
-- **Prerequis** : Screencast 06
+- **Prérequis** : Screencast 06
 
 ## Setup
 - [ ] VS Code ouvert dans un projet Expo
-- [ ] Terminal integre ouvert
+- [ ] Terminal intégré ouvert
 - [ ] Simulateur iOS et emulateur Android lances
 - [ ] Fichier `modules/07-composants-ui-avances.md` ouvert
 
@@ -16,15 +16,15 @@
 
 ### [00:00-02:00] Introduction — Au-dela des composants de base
 
-> On a vu les composants fondamentaux. Maintenant, on va construire des composants avances reutilisables : un systeme de Toast, un BottomSheet anime et un ThemeProvider complet. On va aussi voir l'accessibilite de chaque composant.
+> On a vu les composants fondamentaux. Maintenant, on va construire des composants avances réutilisables : un système de Toast, un BottomSheet anime et un ThemeProvider complet. On va aussi voir l'accessibilité de chaque composant.
 
 **Action** : Montrer l'objectif final — une app avec un theme sombre/clair, des toasts qui apparaissent en haut et un BottomSheet anime.
 
-### [02:00-04:30] Systeme de Toast
+### [02:00-04:30] Système de Toast
 
 > Un toast, c'est un message ephemere qui apparait pour confirmer une action. Implementons-le avec un Context React.
 
-**Action** : Creer le type et le Context.
+**Action** : Créer le type et le Context.
 
 ```typescript
 interface Toast {
@@ -65,7 +65,7 @@ function ToastProvider({ children }) {
 }
 ```
 
-> Insister sur l'accessibilite : chaque toast a `accessibilityRole="alert"` et `accessibilityLiveRegion="polite"`.
+> Insister sur l'accessibilité : chaque toast a `accessibilityRole="alert"` et `accessibilityLiveRegion="polite"`.
 
 **Action** : Tester avec VoiceOver. Montrer que le lecteur d'ecran annonce le toast.
 
@@ -73,7 +73,7 @@ function ToastProvider({ children }) {
 
 > Les BottomSheet sont partout dans les apps mobiles. Construisons-en un avec Animated et Modal.
 
-**Action** : Creer le composant `BottomSheet`.
+**Action** : Créer le composant `BottomSheet`.
 
 ```typescript
 function BottomSheet({ visible, onClose, children, height = '50%' }) {
@@ -117,7 +117,7 @@ function BottomSheet({ visible, onClose, children, height = '50%' }) {
 
 > Un theme coherent evite les valeurs magiques dans les styles. Voyons comment construire un ThemeProvider avec Context.
 
-**Action** : Definir les tokens de theme.
+**Action** : Définir les tokens de theme.
 
 ```typescript
 const lightTheme = {
@@ -146,7 +146,7 @@ const darkTheme = {
 };
 ```
 
-**Action** : Creer le ThemeProvider.
+**Action** : Créer le ThemeProvider.
 
 ```typescript
 function ThemeProvider({ children }) {
@@ -163,7 +163,7 @@ function ThemeProvider({ children }) {
 }
 ```
 
-**Action** : Creer un composant `ThemedCard` qui utilise `useTheme()`.
+**Action** : Créer un composant `ThemedCard` qui utilise `useTheme()`.
 
 ```typescript
 function ThemedCard({ title, subtitle }) {
@@ -184,13 +184,13 @@ function ThemedCard({ title, subtitle }) {
 }
 ```
 
-> Montrer le toggle entre theme clair et sombre en temps reel.
+> Montrer le toggle entre theme clair et sombre en temps réel.
 
 ### [10:00-12:30] Compound Components — Select
 
-> Le pattern Compound Components offre une API tres lisible pour les composants complexes.
+> Le pattern Compound Components offre une API très lisible pour les composants complexes.
 
-**Action** : Montrer la difference entre l'API "props array" et l'API compound.
+**Action** : Montrer la différence entre l'API "props array" et l'API compound.
 
 ```typescript
 // API classique — les donnees sont separees du rendu
@@ -234,13 +234,13 @@ Select.Option = function Option({ value, children }) {
 };
 ```
 
-> Insister sur l'accessibilite : accessibilityRole="button" sur le trigger, accessibilityState avec expanded pour l'etat ouvert/ferme.
+> Insister sur l'accessibilité : accessibilityRole="button" sur le trigger, accessibilityState avec expanded pour l'état ouvert/ferme.
 
-### [12:30-14:00] Accessibilite — les bases essentielles
+### [12:30-14:00] Accessibilité — les bases essentielles
 
 > Chaque composant interactif DOIT avoir au minimum : accessibilityRole, accessibilityLabel, accessibilityState.
 
-**Action** : Montrer un toggle sans et avec accessibilite.
+**Action** : Montrer un toggle sans et avec accessibilité.
 
 ```typescript
 // AVANT (pas accessible)
@@ -259,11 +259,11 @@ Select.Option = function Option({ value, children }) {
 </Pressable>
 ```
 
-**Action** : Activer VoiceOver/TalkBack et naviguer dans l'app. Montrer la difference d'annonce.
+**Action** : Activer VoiceOver/TalkBack et naviguer dans l'app. Montrer la différence d'annonce.
 
 > Sans les props : "Bouton. Appuyez deux fois pour activer."
-> Avec les props : "Mode sombre. Bouton a bascule. Active. Appuyez deux fois pour desactiver."
+> Avec les props : "Mode sombre. Bouton a bascule. Active. Appuyez deux fois pour désactiver."
 
 ### [14:00-14:30] Recap
 
-> En resume : Pressable remplace TouchableOpacity, les Toast et BottomSheet se construisent avec Context et Animated, le ThemeProvider garantit la coherence visuelle, Compound Components offre une API flexible, et l'accessibilite est non-negociable. Passez au Lab 07 pour pratiquer.
+> En résumé : Pressable remplace TouchableOpacity, les Toast et BottomSheet se construisent avec Context et Animated, le ThemeProvider garantit la coherence visuelle, Compound Components offre une API flexible, et l'accessibilité est non-negociable. Passez au Lab 07 pour pratiquer.

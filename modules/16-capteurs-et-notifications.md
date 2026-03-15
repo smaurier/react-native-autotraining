@@ -10,7 +10,7 @@
 - Traiter les donnees brutes : filtre passe-bas, moyenne mobile, detection de seuil
 - Configurer les push notifications avec expo-notifications
 - Planifier des notifications locales avec channels Android et categories
-- Executer des taches en arriere-plan avec expo-task-manager et expo-background-fetch
+- Exécuter des taches en arriere-plan avec expo-task-manager et expo-background-fetch
 - Construire une app podometre avec compteur de pas et alertes de notification
 
 ---
@@ -125,9 +125,9 @@ Accelerometer.setUpdateInterval(100);
 Accelerometer.setUpdateInterval(500);
 ```
 
-> **Performance** : une frequence trop elevee surcharge le thread JS. Avec la New Architecture, le Turbo Module transmet les donnees via JSI (appel synchrone C++ → JS), mais le setState provoque un re-render a chaque mesure. Privilegiez `useRef` + `requestAnimationFrame` pour les animations basees sur les capteurs.
+> **Performance** : une frequence trop elevee surcharge le thread JS. Avec la New Architecture, le Turbo Module transmet les donnees via JSI (appel synchrone C++ → JS), mais le setState provoque un re-render à chaque mesure. Privilegiez `useRef` + `requestAnimationFrame` pour les animations basees sur les capteurs.
 
-### Verification de disponibilite
+### Vérification de disponibilité
 
 ```typescript
 import { Accelerometer } from 'expo-sensors';
@@ -147,7 +147,7 @@ async function checkAvailability() {
 
 ### Principe
 
-Le gyroscope mesure la vitesse de rotation autour de chaque axe en radians par seconde (rad/s). Combine avec l'accelerometre, il permet de reconstituer l'orientation precise de l'appareil.
+Le gyroscope mesure la vitesse de rotation autour de chaque axe en radians par seconde (rad/s). Combine avec l'accelerometre, il permet de reconstituer l'orientation précisé de l'appareil.
 
 ```typescript
 import { Gyroscope, GyroscopeMeasurement } from 'expo-sensors';
@@ -175,7 +175,7 @@ function useGyroscope(interval = 100) {
 |-------------|-------------------|----------------|
 | Boussole | Magnetometre | Accelerometre |
 | Detection de secousse | Accelerometre | - |
-| Compteur de pas | Podometre (ou accelerometre) | - |
+| Compteur de pas | Podometre (où accelerometre) | - |
 | Stabilisation camera | Gyroscope | Accelerometre |
 | Realite augmentee | Gyroscope + Accelerometre | Magnetometre |
 | Altimetre | Barometre | - |
@@ -186,7 +186,7 @@ function useGyroscope(interval = 100) {
 
 ### Principe
 
-Le magnetometre mesure le champ magnetique terrestre en microtesla (uT). Il permet de construire une boussole numerique.
+Le magnetometre mesure le champ magnetique terrestre en microtesla (uT). Il permet de construire une boussole numérique.
 
 ```typescript
 import { Magnetometer, MagnetometerMeasurement } from 'expo-sensors';
@@ -290,7 +290,7 @@ function pressureToAltitude(
 }
 ```
 
-> **Attention** : `relativeAltitude` n'est disponible que sur iOS. Sur Android, utilisez la formule barometrique avec une pression de reference.
+> **Attention** : `relativeAltitude` n'est disponible que sur iOS. Sur Android, utilisez la formule barometrique avec une pression de référence.
 
 ---
 
@@ -298,7 +298,7 @@ function pressureToAltitude(
 
 ### Compteur de pas natif
 
-Le Pedometer utilise les capteurs de mouvement integres au systeme (CoreMotion sur iOS, Activity Recognition sur Android). Il est bien plus precis qu'une detection manuelle via l'accelerometre.
+Le Pedometer utilise les capteurs de mouvement integres au système (CoreMotion sur iOS, Activity Recognition sur Android). Il est bien plus précis qu'une detection manuelle via l'accelerometre.
 
 ```typescript
 import { Pedometer } from 'expo-sensors';
@@ -343,16 +343,16 @@ const weeklySteps = await getStepHistory(7);
 
 ## Traitement des donnees capteur
 
-### Probleme des donnees brutes
+### Problème des donnees brutes
 
-Les capteurs physiques produisent des donnees bruyantes. Sans filtrage, les valeurs oscillent rapidement et rendent l'interface instable. Trois techniques fondamentales resolvent ce probleme.
+Les capteurs physiques produisent des donnees bruyantes. Sans filtrage, les valeurs oscillent rapidement et rendent l'interface instable. Trois techniques fondamentales resolvent ce problème.
 
 ### Filtre passe-bas (Low-pass filter)
 
-Le filtre passe-bas attenue les variations rapides (bruit) tout en conservant les tendances lentes (mouvement reel). Le parametre `alpha` (entre 0 et 1) controle la force du lissage :
+Le filtre passe-bas attenue les variations rapides (bruit) tout en conservant les tendances lentes (mouvement réel). Le paramètre `alpha` (entre 0 et 1) controle la force du lissage :
 
-- `alpha` proche de 0 : lissage fort (tres stable mais lent a reagir)
-- `alpha` proche de 1 : lissage faible (reactif mais bruite)
+- `alpha` proche de 0 : lissage fort (très stable mais lent a reagir)
+- `alpha` proche de 1 : lissage faible (réactif mais bruite)
 
 ```typescript
 // Formule : filteredValue = alpha * newValue + (1 - alpha) * previousValue
@@ -401,7 +401,7 @@ function SmoothedAccelerometer() {
 
 ### Moyenne mobile (Moving average)
 
-La moyenne mobile calcule la moyenne des N dernieres valeurs. Elle est plus simple que le filtre passe-bas mais introduit un delai proportionnel a la taille de la fenetre.
+La moyenne mobile calcule la moyenne des N dernières valeurs. Elle est plus simple que le filtre passe-bas mais introduit un delai proportionnel à la taille de la fenêtre.
 
 ```typescript
 class MovingAverage {
@@ -492,7 +492,7 @@ function createStepDetector(config: StepDetectorConfig) {
 
 ### Fusion de capteurs
 
-La fusion combine accelerometre et gyroscope pour obtenir une orientation robuste. Le filtre complementaire est la methode la plus simple :
+La fusion combine accelerometre et gyroscope pour obtenir une orientation robuste. Le filtre complementaire est la méthode la plus simple :
 
 ```typescript
 // Filtre complementaire : combine gyroscope (court terme) et accelerometre (long terme)
@@ -567,7 +567,7 @@ function createSensorFusion(alpha = 0.98) {
 2. Le token est envoye au backend
 3. Le backend envoie les notifications via l'API Expo Push
 4. Expo Push relaye vers APNs (iOS) ou FCM (Android)
-5. Le systeme affiche la notification sur l'appareil
+5. Le système affiche la notification sur l'appareil
 
 ### Configuration
 
@@ -877,7 +877,7 @@ async function getScheduledCount(): Promise<number> {
 
 ### expo-task-manager
 
-`expo-task-manager` permet de definir des taches qui s'executent meme quand l'app est en arriere-plan ou terminee. **Important** : la definition de la tache (TaskManager.defineTask) doit etre faite au niveau module (hors composant) et dans un fichier charge au demarrage.
+`expo-task-manager` permet de définir des taches qui s'executent même quand l'app est en arriere-plan ou terminee. **Important** : la définition de la tache (TaskManager.defineTask) doit etre faite au niveau module (hors composant) et dans un fichier charge au démarrage.
 
 ```typescript
 import * as TaskManager from 'expo-task-manager';
@@ -948,11 +948,11 @@ async function unregisterBackgroundFetch() {
 
 | Plateforme | Limitation |
 |------------|-----------|
-| iOS | Background fetch execute "a l'opportunite du systeme" — pas de garantie d'intervalle exact |
+| iOS | Background fetch exécuté "a l'opportunite du système" — pas de garantie d'intervalle exact |
 | iOS | L'app peut etre tuee si elle utilise trop de ressources en arriere-plan |
 | Android | Doze mode et App Standby limitent la frequence des taches |
-| Android | `stopOnTerminate: false` necessite un foreground service pour garantir l'execution |
-| Les deux | Les taches en arriere-plan ont un temps d'execution limite (~30 secondes) |
+| Android | `stopOnTerminate: false` nécessité un foreground service pour garantir l'exécution |
+| Les deux | Les taches en arriere-plan ont un temps d'exécution limite (~30 secondes) |
 
 ---
 
@@ -1284,7 +1284,7 @@ Accelerometer.addListener((d) => { dataRef.current = d; });
 // Mettre a jour l'UI via requestAnimationFrame ou intervalle
 ```
 
-### 3. Push token sans verification Device.isDevice
+### 3. Push token sans vérification Device.isDevice
 
 ```typescript
 // MAUVAIS — crash sur simulateur
@@ -1337,9 +1337,9 @@ function App() {
 
 ---
 
-## Resume
+## Résumé
 
-| Concept | API | Point cle |
+| Concept | API | Point clé |
 |---------|-----|-----------|
 | Accelerometre | `Accelerometer.addListener` | Toujours cleanup, adapter la frequence |
 | Gyroscope | `Gyroscope.addListener` | Combine avec accelerometre pour fusion |
@@ -1359,3 +1359,13 @@ function App() {
 Passez au [Lab 16](../labs/lab-16-capteurs-notifications/) pour implementer un filtre passe-bas, une moyenne mobile, un detecteur de pas, un planificateur de notifications et une fusion de capteurs en TypeScript pur.
 
 Puis testez vos connaissances avec le [Quiz 16](../quizzes/quiz-16-capteurs.html).
+
+---
+
+<!-- parcours-recommande -->
+
+::: tip Parcours recommandé
+1. **Screencast** : [screencast 16 capteurs](../screencasts/screencast-16-capteurs.md)
+2. **Lab** : [lab-16-capteurs-notifications](../labs/lab-16-capteurs-notifications/README)
+3. **Quiz** : [quiz 16 capteurs](../quizzes/quiz-16-capteurs.html)
+:::

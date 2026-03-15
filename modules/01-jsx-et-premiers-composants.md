@@ -4,7 +4,7 @@
 |----------|--------|
 | **Difficulte** | 1/5 |
 | **Duree** | 60 min |
-| **Prerequis** | [Module 00 — Prerequis et introduction](/modules/00-prerequis-et-introduction) |
+| **Prérequis** | [Module 00 — Prérequis et introduction](/modules/00-prerequis-et-introduction) |
 | **Lab** | [Lab 01 — JSX et composants](/labs/lab-01-jsx-composants/) |
 | **Quiz** | [Quiz 01 — JSX et composants](/quizzes/quiz-01-jsx-composants.html) |
 
@@ -12,12 +12,12 @@
 
 ## Objectifs du module
 
-- Maitriser la syntaxe JSX et ses particularites en React Native
-- Connaitre les composants de base : View, Text, Image, ScrollView, SafeAreaView
-- Creer des composants fonctionnels bien structures
+- Maîtriser la syntaxe JSX et ses particularites en React Native
+- Connaître les composants de base : View, Text, Image, ScrollView, SafeAreaView
+- Créer des composants fonctionnels bien structures
 - Composer des interfaces en imbriquant des composants
 - Decouvrir les bases du styling avec StyleSheet
-- Eviter les erreurs frequentes des debutants
+- Éviter les erreurs frequentes des débutants
 
 ---
 
@@ -95,7 +95,7 @@ return (
 
 ### 1.3 Expressions JavaScript dans le JSX
 
-Tout ce qui est entre `{}` est evalue comme du JavaScript :
+Tout ce qui est entre `{}` est évalué comme du JavaScript :
 
 ```typescript
 function UserGreeting() {
@@ -129,7 +129,7 @@ function UserGreeting() {
 
 ### 1.4 Rendu conditionnel
 
-Plusieurs patterns pour afficher ou masquer des elements :
+Plusieurs patterns pour afficher ou masquer des éléments :
 
 ```typescript
 interface UserCardProps {
@@ -235,7 +235,7 @@ function ProductList() {
 ```
 
 ::: warning Pourquoi la prop `key` ?
-React utilise `key` pour identifier chaque element d'une liste. Sans `key` (ou avec `key={index}`), React ne peut pas optimiser les mises a jour et peut produire des bugs visuels.
+React utilise `key` pour identifier chaque élément d'une liste. Sans `key` (où avec `key={index}`), React ne peut pas optimiser les mises a jour et peut produire des bugs visuels.
 
 Utilisez toujours un identifiant **unique et stable** (`id`, `slug`, etc.), jamais l'index du tableau.
 :::
@@ -662,10 +662,10 @@ const styles = StyleSheet.create({
 ```
 
 ::: warning ScrollView vs FlatList
-`ScrollView` rend **tous** ses enfants d'un coup. Pour les longues listes (> 50 elements), utilisez `FlatList` qui ne rend que les elements visibles (virtualisation). Nous verrons `FlatList` au module 04.
+`ScrollView` rend **tous** ses enfants d'un coup. Pour les longues listes (> 50 éléments), utilisez `FlatList` qui ne rend que les éléments visibles (virtualisation). Nous verrons `FlatList` au module 04.
 :::
 
-### 2.5 SafeAreaView — eviter le notch et les barres systeme
+### 2.5 SafeAreaView — éviter le notch et les barres système
 
 ```typescript
 import { SafeAreaView, View, Text, StyleSheet } from 'react-native';
@@ -1110,7 +1110,7 @@ function HomeScreen() {
 }
 ```
 
-### 4.3 Composants de liste reutilisables
+### 4.3 Composants de liste réutilisables
 
 ```typescript
 // Composant Avatar reutilisable
@@ -1930,11 +1930,11 @@ src/
 
 ### 8.2 Regles de base
 
-1. **Un composant = un fichier** (sauf sous-composants tres simples)
-2. **Props typees avec interface** — toujours definir les props explicitement
+1. **Un composant = un fichier** (sauf sous-composants très simples)
+2. **Props typees avec interface** — toujours définir les props explicitement
 3. **Styles en bas du fichier** via `StyleSheet.create`
 4. **Noms descriptifs** — `ProductCard` pas `Card1`
-5. **Composants petits et focuses** — si un composant depasse 150 lignes, le decouper
+5. **Composants petits et focuses** — si un composant dépasse 150 lignes, le découper
 6. **Pas de logique complexe dans le JSX** — extraire dans des fonctions
 
 ```typescript
@@ -1953,7 +1953,7 @@ const total = items
 
 ---
 
-## 9. Recapitulatif
+## 9. Récapitulatif
 
 | Concept | Detail |
 |---------|--------|
@@ -1962,9 +1962,9 @@ const total = items
 | `Text` | Obligatoire pour tout texte affiche |
 | `Image` | Images locales (`require`) ou distantes (`{ uri }`) |
 | `ScrollView` | Zone scrollable (rend tout d'un coup) |
-| `SafeAreaView` | Evite le notch et les barres systeme |
+| `SafeAreaView` | Evite le notch et les barres système |
 | `Pressable` | Zone tactile avec feedback |
-| `key` | Obligatoire sur les elements de liste |
+| `key` | Obligatoire sur les éléments de liste |
 | `StyleSheet.create` | Styles optimises, camelCase, pas d'unites |
 | Fragments `<>...</>` | Grouper sans noeud supplementaire |
 
@@ -1987,3 +1987,13 @@ Puis testez vos connaissances avec le [Quiz 01](/quizzes/quiz-01-jsx-composants.
 - [JSX in Depth](https://react.dev/learn/writing-markup-with-jsx)
 - [Conditional Rendering](https://react.dev/learn/conditional-rendering)
 - [Rendering Lists](https://react.dev/learn/rendering-lists)
+
+---
+
+<!-- parcours-recommande -->
+
+::: tip Parcours recommandé
+1. **Screencast** : [screencast 01 jsx composants](../screencasts/screencast-01-jsx-composants.md)
+2. **Lab** : [lab-01-jsx-composants](../labs/lab-01-jsx-composants/README)
+3. **Quiz** : [quiz 01 jsx composants](../quizzes/quiz-01-jsx-composants.html)
+:::

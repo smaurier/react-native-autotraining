@@ -4,10 +4,10 @@
 
 Pratiquer les concepts fondamentaux de la communication par props en React Native, sans runtime React : validation de props, fusion de defaults, event emitter, proxy de props, et discriminated unions.
 
-## Prerequis
+## Prérequis
 
 - Module 02 : Props et communication
-- TypeScript : interfaces, generiques, unions discriminees
+- TypeScript : interfaces, génériques, unions discriminees
 
 ## Lancer les tests
 
@@ -23,7 +23,7 @@ npx tsx labs/lab-02-props-communication/solution.ts
 
 ### 1. `validateProps(schema, props)` — Validation de props
 
-Implementez un validateur qui verifie un objet de props contre un schema :
+Implementez un validateur qui vérifié un objet de props contre un schema :
 - Props requises presentes
 - Types corrects (`string`, `number`, `boolean`, `function`, `object`, `array`)
 - Validator personnalise respecte
@@ -34,7 +34,7 @@ Fusionnez les props fournies avec les `defaultValue` du schema. Les props fourni
 
 ### 3. `createEventEmitter<Events>()` — Event emitter
 
-Creez un bus d'evenements generique avec :
+Creez un bus d'événements générique avec :
 - `on(event, listener)` : enregistrer un listener
 - `off(event, listener)` : retirer un listener
 - `emit(event, payload)` : declencher les listeners
@@ -46,7 +46,7 @@ Creez un objet qui retourne la prop si elle existe, sinon le default. Avec `getK
 
 ### 5. Type guards pour discriminated unions
 
-Implementez `isErrorAlert`, `isSuccessAlert`, `isWarningAlert`, `isIconButton` et `getAlertDescription` qui genere une description texte selon le type d'alerte.
+Implementez `isErrorAlert`, `isSuccessAlert`, `isWarningAlert`, `isIconButton` et `getAlertDescription` qui généré une description texte selon le type d'alerte.
 
 ## Nombre de tests : 15
 

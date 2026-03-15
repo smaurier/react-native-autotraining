@@ -6,13 +6,13 @@
 
 ## Objectifs
 
-- Creer un Bottom Tab Navigator avec icones, badges et tab bar personnalisee
-- Creer un Drawer Navigator avec contenu custom
+- Créer un Bottom Tab Navigator avec icones, badges et tab bar personnalisee
+- Créer un Drawer Navigator avec contenu custom
 - Imbriquer des navigateurs (stack dans tabs, modale sur tabs)
 - Configurer le deep linking (URL scheme, universal links)
 - Implementer un flux d'authentification avec ecrans conditionnels
-- Persister l'etat de navigation
-- Decouvrir les shared element transitions (React Navigation v7)
+- Persister l'état de navigation
+- Decouvrir les shared élément transitions (React Navigation v7)
 - Comprendre Expo Router comme alternative moderne (file-based routing)
 
 ---
@@ -532,7 +532,7 @@ function AppNavigator() {
 
 ### Modal Stack au-dessus des Tabs
 
-Pour presenter des ecrans modaux au-dessus de toute l'application :
+Pour présenter des ecrans modaux au-dessus de toute l'application :
 
 ```tsx
 type RootStackParamList = {
@@ -599,7 +599,7 @@ navigation.navigate('SearchTab', {
 
 ### Configuration du deep linking
 
-Le deep linking permet d'ouvrir un ecran specifique via une URL.
+Le deep linking permet d'ouvrir un ecran spécifique via une URL.
 
 ```tsx
 // navigation/linking.ts
@@ -888,7 +888,7 @@ export function useAuth() {
 
 ## Navigation state persistence
 
-### Sauvegarder et restaurer l'etat
+### Sauvegarder et restaurer l'état
 
 ```tsx
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -938,8 +938,8 @@ function App() {
 
 ### Cas d'usage
 
-- **Developpement** : reprendre la ou on en etait apres un hot reload
-- **Production** : restaurer l'ecran apres un crash ou un kill en arriere-plan
+- **Developpement** : reprendre la ou on en etait après un hot reload
+- **Production** : restaurer l'ecran après un crash ou un kill en arriere-plan
 - **Onboarding** : sauvegarder la progression de l'utilisateur
 
 ### Precautions
@@ -965,11 +965,11 @@ onStateChange={(state) => {
 
 ---
 
-## Shared element transitions
+## Shared élément transitions
 
 ### React Navigation v7 (experimental)
 
-React Navigation v7 introduit les shared element transitions pour creer des animations fluides entre ecrans.
+React Navigation v7 introduit les shared élément transitions pour créer des animations fluides entre ecrans.
 
 ```tsx
 import { SharedTransition, SharedElement } from '@react-navigation/native-stack';
@@ -1025,7 +1025,7 @@ function ProductDetailsScreen({ route }) {
 />
 ```
 
-### Alternative : react-native-shared-element
+### Alternative : react-native-shared-élément
 
 Pour React Navigation 6, utilisez la bibliotheque `react-navigation-shared-element` :
 
@@ -1261,7 +1261,7 @@ function HomeDetailsScreen({ navigation }) {
 // au lieu du HomeStack (au-dessus des tabs)
 ```
 
-### Naviguer vers un tab specifique au clic
+### Naviguer vers un tab spécifique au clic
 
 ```tsx
 // Depuis n'importe quel ecran, ouvrir SearchTab avec une recherche
@@ -1274,7 +1274,7 @@ navigation.navigate('MainTabs', {
 });
 ```
 
-### Reset conditionnel apres action
+### Reset conditionnel après action
 
 ```tsx
 // Apres avoir cree un post, revenir au HomeTab et rafraichir
@@ -1338,7 +1338,7 @@ type HomeListProps = CompositeScreenProps<
 >;
 ```
 
-### 4. Etat de navigation stale
+### 4. État de navigation stale
 
 ```tsx
 // Le deep linking peut creer un etat stale si l'ecran parent n'est pas charge
@@ -1409,13 +1409,13 @@ const { id } = useLocalSearchParams<{ id: string }>();
 | Deep linking | Automatique | Manuel |
 | Web support | Natif (SSR possible) | Partiel |
 | Flexibilite | Conventions strictes | Totale liberte |
-| Projet existant | Migration necessaire | Deja en place |
+| Projet existant | Migration nécessaire | Déjà en place |
 
 > **Recommandation** : Pour tout nouveau projet Expo (2025+), privilegiez Expo Router. Pour un projet existant avec React Navigation, la migration n'est pas urgente mais planifiable.
 
 ---
 
-## Recapitulatif
+## Récapitulatif
 
 | Concept | Cle |
 |---------|-----|
@@ -1431,4 +1431,15 @@ const { id } = useLocalSearchParams<{ id: string }>();
 
 ---
 
-**Prochain module** : [Module 10 — Gestion d'etat : Context et Zustand](./10-gestion-etat-context-zustand.md)
+**Prochain module** : [Module 10 — Gestion d'état : Context et Zustand](./10-gestion-etat-context-zustand.md)
+
+---
+
+<!-- parcours-recommande -->
+
+::: tip Parcours recommandé
+1. **Screencast** : [screencast 09 navigation avancee](../screencasts/screencast-09-navigation-avancee.md)
+2. **Lab** : [lab-09-navigation-avancee](../labs/lab-09-navigation-avancee/README)
+3. **Visualisation** : [Navigation Flow](../visualizations/navigation-flow.html)
+4. **Quiz** : [quiz 09 navigation avancee](../quizzes/quiz-09-navigation-avancee.html)
+:::

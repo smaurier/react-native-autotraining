@@ -2,7 +2,7 @@
 
 ## Objectifs
 
-Maitriser les breakpoints responsive, le scaling de polices, la selection par plateforme, la detection d'orientation et les calculs de grille en TypeScript pur.
+Maîtriser les breakpoints responsive, le scaling de polices, la selection par plateforme, la detection d'orientation et les calculs de grille en TypeScript pur.
 
 ## Exercices
 
@@ -16,7 +16,7 @@ Calculez une taille de police mise a l'echelle avec un facteur maximum (clamp).
 Selectionnez une valeur en fonction de la plateforme (ios, android, web) avec fallback sur default.
 
 ### Exercice 4 : getOrientation
-Detectez l'orientation (portrait/landscape) a partir de la largeur et la hauteur.
+Detectez l'orientation (portrait/landscape) à partir de la largeur et la hauteur.
 
 ### Exercice 5 : createResponsiveValue
 Creez un objet contenant une valeur pour chaque breakpoint.
@@ -31,7 +31,7 @@ Combinez les insets de zone securisee avec un padding minimum.
 Construisez un objet complet d'informations sur l'ecran.
 
 ### Exercice 9 : scaleDimension
-Calculez les dimensions physiques en pixels a partir du pixel ratio.
+Calculez les dimensions physiques en pixels à partir du pixel ratio.
 
 ### Exercice 10 : computeGridColumns
 Calculez le nombre de colonnes d'une grille responsive.

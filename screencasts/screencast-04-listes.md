@@ -14,14 +14,14 @@
 | 3:30-5:00 | SectionList : regrouper des contacts par lettre | VS Code + emulateur |
 | 5:00-6:30 | Pull-to-refresh : onRefresh, refreshing state | VS Code + emulateur |
 | 6:30-8:00 | Scroll infini : onEndReached, pagination | VS Code + emulateur |
-| 8:00-10:00 | Recherche filtree en temps reel | VS Code + emulateur |
+| 8:00-10:00 | Recherche filtree en temps réel | VS Code + emulateur |
 | 10:00-11:00 | Optimisation : getItemLayout, windowSize, maxToRenderPerBatch | VS Code + Flipper |
-| 11:00-12:00 | Recapitulatif et mention de FlashList | Slides |
+| 11:00-12:00 | Récapitulatif et mention de FlashList | Slides |
 
-## Points cles a montrer
-- La difference de performance entre ScrollView (tout en memoire) et FlatList (virtualise)
+## Points clés a montrer
+- La différence de performance entre ScrollView (tout en mémoire) et FlatList (virtualise)
 - Le pattern de pagination avec un state `page` et `hasMore`
-- Comment filtrer sans recalculer la liste complete a chaque frappe (debounce)
+- Comment filtrer sans recalculer la liste complete à chaque frappe (debounce)
 - L'impact visible de getItemLayout sur le scroll rapide
 
 ## Ressources

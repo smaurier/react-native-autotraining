@@ -4,11 +4,11 @@
 - **Duree estimee** : 10-12 min
 - **Module** : `modules/06-responsive-et-plateformes.md`
 - **Lab associe** : Lab 06
-- **Prerequis** : Screencast 05
+- **Prérequis** : Screencast 05
 
 ## Setup
 - [ ] VS Code ouvert dans un projet Expo
-- [ ] Terminal integre ouvert
+- [ ] Terminal intégré ouvert
 - [ ] Simulateur iOS et emulateur Android lances
 - [ ] Fichier `modules/06-responsive-et-plateformes.md` ouvert
 
@@ -16,9 +16,9 @@
 
 ### [00:00-01:30] Introduction — Pourquoi le responsive en React Native
 
-> Le responsive en mobile, ce n'est pas que la taille d'ecran. C'est aussi la plateforme, l'orientation, les zones securisees, le scaling des polices. Dans ce screencast, on va construire un layout qui s'adapte a tout ca.
+> Le responsive en mobile, ce n'est pas que la taille d'ecran. C'est aussi la plateforme, l'orientation, les zones securisees, le scaling des polices. Dans ce screencast, on va construire un layout qui s'adapte a tout ça.
 
-**Action** : Montrer un meme ecran sur iPhone SE, iPhone 14 Pro, iPad et Android.
+**Action** : Montrer un même ecran sur iPhone SE, iPhone 14 Pro, iPad et Android.
 
 ```
 iPhone SE    → phone (375pt)
@@ -30,9 +30,9 @@ Android      → phone/tablet selon appareil
 
 ### [01:30-03:30] Breakpoints et useWindowDimensions
 
-> Definissons un systeme de breakpoints. La cle, c'est d'utiliser useWindowDimensions, pas Dimensions.get().
+> Definissons un système de breakpoints. La clé, c'est d'utiliser useWindowDimensions, pas Dimensions.get().
 
-**Action** : Creer `utils/responsive.ts`.
+**Action** : Créer `utils/responsive.ts`.
 
 ```typescript
 export const BREAKPOINTS = {
@@ -50,7 +50,7 @@ export function getBreakpoint(width: number): Breakpoint {
 }
 ```
 
-**Action** : Creer le hook `useBreakpoint`.
+**Action** : Créer le hook `useBreakpoint`.
 
 ```typescript
 import { useWindowDimensions } from 'react-native';
@@ -61,13 +61,13 @@ export function useBreakpoint(): Breakpoint {
 }
 ```
 
-> Montrer que useWindowDimensions est reactif en pivotant le simulateur.
+> Montrer que useWindowDimensions est réactif en pivotant le simulateur.
 
 ### [03:30-05:30] Layout adaptatif avec breakpoints
 
-> Utilisons notre breakpoint pour creer un layout qui passe de 1 colonne sur phone a 2 sur tablet.
+> Utilisons notre breakpoint pour créer un layout qui passe de 1 colonne sur phone a 2 sur tablet.
 
-**Action** : Creer un composant `AdaptiveLayout`.
+**Action** : Créer un composant `AdaptiveLayout`.
 
 ```typescript
 function AdaptiveLayout() {
@@ -89,15 +89,15 @@ function AdaptiveLayout() {
 }
 ```
 
-> Insister sur `key={numColumns}` — sans ca, FlatList ne se re-layout pas.
+> Insister sur `key={numColumns}` — sans ça, FlatList ne se re-layout pas.
 
 **Action** : Pivoter le simulateur pour montrer le passage portrait/paysage.
 
-### [05:30-07:30] Platform.select et code specifique
+### [05:30-07:30] Platform.select et code spécifique
 
-> React Native offre Platform.select pour ecrire du code conditionnel par plateforme de maniere elegante.
+> React Native offre Platform.select pour écrire du code conditionnel par plateforme de manière elegante.
 
-**Action** : Creer un bouton avec des ombres platform-specific.
+**Action** : Créer un bouton avec des ombres platform-specific.
 
 ```typescript
 const styles = StyleSheet.create({
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-> Montrer la difference visuelle entre iOS (ombre CSS) et Android (elevation Material).
+> Montrer la différence visuelle entre iOS (ombre CSS) et Android (elevation Material).
 
 ### [07:30-09:00] Safe area et StatusBar
 
@@ -157,7 +157,7 @@ function Screen() {
 
 > Montrer les valeurs de insets sur iPhone 14 Pro (top: 59, bottom: 34) vs un appareil sans encoche.
 
-### [09:00-10:30] Font scaling et accessibilite
+### [09:00-10:30] Font scaling et accessibilité
 
 > Beaucoup d'utilisateurs augmentent la taille des polices. Il faut le supporter.
 
@@ -174,8 +174,8 @@ function Header({ title }: { title: string }) {
 }
 ```
 
-> Aller dans les reglages du simulateur, augmenter la taille des polices, montrer l'impact. Montrer comment maxFontSizeMultiplier protege les elements de layout.
+> Aller dans les reglages du simulateur, augmenter la taille des polices, montrer l'impact. Montrer comment maxFontSizeMultiplier protege les éléments de layout.
 
 ### [10:30-11:00] Recap
 
-> En resume : useWindowDimensions pour la reactivite, un systeme de breakpoints pour les layouts, Platform.select pour le code conditionnel, safe area context pour les zones securisees, et scaleFont pour l'accessibilite. Passez au Lab 06 pour pratiquer tout ca.
+> En résumé : useWindowDimensions pour la réactivité, un système de breakpoints pour les layouts, Platform.select pour le code conditionnel, safe area context pour les zones securisees, et scaleFont pour l'accessibilité. Passez au Lab 06 pour pratiquer tout ça.

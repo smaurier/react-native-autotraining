@@ -11,12 +11,12 @@
 ## Plan de tournage
 
 ### Intro (0:00 - 0:30)
-- "Dans ce screencast, on va construire une carte de profil complete etape par etape. On va decouvrir View, Text, Image, les styles et la composition de composants."
-- Montrer le resultat final (screenshot de la carte profil terminee)
+- "Dans ce screencast, on va construire une carte de profil complete étape par étape. On va découvrir View, Text, Image, les styles et la composition de composants."
+- Montrer le résultat final (screenshot de la carte profil terminee)
 
 ### Partie 1 — Structure de base avec View et Text (0:30 - 2:30)
 - Partir d'un `App.tsx` vierge
-- Creer la structure de base :
+- Créer la structure de base :
   ```tsx
   export default function App() {
     return (
@@ -44,11 +44,11 @@
     style={styles.avatar}
   />
   ```
-- Expliquer la difference : source avec objet URI vs source avec require local
+- Expliquer la différence : source avec objet URI vs source avec require local
 - Styler l'avatar : width, height, borderRadius (cercle = moitie de width)
-- Montrer les differents resizeMode : cover, contain, stretch
+- Montrer les différents resizeMode : cover, contain, stretch
 
-### Partie 3 — Creer la carte (Card) (4:30 - 6:30)
+### Partie 3 — Créer la carte (Card) (4:30 - 6:30)
 - Envelopper le contenu dans une View "card" :
   ```tsx
   <View style={styles.card}>
@@ -59,10 +59,10 @@
   - backgroundColor, borderRadius, padding
   - alignItems: 'center' pour centrer le contenu
   - Ombres : shadowColor/shadowOffset/shadowOpacity/shadowRadius (iOS) + elevation (Android)
-- Montrer la difference iOS vs Android pour les ombres
+- Montrer la différence iOS vs Android pour les ombres
 
 ### Partie 4 — Ajouter les statistiques (6:30 - 8:30)
-- Creer une ligne de stats avec flexDirection: 'row' :
+- Créer une ligne de stats avec flexDirection: 'row' :
   ```tsx
   <View style={styles.statsRow}>
     <View style={styles.stat}>
@@ -120,7 +120,7 @@
 
 ### Outro (12:00)
 - Recapituler les composants vus : View, Text, Image, Pressable, ScrollView
-- "On a appris a creer, styler et composer des composants. Dans le prochain module, on va decouvrir les props et la communication entre composants."
+- "On a appris a créer, styler et composer des composants. Dans le prochain module, on va découvrir les props et la communication entre composants."
 - Rappeler le Lab 01 et le Quiz 01
 
 ---
@@ -128,9 +128,9 @@
 ## Points a montrer visuellement
 
 - [ ] Split screen : VS Code a gauche, emulateur a droite
-- [ ] Fast Refresh a chaque modification
+- [ ] Fast Refresh à chaque modification
 - [ ] Erreur "Text strings must be rendered within Text" (et la correction)
-- [ ] Difference ombre iOS vs Android (side by side si possible)
+- [ ] Différence ombre iOS vs Android (side by side si possible)
 - [ ] Feedback Pressable en action
 - [ ] Arbre de composants final (schema)
 

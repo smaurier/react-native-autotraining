@@ -6,9 +6,9 @@
 
 ## Objectifs
 
-- Creer et manipuler des `Animated.Value`
-- Maitriser `Animated.timing` avec les courbes d'easing
-- Comprendre `Animated.spring` et ses parametres physiques
+- Créer et manipuler des `Animated.Value`
+- Maîtriser `Animated.timing` avec les courbes d'easing
+- Comprendre `Animated.spring` et ses paramètres physiques
 - Utiliser `Animated.decay` pour les animations basees sur la velocite
 - Interpoler des valeurs avec `inputRange` / `outputRange`
 - Animer en reaction au scroll avec `Animated.event`
@@ -22,14 +22,14 @@
 
 ### Concept fondamental
 
-`Animated.Value` est un wrapper autour d'un nombre. Au lieu de stocker une valeur dans un `useState`, on la stocke dans un objet mutable qui peut etre connecte directement aux proprietes de style sans provoquer de re-render React.
+`Animated.Value` est un wrapper autour d'un nombre. Au lieu de stocker une valeur dans un `useState`, on la stocke dans un objet mutable qui peut etre connecte directement aux propriétés de style sans provoquer de re-render React.
 
 ```
 useState(0.5)          →  re-render  →  reconciliation  →  commit  →  affichage
 Animated.Value(0.5)    →  thread natif  →  affichage (bypass React)
 ```
 
-### Creation
+### Création
 
 ```typescript
 import { Animated, View, StyleSheet } from 'react-native';
@@ -47,9 +47,9 @@ function FadeInView({ children }: { children: React.ReactNode }) {
 }
 ```
 
-> **Pourquoi useRef et pas useState ?** `Animated.Value` est un objet mutable. Si on le met dans `useState`, React ne detecte pas les changements (la reference reste la meme). Et surtout, on ne veut PAS que React re-rende quand la valeur change — c'est le thread natif qui anime directement.
+> **Pourquoi useRef et pas useState ?** `Animated.Value` est un objet mutable. Si on le met dans `useState`, React ne détecté pas les changements (la référence reste la même). Et surtout, on ne veut PAS que React re-rende quand la valeur change — c'est le thread natif qui anime directement.
 
-### Lire et ecrire la valeur
+### Lire et écrire la valeur
 
 ```typescript
 const anim = useRef(new Animated.Value(0)).current;
@@ -88,7 +88,7 @@ const position = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
 
 ### Principe
 
-`Animated.timing` anime une valeur de son etat actuel vers une valeur cible sur une duree donnee, en suivant une courbe d'easing.
+`Animated.timing` anime une valeur de son état actuel vers une valeur cible sur une duree donnee, en suivant une courbe d'easing.
 
 ```typescript
 import { Animated, Easing } from 'react-native';
@@ -212,7 +212,7 @@ Animated.timing(opacity, {
 
 ### Principe
 
-`Animated.spring` simule un ressort physique. Au lieu de specifier une duree, vous definissez des proprietes physiques. Le resultat est une animation qui semble naturelle et organique.
+`Animated.spring` simule un ressort physique. Au lieu de spécifier une duree, vous definissez des propriétés physiques. Le résultat est une animation qui semble naturelle et organique.
 
 ```typescript
 Animated.spring(value, {
@@ -225,7 +225,7 @@ Animated.spring(value, {
 
 ### Parametres physiques
 
-**Modele tension/friction** (defaut) :
+**Modèle tension/friction** (defaut) :
 - `tension` : rigidite du ressort. Plus la tension est haute, plus le ressort est "nerveux" (oscille vite).
 - `friction` : amortissement. Plus la friction est haute, moins le ressort oscille.
 
@@ -255,7 +255,7 @@ Animated.spring(scale, {
 });
 ```
 
-**Modele masse/amortissement/rigidite** (alternatif, plus precis) :
+**Modèle masse/amortissement/rigidite** (alternatif, plus précis) :
 
 ```typescript
 Animated.spring(value, {
@@ -267,11 +267,11 @@ Animated.spring(value, {
 });
 ```
 
-> **Attention** : ne melangez pas les deux modeles. Utilisez SOIT tension/friction, SOIT mass/damping/stiffness.
+> **Attention** : ne melangez pas les deux modèles. Utilisez SOIT tension/friction, SOIT mass/damping/stiffness.
 
 ### Velocity
 
-`velocity` donne une vitesse initiale au ressort. Utile apres un geste (le doigt est relache avec une certaine velocite) :
+`velocity` donne une vitesse initiale au ressort. Utile après un geste (le doigt est relache avec une certaine velocite) :
 
 ```typescript
 // Apres un geste de swipe
@@ -288,7 +288,7 @@ const onGestureEnd = (velocity: number) => {
 
 ### restSpeedThreshold et restDisplacementThreshold
 
-Ces parametres controlent quand l'animation est consideree comme terminee :
+Ces paramètres controlent quand l'animation est consideree comme terminee :
 
 ```typescript
 Animated.spring(value, {
@@ -351,7 +351,7 @@ Animated.decay(translateX, {
 }).start();
 ```
 
-### Cas d'usage : lancer un element
+### Cas d'usage : lancer un élément
 
 ```typescript
 function ThrowableCard() {
@@ -388,7 +388,7 @@ function ThrowableCard() {
 ### Deceleration
 
 - `0.997` (defaut) : deceleration standard
-- `0.999` : tres lente (l'objet glisse longtemps)
+- `0.999` : très lente (l'objet glisse longtemps)
 - `0.990` : rapide (l'objet s'arrete vite)
 
 ```
@@ -502,7 +502,7 @@ const rotation = animValue.interpolate({
 
 ### Principe
 
-`Animated.event` mappe un evenement natif (scroll, gesture) directement vers une `Animated.Value` sans passer par JS. Avec `useNativeDriver: true`, le mapping se fait entierement sur le thread natif.
+`Animated.event` mappe un événement natif (scroll, gesture) directement vers une `Animated.Value` sans passer par JS. Avec `useNativeDriver: true`, le mapping se fait entièrement sur le thread natif.
 
 ```typescript
 function ParallaxHeader() {
@@ -558,7 +558,7 @@ function ParallaxHeader() {
 }
 ```
 
-> **Important** : `scrollEventThrottle={16}` est obligatoire sur iOS pour recevoir les evenements scroll a 60 fps. Sans cette prop, iOS envoie les evenements de scroll de maniere sporadique.
+> **Important** : `scrollEventThrottle={16}` est obligatoire sur iOS pour recevoir les événements scroll a 60 fps. Sans cette prop, iOS envoie les événements de scroll de manière sporadique.
 
 ### Sticky header anime
 
@@ -649,7 +649,7 @@ function showCard() {
 
 ### Animated.sequence
 
-Execute les animations l'une apres l'autre :
+Execute les animations l'une après l'autre :
 
 ```typescript
 function bounceIn() {
@@ -849,7 +849,7 @@ Les types disponibles :
 - `LayoutAnimation.Types.easeOut`
 - `LayoutAnimation.Types.keyboard`
 
-Les proprietes animables :
+Les propriétés animables :
 - `LayoutAnimation.Properties.opacity` — apparition/disparition en fondu
 - `LayoutAnimation.Properties.scaleX` — mise a l'echelle horizontale
 - `LayoutAnimation.Properties.scaleY` — mise a l'echelle verticale
@@ -908,7 +908,7 @@ function AnimatedList() {
 
 | Critere | LayoutAnimation | Animated |
 |---------|-----------------|----------|
-| Complexite | Tres simple (1 ligne) | Plus verbose |
+| Complexite | Très simple (1 ligne) | Plus verbose |
 | Controle | Limité (preset ou config) | Total (valeur par valeur) |
 | Annulation | Impossible | `animation.stop()` |
 | Geste | Non | Oui |
@@ -920,9 +920,9 @@ function AnimatedList() {
 
 ## useNativeDriver
 
-### Comment ca marche
+### Comment ça marche
 
-Avec `useNativeDriver: true`, la definition de l'animation est envoyee au thread natif au demarrage. Le thread natif execute l'animation frame par frame sans communiquer avec JS. Resultat : 60 fps meme si le thread JS est occupe.
+Avec `useNativeDriver: true`, la définition de l'animation est envoyee au thread natif au démarrage. Le thread natif exécuté l'animation frame par frame sans communiquer avec JS. Résultat : 60 fps même si le thread JS est occupe.
 
 ```
 SANS useNativeDriver :
@@ -936,7 +936,7 @@ UI Thread  ──[frame]──[frame]──[frame]──[frame]──  (60 fps g
 
 ### Proprietes supportees
 
-`useNativeDriver: true` ne supporte que les proprietes qui ne necessitent pas de recalcul de layout :
+`useNativeDriver: true` ne supporte que les propriétés qui ne necessitent pas de recalcul de layout :
 
 | Supporte | Non supporte |
 |----------|-------------|
@@ -972,7 +972,7 @@ Animated.timing(width, {
 }).start();
 ```
 
-### Strategie : contourner les limitations
+### Stratégie : contourner les limitations
 
 ```typescript
 // OBJECTIF : animer la largeur d'une barre de progression
@@ -1256,7 +1256,7 @@ function FadeTransition({ visible, children }: {
 
 ## Bonnes pratiques
 
-### 1. Toujours preferer useNativeDriver
+### 1. Toujours préférer useNativeDriver
 
 ```typescript
 // BON — 60 fps garanti
@@ -1274,7 +1274,7 @@ Animated.timing(width, {
 }).start();
 ```
 
-### 2. Eviter les re-creations d'Animated.Value
+### 2. Éviter les re-creations d'Animated.Value
 
 ```typescript
 // MAUVAIS — cree une nouvelle valeur a chaque render
@@ -1319,7 +1319,7 @@ Animated.spring(scale, { toValue: 1, tension: 40, friction: 7, useNativeDriver: 
 Animated.timing(opacity, { toValue: 1, duration: 300, useNativeDriver: true });
 ```
 
-### 5. Eviter LayoutAnimation + FlatList
+### 5. Éviter LayoutAnimation + FlatList
 
 ```typescript
 // ATTENTION : LayoutAnimation peut causer des bugs visuels avec FlatList
@@ -1349,7 +1349,7 @@ Animated.timing(value, {
 }).start();
 ```
 
-### 2. Melanger native et non-native sur la meme valeur
+### 2. Melanger native et non-native sur la même valeur
 
 ```typescript
 const value = useRef(new Animated.Value(0)).current;
@@ -1400,18 +1400,18 @@ const opacity = scrollY.interpolate({
 
 ---
 
-## Resume
+## Résumé
 
 | Concept | Quand l'utiliser | useNativeDriver |
 |---------|-----------------|-----------------|
 | `Animated.timing` | Transitions d'ecran, fade, slide | Oui |
 | `Animated.spring` | Reactions aux gestes, rebond | Oui |
-| `Animated.decay` | Lancer un element (inertie) | Oui |
-| `interpolate` | Mapper une valeur vers plusieurs proprietes | Selon la propriete |
+| `Animated.decay` | Lancer un élément (inertie) | Oui |
+| `interpolate` | Mapper une valeur vers plusieurs propriétés | Selon la propriété |
 | `Animated.event` | Scroll-driven animations | Oui |
-| `parallel` | Plusieurs proprietes en meme temps | Oui |
-| `sequence` | Etape 1 puis etape 2 | Oui |
-| `stagger` | Apparition decalee d'elements | Oui |
+| `parallel` | Plusieurs propriétés en même temps | Oui |
+| `sequence` | Étape 1 puis étape 2 | Oui |
+| `stagger` | Apparition decalee d'éléments | Oui |
 | `loop` | Animations infinies (loader, pulse) | Oui |
 | `LayoutAnimation` | Ajout/suppression/resize de layout | N/A (natif) |
 
@@ -1422,3 +1422,14 @@ const opacity = scrollY.interpolate({
 Passez au [Lab 17](../labs/lab-17-animated-api/) pour implementer des valeurs animees, des animations timing/spring, des fonctions d'easing, des sequences et des interpolations en TypeScript pur.
 
 Puis testez vos connaissances avec le [Quiz 17](../quizzes/quiz-17-animated.html).
+
+---
+
+<!-- parcours-recommande -->
+
+::: tip Parcours recommandé
+1. **Screencast** : [screencast 17 animated](../screencasts/screencast-17-animated.md)
+2. **Lab** : [lab-17-animated-api](../labs/lab-17-animated-api/README)
+3. **Visualisation** : [Animation Curves](../visualizations/animation-curves.html)
+4. **Quiz** : [quiz 17 animated](../quizzes/quiz-17-animated.html)
+:::

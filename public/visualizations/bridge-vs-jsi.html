@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bridge vs JSI — React Native</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#1a1a2e;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;padding:20px}
+  h1{text-align:center;color:#4dabf7;margin-bottom:4px;font-size:1.6rem}
+  .subtitle{text-align:center;color:#8899aa;margin-bottom:24px;font-size:.9rem}
+  .main{max-width:1200px;margin:0 auto}
+  .panels{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:20px}
+  .panel{background:#16213e;border-radius:14px;padding:20px;border:1px solid #253555;position:relative;overflow:hidden}
+  .panel h2{font-size:1.05rem;margin-bottom:4px}
+  .panel .arch-label{font-size:.78rem;color:#8899aa;margin-bottom:16px}
+  .panel.bridge h2{color:#ff6b6b}
+  .panel.jsi h2{color:#51cf66}
+  .flow-area{position:relative;height:280px;background:#0f1729;border-radius:10px;border:1px solid #253555;overflow:hidden}
+  .box{position:absolute;width:140px;padding:12px 8px;border-radius:10px;text-align:center;font-size:.78rem;font-weight:600;z-index:2}
+  .box-js{background:#2d1b69;border:2px solid #7c5cbf;top:50%;left:12px;transform:translateY(-50%)}
+  .box-native{background:#1b4332;border:2px solid #40c057;top:50%;right:12px;transform:translateY(-50%)}
+  .box-bridge{background:#3b1a1a;border:2px solid #e03131;top:50%;left:50%;transform:translate(-50%,-50%);width:110px;font-size:.7rem}
+  .box-queue{position:absolute;background:#3b2a0a;border:2px solid #f59f00;top:15%;left:50%;transform:translateX(-50%);width:100px;padding:8px;border-radius:8px;text-align:center;font-size:.68rem;font-weight:600;z-index:2}
+  .arrow-direct{position:absolute;top:50%;left:160px;right:160px;height:4px;transform:translateY(-50%);z-index:1}
+  .arrow-direct .line{height:4px;border-radius:2px;width:100%}
+  .bridge .arrow-direct .line{background:linear-gradient(90deg,#7c5cbf,#e03131,#40c057)}
+  .jsi .arrow-direct .line{background:linear-gradient(90deg,#7c5cbf,#40c057)}
+  .arrow-label{position:absolute;top:calc(50% + 16px);left:50%;transform:translateX(-50%);font-size:.7rem;color:#8899aa;white-space:nowrap;z-index:2}
+
+  /* Packets */
+  .packet{position:absolute;width:22px;height:22px;border-radius:50%;z-index:5;pointer-events:none;display:flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:700;opacity:0;transition:none}
+  .packet.json{background:#f59f00;color:#1a1a2e}
+  .packet.direct{background:#51cf66;color:#1a1a2e}
+
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+  .stat{background:#0f1729;border-radius:8px;padding:10px;text-align:center;border:1px solid #253555}
+  .stat .val{font-size:1.4rem;font-weight:700;margin-bottom:2px}
+  .stat .label{font-size:.72rem;color:#8899aa}
+  .bridge .stat .val{color:#ff6b6b}
+  .jsi .stat .val{color:#51cf66}
+
+  .controls{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .btn{padding:12px 24px;border:none;border-radius:10px;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .15s}
+  .btn-primary{background:#0d6efd;color:#fff}
+  .btn-primary:hover{background:#4dabf7;transform:translateY(-1px)}
+  .btn-warn{background:#e03131;color:#fff}
+  .btn-warn:hover{background:#ff6b6b;transform:translateY(-1px)}
+  .btn-reset{background:#253555;color:#aabbcc}
+  .btn-reset:hover{background:#2a4060}
+  .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+  .explanation{max-width:1200px;margin:20px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .expl-card{background:#16213e;border-radius:12px;padding:16px;border:1px solid #253555}
+  .expl-card h3{font-size:.95rem;margin-bottom:8px}
+  .expl-card.bridge-expl h3{color:#ff6b6b}
+  .expl-card.jsi-expl h3{color:#51cf66}
+  .expl-card ul{padding-left:18px;font-size:.82rem;line-height:1.8;color:#aabbcc}
+  .expl-card li strong{color:#e0e0e0}
+
+  .progress-bar{position:absolute;bottom:0;left:0;height:3px;background:#4dabf7;transition:width .1s linear;border-radius:2px;z-index:10}
+  .bridge .progress-bar{background:#ff6b6b}
+  .jsi .progress-bar{background:#51cf66}
+</style>
+</head>
+<body>
+<h1>Bridge vs JSI</h1>
+<p class="subtitle">Comparaison des architectures de communication JS ↔ Native dans React Native</p>
+
+<div class="main">
+  <div class="controls">
+    <button class="btn btn-primary" id="sendOne">Envoyer un message</button>
+    <button class="btn btn-warn" id="sendBatch">Envoyer 100 messages</button>
+    <button class="btn btn-reset" id="resetBtn">Reinitialiser</button>
+  </div>
+
+  <div class="panels" style="margin-top:20px">
+    <!-- Bridge Panel -->
+    <div class="panel bridge">
+      <h2>Bridge (ancienne architecture)</h2>
+      <p class="arch-label">React Native &lt; 0.68 — Communication asynchrone via JSON</p>
+      <div class="flow-area" id="bridgeFlow">
+        <div class="box box-js">JS Thread<br><span style="font-size:.65rem;color:#b197fc">Logique &amp; UI</span></div>
+        <div class="box-queue" id="bridgeQueue">File d'attente<br><span id="queueCount" style="color:#f59f00">0 msg</span></div>
+        <div class="box box-bridge" id="bridgeBox">BRIDGE<br><span style="font-size:.6rem;color:#ff8787">Serialisation JSON</span></div>
+        <div class="box box-native">Native Thread<br><span style="font-size:.65rem;color:#69db7c">Modules natifs</span></div>
+        <div class="arrow-direct"><div class="line"></div></div>
+        <div class="arrow-label">Serialisation → File → Deserialisation</div>
+        <div class="progress-bar" id="bridgeProgress"></div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="val" id="bridgeMsgCount">0</div><div class="label">Messages envoyés</div></div>
+        <div class="stat"><div class="val" id="bridgeLatency">0 ms</div><div class="label">Latence par message</div></div>
+        <div class="stat"><div class="val" id="bridgeTotal">0 ms</div><div class="label">Temps total</div></div>
+        <div class="stat"><div class="val" id="bridgeThroughput">0</div><div class="label">Messages/sec</div></div>
+      </div>
+    </div>
+
+    <!-- JSI Panel -->
+    <div class="panel jsi">
+      <h2>JSI (architecture actuelle)</h2>
+      <p class="arch-label">React Native &ge; 0.68 — Appels synchrones directs en C++</p>
+      <div class="flow-area" id="jsiFlow">
+        <div class="box box-js">JS Thread<br><span style="font-size:.65rem;color:#b197fc">Logique &amp; UI</span></div>
+        <div class="box box-native">Native Thread<br><span style="font-size:.65rem;color:#69db7c">Modules Turbo</span></div>
+        <div class="arrow-direct"><div class="line"></div></div>
+        <div class="arrow-label">Appel direct C++ (pas de serialisation)</div>
+        <div class="progress-bar" id="jsiProgress"></div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="val" id="jsiMsgCount">0</div><div class="label">Messages envoyés</div></div>
+        <div class="stat"><div class="val" id="jsiLatency">0 ms</div><div class="label">Latence par message</div></div>
+        <div class="stat"><div class="val" id="jsiTotal">0 ms</div><div class="label">Temps total</div></div>
+        <div class="stat"><div class="val" id="jsiThroughput">0</div><div class="label">Messages/sec</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="explanation">
+    <div class="expl-card bridge-expl">
+      <h3>Le Bridge (ancien)</h3>
+      <ul>
+        <li><strong>Asynchrone</strong> : chaque appel JS → Native passe par une file d'attente</li>
+        <li><strong>Serialisation JSON</strong> : les donnees sont converties en JSON string, envoyees, puis parsees cote natif</li>
+        <li><strong>Goulot d'etranglement</strong> : animations, listes defilantes et gestes souffrent du delai</li>
+        <li><strong>Pas de references partagees</strong> : JS et Native ne peuvent pas acceder aux memes objets</li>
+      </ul>
+    </div>
+    <div class="expl-card jsi-expl">
+      <h3>Le JSI (nouveau)</h3>
+      <ul>
+        <li><strong>Synchrone</strong> : appels directs sans file d'attente</li>
+        <li><strong>Pas de serialisation</strong> : les objets C++ sont accessibles directement depuis JS</li>
+        <li><strong>References partagees</strong> : JS peut tenir une reference a un objet natif (HostObject)</li>
+        <li><strong>Turbo Modules</strong> : chargement paresseux, typage compile (Codegen)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+let bridgeStats = { msgs: 0, totalTime: 0 };
+let jsiStats = { msgs: 0, totalTime: 0 };
+let busy = false;
+
+const BRIDGE_LATENCY_MIN = 8;
+const BRIDGE_LATENCY_MAX = 16;
+const JSI_LATENCY_MIN = 0.3;
+const JSI_LATENCY_MAX = 1.2;
+const BRIDGE_SERIALIZE_TIME = 4;
+
+function randBetween(a, b) { return a + Math.random() * (b - a); }
+
+function createPacket(container, cls) {
+  const p = document.createElement('div');
+  p.className = 'packet ' + cls;
+  p.textContent = cls === 'json' ? '{ }' : '→';
+  container.appendChild(p);
+  return p;
+}
+
+function animatePacket(packet, fromX, fromY, toX, toY, duration) {
+  return new Promise(resolve => {
+    packet.style.left = fromX + 'px';
+    packet.style.top = fromY + 'px';
+    packet.style.opacity = '1';
+    packet.style.transition = `left ${duration}ms ease-in-out, top ${duration}ms ease-in-out`;
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        packet.style.left = toX + 'px';
+        packet.style.top = toY + 'px';
+        setTimeout(() => {
+          packet.style.opacity = '0';
+          setTimeout(() => { packet.remove(); resolve(); }, 100);
+        }, duration);
+      });
+    });
+  });
+}
+
+async function sendBridgeMessage() {
+  const flow = $('bridgeFlow');
+  const w = flow.clientWidth;
+  const h = flow.clientHeight;
+  const midY = h / 2 - 11;
+
+  const latency = randBetween(BRIDGE_LATENCY_MIN, BRIDGE_LATENCY_MAX);
+  const serTime = BRIDGE_SERIALIZE_TIME;
+  const totalMsg = latency + serTime;
+
+  // Animate: JS → Bridge center
+  const p1 = createPacket(flow, 'json');
+  const half = latency / 2;
+  await animatePacket(p1, 155, midY, w/2 - 14, midY - 30, Math.max(half * 20, 150));
+
+  // Show queue count
+  $('queueCount').textContent = '1 msg';
+
+  // Bridge center → Native
+  const p2 = createPacket(flow, 'json');
+  await animatePacket(p2, w/2, midY, w - 175, midY, Math.max(half * 20, 150));
+  $('queueCount').textContent = '0 msg';
+
+  bridgeStats.msgs++;
+  bridgeStats.totalTime += totalMsg;
+  updateBridgeStats(latency);
+}
+
+async function sendJSIMessage() {
+  const flow = $('jsiFlow');
+  const w = flow.clientWidth;
+  const h = flow.clientHeight;
+  const midY = h / 2 - 11;
+
+  const latency = randBetween(JSI_LATENCY_MIN, JSI_LATENCY_MAX);
+
+  const p = createPacket(flow, 'direct');
+  await animatePacket(p, 155, midY, w - 175, midY, Math.max(latency * 40, 80));
+
+  jsiStats.msgs++;
+  jsiStats.totalTime += latency;
+  updateJSIStats(latency);
+}
+
+function updateBridgeStats(lastLatency) {
+  $('bridgeMsgCount').textContent = bridgeStats.msgs;
+  $('bridgeLatency').textContent = lastLatency.toFixed(1) + ' ms';
+  $('bridgeTotal').textContent = bridgeStats.totalTime.toFixed(1) + ' ms';
+  const throughput = bridgeStats.totalTime > 0 ? (bridgeStats.msgs / (bridgeStats.totalTime / 1000)).toFixed(0) : 0;
+  $('bridgeThroughput').textContent = throughput;
+}
+
+function updateJSIStats(lastLatency) {
+  $('jsiMsgCount').textContent = jsiStats.msgs;
+  $('jsiLatency').textContent = lastLatency.toFixed(2) + ' ms';
+  $('jsiTotal').textContent = jsiStats.totalTime.toFixed(2) + ' ms';
+  const throughput = jsiStats.totalTime > 0 ? (jsiStats.msgs / (jsiStats.totalTime / 1000)).toFixed(0) : 0;
+  $('jsiThroughput').textContent = throughput;
+}
+
+async function sendOne() {
+  if (busy) return;
+  busy = true;
+  $('sendOne').disabled = true;
+  $('sendBatch').disabled = true;
+  await Promise.all([sendBridgeMessage(), sendJSIMessage()]);
+  busy = false;
+  $('sendOne').disabled = false;
+  $('sendBatch').disabled = false;
+}
+
+async function sendBatch() {
+  if (busy) return;
+  busy = true;
+  $('sendOne').disabled = true;
+  $('sendBatch').disabled = true;
+
+  const total = 100;
+
+  // Bridge: sequential (bottleneck)
+  const bridgePromise = (async () => {
+    for (let i = 0; i < total; i++) {
+      const flow = $('bridgeFlow');
+      const w = flow.clientWidth;
+      const h = flow.clientHeight;
+      const midY = h / 2 - 11;
+      const latency = randBetween(BRIDGE_LATENCY_MIN, BRIDGE_LATENCY_MAX);
+
+      $('queueCount').textContent = (total - i) + ' msg';
+      $('bridgeProgress').style.width = ((i + 1) / total * 100) + '%';
+
+      // Fast visual
+      const p = createPacket(flow, 'json');
+      p.style.left = '155px';
+      p.style.top = midY + 'px';
+      p.style.opacity = '1';
+      p.style.transition = 'left 60ms linear, opacity 60ms';
+      await new Promise(r => requestAnimationFrame(() => {
+        p.style.left = (w - 175) + 'px';
+        setTimeout(() => { p.style.opacity = '0'; setTimeout(() => p.remove(), 50); r(); }, 60);
+      }));
+
+      bridgeStats.msgs++;
+      bridgeStats.totalTime += latency + BRIDGE_SERIALIZE_TIME;
+      updateBridgeStats(latency);
+    }
+    $('queueCount').textContent = '0 msg';
+  })();
+
+  // JSI: much faster
+  const jsiPromise = (async () => {
+    for (let i = 0; i < total; i++) {
+      const flow = $('jsiFlow');
+      const w = flow.clientWidth;
+      const h = flow.clientHeight;
+      const midY = h / 2 - 11;
+      const latency = randBetween(JSI_LATENCY_MIN, JSI_LATENCY_MAX);
+
+      $('jsiProgress').style.width = ((i + 1) / total * 100) + '%';
+
+      const p = createPacket(flow, 'direct');
+      p.style.left = '155px';
+      p.style.top = midY + 'px';
+      p.style.opacity = '1';
+      p.style.transition = 'left 25ms linear, opacity 25ms';
+      await new Promise(r => requestAnimationFrame(() => {
+        p.style.left = (w - 175) + 'px';
+        setTimeout(() => { p.style.opacity = '0'; setTimeout(() => p.remove(), 30); r(); }, 25);
+      }));
+
+      jsiStats.msgs++;
+      jsiStats.totalTime += latency;
+      updateJSIStats(latency);
+    }
+  })();
+
+  await Promise.all([bridgePromise, jsiPromise]);
+
+  setTimeout(() => {
+    $('bridgeProgress').style.width = '0';
+    $('jsiProgress').style.width = '0';
+  }, 500);
+
+  busy = false;
+  $('sendOne').disabled = false;
+  $('sendBatch').disabled = false;
+}
+
+function reset() {
+  bridgeStats = { msgs: 0, totalTime: 0 };
+  jsiStats = { msgs: 0, totalTime: 0 };
+  ['bridgeMsgCount','bridgeLatency','bridgeTotal','bridgeThroughput'].forEach(id => $(id).textContent = '0');
+  ['jsiMsgCount','jsiLatency','jsiTotal','jsiThroughput'].forEach(id => $(id).textContent = '0');
+  $('bridgeLatency').textContent = '0 ms';
+  $('bridgeTotal').textContent = '0 ms';
+  $('jsiLatency').textContent = '0 ms';
+  $('jsiTotal').textContent = '0 ms';
+  $('queueCount').textContent = '0 msg';
+  $('bridgeProgress').style.width = '0';
+  $('jsiProgress').style.width = '0';
+}
+
+$('sendOne').addEventListener('click', sendOne);
+$('sendBatch').addEventListener('click', sendBatch);
+$('resetBtn').addEventListener('click', reset);
+</script>
+</body>
+</html>

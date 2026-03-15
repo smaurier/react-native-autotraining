@@ -1,4 +1,4 @@
-# Lab 00 — Prerequis TypeScript
+# Lab 00 — Prérequis TypeScript
 
 ## Objectifs
 

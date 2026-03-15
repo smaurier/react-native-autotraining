@@ -2,13 +2,13 @@
 
 ## Objectif
 
-Implementer en pur TypeScript les abstractions courantes pour interagir avec les APIs natives : permissions, systeme de fichiers, compression d'image, suivi GPS et intents de partage.
+Implementer en pur TypeScript les abstractions courantes pour interagir avec les APIs natives : permissions, système de fichiers, compression d'image, suivi GPS et intents de partage.
 
-## Prerequis
+## Prérequis
 
 - Module 15 : APIs natives essentielles
 - TypeScript : interfaces, Map, formules mathematiques
-- Concepts : permissions mobiles, systeme de fichiers, geolocalisation
+- Concepts : permissions mobiles, système de fichiers, geolocalisation
 
 ## Lancement
 
@@ -24,11 +24,11 @@ npx tsx labs/lab-15-apis-natives/solution.ts
 
 ### Exercice 1 : createPermissionManager (5 tests)
 
-Simulez le modele de permissions d'Expo. Les permissions commencent a `undetermined` et passent a `granted` quand on appelle `request`. Gerez les cas d'erreur (permission inexistante) et les etats `denied`.
+Simulez le modèle de permissions d'Expo. Les permissions commencent a `undetermined` et passent a `granted` quand on appelle `request`. Gerez les cas d'erreur (permission inexistante) et les états `denied`.
 
 ### Exercice 2 : createFileManager (5 tests)
 
-Simulez un systeme de fichiers en memoire avec `write`, `read`, `delete`, `exists` et `listDir`. Le path utilise `/` comme separateur. `listDir` ne retourne que les fichiers directement dans le repertoire (pas les sous-repertoires).
+Simulez un système de fichiers en mémoire avec `write`, `read`, `delete`, `exists` et `listDir`. Le path utilise `/` comme separateur. `listDir` ne retourne que les fichiers directement dans le répertoire (pas les sous-répertoires).
 
 ### Exercice 3 : compressImageMetadata (3 tests)
 
@@ -42,7 +42,7 @@ Suivez des points GPS et calculez la distance totale (formule de Haversine), la 
 
 Construisez un payload de partage adapte a iOS et Android. Sur Android, les URLs sont combinees avec le message. Les fichiers et images incluent un mimeType (defaut `application/octet-stream`).
 
-## Evaluation
+## Évaluation
 
 - 23 tests au total
 - Tous les tests doivent passer

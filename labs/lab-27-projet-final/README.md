@@ -4,15 +4,15 @@
 
 Implementer la logique metier complete de NomadNote, l'application de notes collaborative offline-first. Ce lab couvre les 9 piliers fonctionnels de l'application sous forme de fonctions pures TypeScript.
 
-## Concepts cles
+## Concepts clés
 
-### Modele de note (CRUD)
+### Modèle de note (CRUD)
 
-Le modele `Note` est le coeur de l'application. Les operations CRUD (Create, Read, Update, Delete) manipulent des objets immutables avec versioning (`syncVersion`) pour la synchronisation. Le delete est un soft-delete (champ `deletedAt`) pour permettre la reconciliation offline.
+Le modèle `Note` est le coeur de l'application. Les operations CRUD (Create, Read, Update, Delete) manipulent des objets immutables avec versioning (`syncVersion`) pour la synchronisation. Le delete est un soft-delete (champ `deletedAt`) pour permettre la reconciliation offline.
 
-### Systeme de tags
+### Système de tags
 
-Les tags permettent d'organiser les notes par categories. La comparaison est insensible a la casse pour eviter les doublons (`React` et `react` sont consideres identiques). Le filtrage utilise une logique AND : seules les notes possedant tous les tags demandes sont retournees.
+Les tags permettent d'organiser les notes par categories. La comparaison est insensible à la casse pour éviter les doublons (`React` et `react` sont consideres identiques). Le filtrage utilise une logique AND : seules les notes possedant tous les tags demandes sont retournees.
 
 ### Recherche
 
@@ -23,7 +23,7 @@ Trois modes de recherche sont implementes :
 
 ### Moteur de synchronisation
 
-Le sync engine gere la file d'operations en attente et la fusion des donnees locales/distantes. La resolution de conflits utilise d'abord le `syncVersion` (le plus eleve gagne), puis le Last-Write-Wins base sur `updatedAt` en cas d'egalite.
+Le sync engine géré la file d'operations en attente et la fusion des donnees locales/distantes. La résolution de conflits utilise d'abord le `syncVersion` (le plus eleve gagne), puis le Last-Write-Wins base sur `updatedAt` en cas d'egalite.
 
 ### Chiffrement
 
@@ -31,19 +31,19 @@ Implementation pedagogique d'un chiffrement XOR avec encodage base64. En product
 
 ### Gestion de la collaboration
 
-Le systeme de permissions a trois niveaux (read, write, admin) plus le role proprietaire (auteur). Chaque niveau herite des permissions du niveau inferieur.
+Le système de permissions a trois niveaux (read, write, admin) plus le role proprietaire (auteur). Chaque niveau hérité des permissions du niveau inferieur.
 
 ### File d'attente offline
 
-La queue gere les operations en attente avec un cycle de vie : pending → processing → completed/failed. Les elements echoues peuvent etre remis en attente avec `retry`.
+La queue géré les operations en attente avec un cycle de vie : pending → processing → completed/failed. Les éléments echoues peuvent etre remis en attente avec `retry`.
 
 ### Cache LRU
 
-Le cache utilise l'algorithme Least Recently Used pour maintenir en memoire les notes les plus consultees. Quand le cache est plein, la note la plus anciennement accedee est evincee.
+Le cache utilise l'algorithme Least Recently Used pour maintenir en mémoire les notes les plus consultees. Quand le cache est plein, la note la plus anciennement accedee est evincee.
 
 ### Dispatcher de notifications
 
-Le dispatcher gere les notifications immediates et planifiees (avec delai). Les notifications planifiees ne sont visibles dans `getUnread` qu'apres avoir ete marquees comme recues via `handleReceived`.
+Le dispatcher géré les notifications immediates et planifiees (avec delai). Les notifications planifiees ne sont visibles dans `getUnread` qu'après avoir ete marquees comme recues via `handleReceived`.
 
 ## Exercices
 
@@ -51,7 +51,7 @@ Le dispatcher gere les notifications immediates et planifiees (avec delai). Les 
 npx tsx exercise.ts
 ```
 
-## Verification de la solution
+## Vérification de la solution
 
 ```bash
 npx tsx solution.ts

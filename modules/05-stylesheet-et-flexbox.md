@@ -8,20 +8,20 @@
 
 A la fin de ce module, vous serez capable de :
 
-- Utiliser `StyleSheet.create` pour definir des styles types et optimises
-- Maitriser Flexbox dans React Native (differences avec le CSS web)
-- Controler la direction, l'alignement et la distribution avec les proprietes Flex
+- Utiliser `StyleSheet.create` pour définir des styles types et optimises
+- Maîtriser Flexbox dans React Native (différences avec le CSS web)
+- Controler la direction, l'alignement et la distribution avec les propriétés Flex
 - Utiliser `flex`, `flexGrow`, `flexShrink` et `flexBasis` pour le dimensionnement
-- Gerer le wrapping et les gaps entre elements
-- Positionner des elements avec `position: relative` et `absolute`
-- Creer des layouts responsifs avec `Dimensions` et les pourcentages
+- Gérer le wrapping et les gaps entre éléments
+- Positionner des éléments avec `position: relative` et `absolute`
+- Créer des layouts responsifs avec `Dimensions` et les pourcentages
 - Appliquer des styles conditionnels par plateforme avec `Platform.OS`
 - Composer des styles avec les tableaux, le spread et les ternaires
 
 ---
 
 :::tip Changement de perspective
-Jusqu'ici, vous avez appris a **afficher des donnees** : composants, props, state, listes. A partir de ce module, vous allez apprendre a **disposer ces donnees sur l'ecran**. On passe de "quoi afficher" a "ou et comment l'afficher". C'est un mode de pensee different — plus spatial, plus visuel — mais les concepts sont simples une fois qu'on a compris le modele Flexbox.
+Jusqu'ici, vous avez appris a **afficher des donnees** : composants, props, state, listes. A partir de ce module, vous allez apprendre a **disposer ces donnees sur l'ecran**. On passe de "quoi afficher" a "où et comment l'afficher". C'est un mode de pensee différent — plus spatial, plus visuel — mais les concepts sont simples une fois qu'on a compris le modèle Flexbox.
 :::
 
 <details>
@@ -39,9 +39,9 @@ Jusqu'ici, vous avez appris a **afficher des donnees** : composants, props, stat
 
 ## StyleSheet.create : pourquoi et comment
 
-### Le probleme des styles inline
+### Le problème des styles inline
 
-En React Native, vous pouvez ecrire des styles directement en inline :
+En React Native, vous pouvez écrire des styles directement en inline :
 
 ```tsx
 // ❌ Fonctionne mais sous-optimal
@@ -67,11 +67,11 @@ function InlineCard() {
 ```
 
 **Problemes** :
-1. Un nouvel objet est cree a chaque rendu → comparaisons echouent
-2. Pas de validation des proprietes → fautes de frappe silencieuses
+1. Un nouvel objet est créé à chaque rendu → comparaisons echouent
+2. Pas de validation des propriétés → fautes de frappe silencieuses
 3. Code difficile a maintenir quand les styles grandissent
 
-### StyleSheet.create a la rescousse
+### StyleSheet.create à la rescousse
 
 ```tsx
 import { View, Text, StyleSheet } from 'react-native';
@@ -108,10 +108,10 @@ const styles = StyleSheet.create({
 
 | Avantage | Detail |
 |----------|--------|
-| **References stables** | L'objet est cree une seule fois, pas a chaque rendu |
-| **Validation TypeScript** | Les proprietes invalides sont detectees a la compilation |
+| **Références stables** | L'objet est créé une seule fois, pas à chaque rendu |
+| **Validation TypeScript** | Les propriétés invalides sont detectees à la compilation |
 | **Optimisation bridge** | React Native peut envoyer un ID de style au lieu de l'objet complet via le bridge |
-| **Lisibilite** | Separation claire entre logique et presentation |
+| **Lisibilite** | Separation claire entre logique et présentation |
 | **Reutilisabilite** | Styles facilement partageables entre composants |
 
 ### StyleSheet.flatten et StyleSheet.compose
@@ -147,11 +147,11 @@ const borderStyle = {
 
 ## Flexbox dans React Native
 
-React Native utilise Flexbox pour le layout, mais avec des **differences importantes** par rapport au CSS web.
+React Native utilise Flexbox pour le layout, mais avec des **différences importantes** par rapport au CSS web.
 
-### Differences cles avec le CSS
+### Differences clés avec le CSS
 
-| Propriete | CSS Web | React Native |
+| Propriété | CSS Web | React Native |
 |-----------|---------|--------------|
 | `flexDirection` | `row` (defaut) | **`column`** (defaut) |
 | `alignContent` | `stretch` | `flex-start` |
@@ -161,11 +161,11 @@ React Native utilise Flexbox pour le layout, mais avec des **differences importa
 | `gap` | Support complet | Supporte depuis RN 0.71 |
 | `auto` margin | Oui (hack d'alignement) | **Non supporte** |
 
-:::warning Difference majeure : flexDirection
-En CSS web, les elements s'affichent en ligne (`row`) par defaut. En React Native, ils s'empilent en colonne (`column`). C'est la source de confusion la plus frequente pour les developpeurs web.
+:::warning Différence majeure : flexDirection
+En CSS web, les éléments s'affichent en ligne (`row`) par defaut. En React Native, ils s'empilent en colonne (`column`). C'est la source de confusion la plus frequente pour les développeurs web.
 :::
 
-### Le modele mental
+### Le modèle mental
 
 ```
 CSS Web (defaut: row)              React Native (defaut: column)
@@ -376,12 +376,12 @@ flex: -1          →  flexGrow: 0,  flexShrink: 1,  flexBasis: auto
 ```
 
 :::tip Astuce
-`flex: 1` est le pattern le plus courant pour faire qu'un element occupe tout l'espace restant. C'est l'equivalent du "layout remplissant" omnipresent dans les apps mobiles.
+`flex: 1` est le pattern le plus courant pour faire qu'un élément occupe tout l'espace restant. C'est l'équivalent du "layout remplissant" omnipresent dans les apps mobiles.
 :::
 
 ### flexGrow
 
-Definit combien d'espace supplementaire l'element prend parmi l'espace libre :
+Definit combien d'espace supplementaire l'élément prend parmi l'espace libre :
 
 ```tsx
 <View style={{ flexDirection: 'row', height: 100 }}>
@@ -400,7 +400,7 @@ Conteneur: 360px de large
 
 ### flexShrink
 
-Definit combien un element retrecit quand l'espace est insuffisant :
+Definit combien un élément retrecit quand l'espace est insuffisant :
 
 ```tsx
 <View style={{ flexDirection: 'row', width: 300 }}>
@@ -416,12 +416,12 @@ Bleu:  flexShrink 0 → ne retrecit pas → taille finale: 200px
 ```
 
 :::warning flexShrink en RN vs CSS
-En CSS, `flexShrink` vaut **1** par defaut. En React Native, il vaut **0** par defaut. Cela signifie que les elements debordent au lieu de retrecir si vous ne specifiez pas `flexShrink`.
+En CSS, `flexShrink` vaut **1** par defaut. En React Native, il vaut **0** par defaut. Cela signifie que les éléments debordent au lieu de retrecir si vous ne specifiez pas `flexShrink`.
 :::
 
 ### flexBasis
 
-La taille initiale de l'element avant la distribution de l'espace libre :
+La taille initiale de l'élément avant la distribution de l'espace libre :
 
 ```tsx
 <View style={{ flexDirection: 'row' }}>
@@ -439,7 +439,7 @@ Bleu:  200 + 50 = 250px
 
 ### Algorithme Flexbox simplifie
 
-L'algorithme de distribution Flexbox fonctionne en 3 etapes :
+L'algorithme de distribution Flexbox fonctionne en 3 étapes :
 
 1. **Calcul de la taille de base** : `flexBasis` ou `width`/`height` selon l'axe
 2. **Calcul de l'espace libre** : `containerSize - sum(bases)`
@@ -463,7 +463,7 @@ Si espace libre < 0 :
 
 ### flexWrap
 
-Par defaut (`nowrap`), les enfants restent sur une seule ligne/colonne. Avec `wrap`, ils passent a la ligne :
+Par defaut (`nowrap`), les enfants restent sur une seule ligne/colonne. Avec `wrap`, ils passent à la ligne :
 
 ```tsx
 <View style={{
@@ -508,7 +508,7 @@ Depuis React Native 0.71, vous pouvez utiliser `gap` pour espacer les enfants sa
 
 :::tip gap vs margin
 `gap` est preferable aux marges pour l'espacement dans les layouts Flex car :
-- Pas de marge en trop sur le premier/dernier element
+- Pas de marge en trop sur le premier/dernier élément
 - Pas besoin de calculs `marginRight` / `marginBottom` conditionnels
 - Plus simple et plus lisible
 :::
@@ -519,7 +519,7 @@ Depuis React Native 0.71, vous pouvez utiliser `gap` pour espacer les enfants sa
 
 ### relative (defaut)
 
-L'element est positionne normalement dans le flux Flex, puis decale par `top`, `right`, `bottom`, `left` :
+L'élément est positionne normalement dans le flux Flex, puis decale par `top`, `right`, `bottom`, `left` :
 
 ```tsx
 <View style={{
@@ -533,7 +533,7 @@ L'element est positionne normalement dans le flux Flex, puis decale par `top`, `
 
 ### absolute
 
-L'element est **retire du flux** Flex et positionne par rapport a son parent :
+L'élément est **retire du flux** Flex et positionne par rapport a son parent :
 
 ```tsx
 function BadgeIcon() {
@@ -618,7 +618,7 @@ const styles = StyleSheet.create({
 | `position: sticky` | Colle lors du scroll | **N'existe pas** (sauf `stickyHeaderIndices`) |
 
 :::warning position: absolute en RN
-En React Native, un element `absolute` est **toujours** positionne par rapport a son parent direct, pas par rapport au premier ancetre avec `position: relative` comme en CSS. C'est plus simple mais different.
+En React Native, un élément `absolute` est **toujours** positionne par rapport a son parent direct, pas par rapport au premier ancetre avec `position: relative` comme en CSS. C'est plus simple mais différent.
 :::
 
 ---
@@ -643,7 +643,7 @@ const styles = StyleSheet.create({
 
 ### Pourcentages
 
-Certaines proprietes acceptent des pourcentages (en string) :
+Certaines propriétés acceptent des pourcentages (en string) :
 
 ```tsx
 const styles = StyleSheet.create({
@@ -775,7 +775,7 @@ const styles = StyleSheet.create({
 
 ### Platform.select
 
-Plus lisible pour les valeurs differentes par plateforme :
+Plus lisible pour les valeurs différentes par plateforme :
 
 ```tsx
 const styles = StyleSheet.create({
@@ -794,7 +794,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-### Fichiers specifiques par plateforme
+### Fichiers spécifiques par plateforme
 
 React Native resout automatiquement les fichiers par plateforme :
 
@@ -1411,13 +1411,13 @@ const styles = StyleSheet.create({
 
 ---
 
-## Resume
+## Résumé
 
 ### StyleSheet
 
 | API | Usage |
 |-----|-------|
-| `StyleSheet.create({})` | Creer des styles types et optimises |
+| `StyleSheet.create({})` | Créer des styles types et optimises |
 | `StyleSheet.flatten([])` | Fusionner un tableau en un objet |
 | `StyleSheet.compose(a, b)` | Combiner 2 styles efficacement |
 | `StyleSheet.absoluteFill` | Raccourci position absolute plein ecran |
@@ -1425,7 +1425,7 @@ const styles = StyleSheet.create({
 
 ### Flexbox
 
-| Propriete | Defaut RN | Description |
+| Propriété | Defaut RN | Description |
 |-----------|-----------|-------------|
 | `flexDirection` | `column` | Axe principal |
 | `justifyContent` | `flex-start` | Distribution axe principal |
@@ -1435,7 +1435,7 @@ const styles = StyleSheet.create({
 | `flexGrow` | 0 | Croissance dans l'espace libre |
 | `flexShrink` | 0 | Retrecissement si debordement |
 | `flexBasis` | `auto` | Taille initiale |
-| `flexWrap` | `nowrap` | Retour a la ligne |
+| `flexWrap` | `nowrap` | Retour à la ligne |
 | `gap` | 0 | Espacement entre enfants |
 | `position` | `relative` | Positionnement |
 
@@ -1443,8 +1443,8 @@ const styles = StyleSheet.create({
 
 - [ ] `flex: 1` sur le conteneur racine
 - [ ] `flexDirection: 'row'` explicite pour les lignes
-- [ ] `flex: 1` ou `flexShrink: 1` sur les elements qui doivent s'adapter
-- [ ] `Platform.select` ou `Platform.OS` pour les styles specifiques
+- [ ] `flex: 1` ou `flexShrink: 1` sur les éléments qui doivent s'adapter
+- [ ] `Platform.select` ou `Platform.OS` pour les styles spécifiques
 - [ ] `useWindowDimensions` pour les layouts responsifs
 - [ ] `StyleSheet.create` au lieu de styles inline
 - [ ] Styles composes avec tableaux `[style1, condition && style2]`
@@ -1455,7 +1455,7 @@ const styles = StyleSheet.create({
 
 Rendez-vous dans le [Lab 05](../labs/lab-05-stylesheet-flexbox/) pour implementer :
 - Calcul de layout Flexbox (positions des enfants)
-- Fusion de styles avec strategie last-wins
+- Fusion de styles avec stratégie last-wins
 - Valeurs responsives avec breakpoints
 - Calcul de positions de grille
 - Extraction de styles par plateforme
@@ -1464,3 +1464,14 @@ Rendez-vous dans le [Lab 05](../labs/lab-05-stylesheet-flexbox/) pour implemente
 cd labs/lab-05-stylesheet-flexbox
 npx tsx exercise.ts
 ```
+
+---
+
+<!-- parcours-recommande -->
+
+::: tip Parcours recommandé
+1. **Screencast** : [screencast 05 stylesheet flexbox](../screencasts/screencast-05-stylesheet-flexbox.md)
+2. **Lab** : [lab-05-stylesheet-flexbox](../labs/lab-05-stylesheet-flexbox/README)
+3. **Visualisation** : [Flexbox Playground](../visualizations/flexbox-playground.html)
+4. **Quiz** : [quiz 05 stylesheet flexbox](../quizzes/quiz-05-stylesheet-flexbox.html)
+:::

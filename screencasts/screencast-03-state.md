@@ -1,12 +1,12 @@
 # Screencast 03 — State et cycle de vie
 
-| Duree | Difficulte | Prerequis |
+| Duree | Difficulte | Prérequis |
 |-------|------------|-----------|
-| ~14 min | 2/5 | Module 02 (Props), Module 03 (theorie) |
+| ~14 min | 2/5 | Module 02 (Props), Module 03 (théorie) |
 
 ## Objectif
 
-Construire un chronometre (StopWatch) pour maitriser useState et useRef, ajouter une recherche debounced pour comprendre useEffect et le cleanup, puis extraire des custom hooks reutilisables.
+Construire un chronometre (StopWatch) pour maîtriser useState et useRef, ajouter une recherche debounced pour comprendre useEffect et le cleanup, puis extraire des custom hooks réutilisables.
 
 ---
 
@@ -17,9 +17,9 @@ Construire un chronometre (StopWatch) pour maitriser useState et useRef, ajouter
 **Setup** : projet Expo, ecran vierge.
 
 1. **[0:00]** Introduction : "On va construire un chronometre pour comprendre useState, useRef et useEffect"
-2. **[0:30]** Creer `components/StopWatch.tsx` :
+2. **[0:30]** Créer `components/StopWatch.tsx` :
    - `useState(0)` pour le temps ecoule (ms)
-   - `useState(false)` pour l'etat running
+   - `useState(false)` pour l'état running
    - Afficher MM:SS.cc
 3. **[1:30]** Premiere tentative NAIVE avec setInterval dans un handler :
    ```tsx
@@ -36,16 +36,16 @@ Construire un chronometre (StopWatch) pour maitriser useState et useRef, ajouter
 8. **[4:00]** Ajouter le cleanup dans useEffect pour le demontage
 9. **[4:30]** Tester : montrer que tout fonctionne, le chrono demarre, s'arrete, se remet a zero
 
-**Point cle** : "useRef pour ce qui ne s'affiche pas, useState pour ce qui s'affiche."
+**Point clé** : "useRef pour ce qui ne s'affiche pas, useState pour ce qui s'affiche."
 
 ### Partie 2 — Recherche debounced avec useEffect (5:00 - 9:30)
 
-1. **[5:00]** Creer `components/DebouncedSearch.tsx` :
+1. **[5:00]** Créer `components/DebouncedSearch.tsx` :
    - `TextInput` avec `useState` pour la query
-   - `useState` pour les resultats
+   - `useState` pour les résultats
    - Simuler une API avec un setTimeout
-2. **[5:30]** Premiere tentative : chercher a chaque frappe
-   - Montrer le probleme : trop de requetes, resultats qui se chevauchent
+2. **[5:30]** Premiere tentative : chercher à chaque frappe
+   - Montrer le problème : trop de requêtes, résultats qui se chevauchent
 3. **[6:00]** Expliquer le concept du debounce avec un schema temporel
 4. **[6:30]** Implementer avec useEffect + setTimeout + cleanup :
    ```tsx
@@ -56,44 +56,44 @@ Construire un chronometre (StopWatch) pour maitriser useState et useRef, ajouter
      return () => clearTimeout(timer);
    }, [query]);
    ```
-5. **[7:00]** Montrer le fonctionnement : taper rapidement, la recherche ne se lance qu'apres 300ms d'inactivite
-6. **[7:30]** Ajouter un AbortController pour annuler les requetes en vol :
-   - Montrer le cleanup qui abort la requete precedente
-7. **[8:00]** Ajouter un etat loading et une gestion d'erreur
+5. **[7:00]** Montrer le fonctionnement : taper rapidement, la recherche ne se lance qu'après 300ms d'inactivite
+6. **[7:30]** Ajouter un AbortController pour annuler les requêtes en vol :
+   - Montrer le cleanup qui abort la requête précédente
+7. **[8:00]** Ajouter un état loading et une gestion d'erreur
 8. **[8:30]** Expliquer le dependency array :
    - `[]` = au montage
    - `[query]` = quand query change
-   - Sans array = a chaque render (a eviter)
+   - Sans array = à chaque render (a éviter)
 9. **[9:00]** Montrer le bug de la boucle infinie si on met un objet dans les deps
 
-**Point cle** : "Le cleanup de useEffect est votre meilleur ami pour eviter les fuites."
+**Point clé** : "Le cleanup de useEffect est votre meilleur ami pour éviter les fuites."
 
 ### Partie 3 — Custom hooks (9:30 - 14:00)
 
-1. **[9:30]** "On a de la logique reutilisable — extraisons-la dans des hooks"
+1. **[9:30]** "On a de la logique réutilisable — extraisons-la dans des hooks"
 2. **[10:00]** Extraire `useDebounce(value, delay)` :
    - Montrer le refactoring pas a pas
    - Le hook retourne la valeur debounced
 3. **[10:30]** Extraire `useStopWatch()` :
    - Retourne `{ elapsed, running, start, stop, reset }`
-   - Le composant StopWatch devient tres simple
-4. **[11:00]** Creer `useToggle(initialValue)` :
+   - Le composant StopWatch devient très simple
+4. **[11:00]** Créer `useToggle(initialValue)` :
    - Retourne `{ value, toggle, setTrue, setFalse }`
    - Montrer l'utilisation pour un switch dark mode
-5. **[11:30]** Creer `usePrevious(value)` :
+5. **[11:30]** Créer `usePrevious(value)` :
    - Utilise useRef + useEffect
-   - Montrer l'utilisation pour afficher "prix precedent" a cote du prix actuel
+   - Montrer l'utilisation pour afficher "prix précédent" a cote du prix actuel
 6. **[12:00]** Montrer la convention : "Toujours commencer par `use`, c'est la regle de React"
 7. **[12:30]** Tester que les hooks se composent : utiliser `useDebounce` dans `useDebouncedSearch`
-8. **[13:00]** Recap : "Les custom hooks sont LE mecanisme de reutilisation en React"
-9. **[13:30]** Resume des 5 regles :
+8. **[13:00]** Recap : "Les custom hooks sont LE mécanisme de reutilisation en React"
+9. **[13:30]** Résumé des 5 regles :
    - Setter fonctionnel quand le new state depend de l'ancien
    - Immutabilite : spread, map, filter — jamais muter
    - Cleanup dans useEffect pour les timers et subscriptions
    - useRef pour les valeurs qui ne s'affichent pas
-   - Custom hooks pour la logique reutilisable
+   - Custom hooks pour la logique réutilisable
 
-**Point cle** : "Un composant bien ecrit = un assemblage de hooks bien decoupes."
+**Point clé** : "Un composant bien écrit = un assemblage de hooks bien decoupes."
 
 ---
 
@@ -114,14 +114,14 @@ App.tsx (modifie)
 ## Points a souligner a l'ecran
 
 - Le console.log pour montrer les re-renders
-- Le React DevTools pour visualiser l'etat des hooks
+- Le React DevTools pour visualiser l'état des hooks
 - La stale closure en action (le bug visible)
-- Le cleanup de useEffect qui log "cleanup!" pour montrer quand il s'execute
-- Le nombre de lignes du composant avant/apres extraction des hooks
+- Le cleanup de useEffect qui log "cleanup!" pour montrer quand il s'exécuté
+- Le nombre de lignes du composant avant/après extraction des hooks
 
 ## Erreurs a montrer volontairement
 
 1. Stale closure dans setInterval -> montrer le bug, expliquer, corriger
 2. Boucle infinie avec un objet dans le dependency array
-3. Oublier le cleanup d'un setInterval -> fuite memoire visible au demontage
-4. Muter un tableau avec push() -> montrer que ca ne re-render pas
+3. Oublier le cleanup d'un setInterval -> fuite mémoire visible au demontage
+4. Muter un tableau avec push() -> montrer que ça ne re-render pas

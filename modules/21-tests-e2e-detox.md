@@ -7,20 +7,20 @@
 ## Objectifs
 
 - Configurer Detox dans un projet Expo/React Native (New Architecture)
-- Ecrire des matchers pour localiser les elements : by.id, by.text, by.label, by.type
+- Écrire des matchers pour localiser les éléments : by.id, by.text, by.label, by.type
 - Effectuer des actions utilisateur : tap, longPress, typeText, scroll, swipe
-- Ecrire des assertions : toBeVisible, toExist, toHaveText, toHaveToggleValue
-- Gerer le cycle de vie des tests : beforeAll, beforeEach, device.reloadReactNative
+- Écrire des assertions : toBeVisible, toExist, toHaveText, toHaveToggleValue
+- Gérer le cycle de vie des tests : beforeAll, beforeEach, device.reloadReactNative
 - Tester des flux complets : login, navigation, formulaire, pull-to-refresh
-- Gerer l'asynchronicite avec waitFor().toBeVisible().withTimeout()
-- Integrer Detox dans un pipeline CI (GitHub Actions)
+- Gérer l'asynchronicite avec waitFor().toBeVisible().withTimeout()
+- Intégrer Detox dans un pipeline CI (GitHub Actions)
 - Decouvrir Maestro comme alternative
 
 ---
 
 ## Pourquoi des tests E2E ?
 
-Les tests unitaires et d'integration verifient des morceaux isoles de logique. Les tests **end-to-end** (E2E) valident l'application **du point de vue de l'utilisateur**, sur un vrai appareil ou simulateur.
+Les tests unitaires et d'intégration verifient des morceaux isoles de logique. Les tests **end-to-end** (E2E) valident l'application **du point de vue de l'utilisateur**, sur un vrai appareil ou simulateur.
 
 ```
 Pyramide de tests :
@@ -43,22 +43,22 @@ Les tests E2E sont les plus **lents** et **couteux** a maintenir, mais ils appor
 - Flux critiques : inscription, paiement, onboarding
 - Navigation complexe : deep links, tabs imbriques
 - Interactions natives : permissions, camera, notifications
-- Regression visuelle apres un upgrade
+- Regression visuelle après un upgrade
 
 ### Detox : le standard React Native
 
-[Detox](https://wix.github.io/Detox/) est developpe par Wix. Ses avantages :
+[Detox](https://wix.github.io/Detox/) est développé par Wix. Ses avantages :
 
-1. **Synchronisation automatique** : Detox attend que les animations, les requetes reseau et les timers soient termines avant d'agir
+1. **Synchronisation automatique** : Detox attend que les animations, les requêtes réseau et les timers soient termines avant d'agir
 2. **Tests grey-box** : acces au runtime natif tout en testant comme un utilisateur
-3. **Fiable** : pas de `sleep()` arbitraires grace a la synchronisation
+3. **Fiable** : pas de `sleep()` arbitraires grâce à la synchronisation
 4. **New Architecture** : compatible Fabric et TurboModules depuis Detox 20+
 
 ---
 
 ## Installation et configuration
 
-### Prerequis
+### Prérequis
 
 ```bash
 # macOS : Xcode + simulateur iOS
@@ -83,7 +83,7 @@ npm install --save-dev detox detox-cli jest @types/detox
 npx detox init
 ```
 
-Ceci cree deux fichiers :
+Ceci créé deux fichiers :
 - `.detoxrc.js` (configuration principale)
 - `e2e/jest.config.js` (configuration Jest pour E2E)
 
@@ -227,9 +227,9 @@ module.exports = {
 
 ---
 
-## Element Matchers
+## Élément Matchers
 
-Les matchers permettent de **localiser** un element dans l'arbre de rendu. Detox offre quatre strategies principales.
+Les matchers permettent de **localiser** un élément dans l'arbre de rendu. Detox offre quatre stratégies principales.
 
 ### by.id — Le plus fiable
 
@@ -245,7 +245,7 @@ const emailInput = element(by.id('email-input'));
 const loginBtn = element(by.id('login-btn'));
 ```
 
-> **Bonne pratique** : toujours utiliser `testID` pour les elements cles. C'est la methode la plus stable car elle ne depend pas du texte affiche ni de la hierarchie.
+> **Bonne pratique** : toujours utiliser `testID` pour les éléments clés. C'est la méthode la plus stable car elle ne depend pas du texte affiche ni de la hiérarchie.
 
 ### by.text — Par contenu textuel
 
@@ -272,7 +272,7 @@ const title = element(by.text('Bienvenue'));
 const addBtn = element(by.label('Ajouter au panier'));
 ```
 
-Utile pour les elements sans texte visible (icones, images).
+Utile pour les éléments sans texte visible (icones, images).
 
 ### by.type — Par type natif (avance)
 
@@ -284,7 +284,7 @@ const scrollView = element(by.type('RCTScrollView'));
 const editText = element(by.type('android.widget.EditText'));
 ```
 
-> **Attention** : `by.type` est fragile car il depend de l'implementation native. A eviter sauf cas tres specifique.
+> **Attention** : `by.type` est fragile car il depend de l'implementation native. A éviter sauf cas très spécifique.
 
 ### Combinaison de matchers
 
@@ -321,7 +321,7 @@ Exemples :
 
 ## Actions
 
-Les actions simulent des **gestes utilisateur** sur les elements localises.
+Les actions simulent des **gestes utilisateur** sur les éléments localises.
 
 ### tap — Appui simple
 
@@ -419,7 +419,7 @@ await element(by.id('notifications-toggle')).tap();
 
 ## Assertions
 
-Les assertions **verifient l'etat** des elements apres une action.
+Les assertions **verifient l'état** des éléments après une action.
 
 ### toBeVisible / toNotBeVisible
 
@@ -431,7 +431,7 @@ await expect(element(by.id('welcome-title'))).toBeVisible();
 await expect(element(by.id('loading-spinner'))).not.toBeVisible();
 ```
 
-> `toBeVisible` verifie que l'element est **physiquement visible** dans le viewport, pas juste qu'il existe dans l'arbre.
+> `toBeVisible` vérifié que l'élément est **physiquement visible** dans le viewport, pas juste qu'il existe dans l'arbre.
 
 ### toExist / toNotExist
 
@@ -793,7 +793,7 @@ describe('Pull to Refresh', () => {
 
 ## Gestion de l'asynchronicite
 
-La synchronisation automatique de Detox gere la plupart des cas. Mais parfois il faut attendre explicitement.
+La synchronisation automatique de Detox géré la plupart des cas. Mais parfois il faut attendre explicitement.
 
 ### waitFor — Attendre une condition
 
@@ -883,7 +883,7 @@ beforeEach(async () => {
 
 ### 1. Page Objects Pattern
 
-Encapsuler les interactions dans des objets reutilisables :
+Encapsuler les interactions dans des objets réutilisables :
 
 ```typescript
 // e2e/pages/LoginPage.ts
@@ -965,7 +965,7 @@ describe('Login', () => {
 });
 ```
 
-### 2. Helpers reutilisables
+### 2. Helpers réutilisables
 
 ```typescript
 // e2e/helpers/auth.ts
@@ -1051,7 +1051,7 @@ npx detox test --configuration android.emu.debug
 
 ---
 
-## Integration CI : GitHub Actions
+## Intégration CI : GitHub Actions
 
 ```yaml
 # .github/workflows/e2e-ios.yml
@@ -1232,21 +1232,21 @@ maestro studio
 
 ### Quand choisir Maestro ?
 
-- **Petite equipe** sans experience Detox
+- **Petite équipe** sans experience Detox
 - **Prototypage rapide** de tests E2E
 - Tests **cross-platform** simples
-- Integration avec **Maestro Cloud** pour CI
+- Intégration avec **Maestro Cloud** pour CI
 
 ### Quand choisir Detox ?
 
-- Besoin de **synchronisation fiable** (animations, requetes)
+- Besoin de **synchronisation fiable** (animations, requêtes)
 - Tests **complexes** avec logique conditionnelle
-- **Grande equipe** avec des testeurs experimentes
+- **Grande équipe** avec des testeurs experimentes
 - Controle fin sur le **device** et les **permissions**
 
 ---
 
-## Strategies de test E2E
+## Stratégies de test E2E
 
 ### Quels flux tester ?
 
@@ -1306,7 +1306,7 @@ describe('[regression] Task CRUD', () => { /* ... */ });
 
 ## Debugging des tests Detox
 
-### Logs detailles
+### Logs détaillés
 
 ```bash
 # Logs Detox complets
@@ -1346,7 +1346,7 @@ it('debug test', async () => {
 });
 ```
 
-### Hierarchie de l'arbre
+### Hiérarchie de l'arbre
 
 ```bash
 # Afficher la hierarchie des vues (iOS)
@@ -1357,7 +1357,7 @@ xcrun simctl ui booted describe
 
 ---
 
-## Recapitulatif
+## Récapitulatif
 
 | Concept | Description |
 |---------|-------------|
@@ -1366,10 +1366,10 @@ xcrun simctl ui booted describe
 | `.tap()` | Simuler un tap utilisateur |
 | `.typeText()` | Saisir du texte dans un champ |
 | `.scroll()` | Defiler dans une liste |
-| `expect().toBeVisible()` | Verifier la visibilite |
+| `expect().toBeVisible()` | Vérifier la visibilite |
 | `waitFor().withTimeout()` | Attendre une condition async |
 | `device.reloadReactNative()` | Recharger l'app entre les tests |
-| `device.launchApp()` | Lancer avec des options specifiques |
+| `device.launchApp()` | Lancer avec des options spécifiques |
 | Page Object Pattern | Encapsuler les interactions par ecran |
 | GitHub Actions | CI avec simulateur macOS / emulateur Android |
 | Maestro | Alternative declarative en YAML |
@@ -1379,3 +1379,13 @@ xcrun simctl ui booted describe
 ## Exercice pratique
 
 Rendez-vous dans le [Lab 21](../labs/lab-21-detox-e2e/) pour implementer un simulateur de tests E2E en pur TypeScript : matchers, actions, assertions, flows et reporting.
+
+---
+
+<!-- parcours-recommande -->
+
+::: tip Parcours recommandé
+1. **Screencast** : [screencast 21 detox](../screencasts/screencast-21-detox.md)
+2. **Lab** : [lab-21-detox-e2e](../labs/lab-21-detox-e2e/README)
+3. **Quiz** : [quiz 21 detox](../quizzes/quiz-21-detox.html)
+:::

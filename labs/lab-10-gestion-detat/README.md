@@ -1,12 +1,12 @@
-# Lab 10 — Gestion de l'etat
+# Lab 10 — Gestion de l'état
 
 ## Objectif
 
-Implementer en pur TypeScript les mecanismes fondamentaux de la gestion d'etat : store reactif, selecteurs, slices, persistence et combinaison de stores.
+Implementer en pur TypeScript les mécanismes fondamentaux de la gestion d'état : store réactif, selecteurs, slices, persistence et combinaison de stores.
 
-## Prerequis
+## Prérequis
 
-- Module 10 : Gestion de l'etat (Context et Zustand)
+- Module 10 : Gestion de l'état (Context et Zustand)
 - TypeScript : generics, closures, Set, Record
 
 ## Lancement
@@ -24,23 +24,23 @@ npx tsx labs/lab-10-gestion-detat/solution.ts
 ### Exercice 1 : createStore (6 tests)
 
 Creez un store minimaliste inspire de Zustand avec :
-- `getState()` : retourne l'etat courant
-- `setState(partial)` : fusionne un objet partiel ou le resultat d'une fonction
+- `getState()` : retourne l'état courant
+- `setState(partial)` : fusionne un objet partiel ou le résultat d'une fonction
 - `subscribe(listener)` : enregistre un listener, retourne `unsubscribe`
 - `destroy()` : supprime tous les listeners
 
 ### Exercice 2 : createSelector (3 tests)
 
-Creez un selecteur qui observe un store et ne notifie les listeners que si la valeur selectionnee change (comparaison `===`). C'est le mecanisme cle qui evite les re-renders inutiles dans Zustand.
+Creez un selecteur qui observe un store et ne notifie les listeners que si la valeur selectionnee change (comparaison `===`). C'est le mécanisme clé qui evite les re-renders inutiles dans Zustand.
 
 ### Exercice 3 : createSlice (3 tests)
 
-Creez un "slice" (tranche d'etat) avec un nom, un etat initial et des actions. Les actions recoivent `(set, get)` pour modifier et lire l'etat. C'est le pattern utilise pour decouper un gros store en modules.
+Creez un "slice" (tranche d'état) avec un nom, un état initial et des actions. Les actions recoivent `(set, get)` pour modifier et lire l'état. C'est le pattern utilise pour découper un gros store en modules.
 
 ### Exercice 4 : persistMiddleware (3 tests)
 
-Ajoutez la persistence a un store existant :
-- A l'initialisation, restaurer l'etat depuis le storage
+Ajoutez la persistence à un store existant :
+- A l'initialisation, restaurer l'état depuis le storage
 - A chaque changement, sauvegarder dans le storage
 - Ignorer les valeurs invalides (JSON.parse echoue)
 
@@ -51,9 +51,9 @@ Combinez plusieurs stores en un objet unique :
 - `subscribe()` notifie quand n'importe quel sous-store change
 - `destroy()` nettoie tout
 
-## Concepts cles
+## Concepts clés
 
-- **Store reactif** : le pattern observer applique a l'etat applicatif
+- **Store réactif** : le pattern observer applique a l'état applicatif
 - **Selecteurs** : evitent les re-renders en comparant les valeurs selectionnees
 - **Slices** : decoupent un store complexe en modules independants
 - **Persistence** : middleware qui intercepte les changements pour sauvegarder

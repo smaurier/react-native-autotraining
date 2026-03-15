@@ -8,13 +8,13 @@
 
 A la fin de ce module, vous serez capable de :
 
-- Utiliser l'API `fetch` native pour effectuer des requetes GET, POST, PUT et DELETE
-- Typer les requetes et reponses avec TypeScript
-- Annuler des requetes avec `AbortController`
+- Utiliser l'API `fetch` native pour effectuer des requêtes GET, POST, PUT et DELETE
+- Typer les requêtes et réponses avec TypeScript
+- Annuler des requêtes avec `AbortController`
 - Implementer un pattern d'authentification Bearer token avec refresh automatique
-- Construire un client API reutilisable avec intercepteurs et retry
+- Construire un client API réutilisable avec intercepteurs et retry
 - Configurer les URLs selon l'environnement (dev, staging, prod)
-- Gerer les erreurs reseau, HTTP et timeout de maniere structuree
+- Gérer les erreurs réseau, HTTP et timeout de manière structuree
 
 ---
 
@@ -32,9 +32,9 @@ A la fin de ce module, vous serez capable de :
 
 ## fetch : l'API native de React Native
 
-React Native embarque l'API `fetch` du standard Web. Pas besoin d'installer Axios ou une autre librairie HTTP — `fetch` est disponible globalement, performant et parfaitement integre a la New Architecture via JSI.
+React Native embarque l'API `fetch` du standard Web. Pas besoin d'installer Axios ou une autre librairie HTTP — `fetch` est disponible globalement, performant et parfaitement intégré à la New Architecture via JSI.
 
-### GET : recuperer des donnees
+### GET : récupérer des donnees
 
 ```tsx
 interface User {
@@ -56,10 +56,10 @@ async function getUser(id: number): Promise<User> {
 ```
 
 :::warning Attention : fetch ne rejette pas sur les erreurs HTTP
-Contrairement a Axios, `fetch` ne leve **pas** d'exception pour les codes 4xx ou 5xx. Seule une erreur **reseau** (pas de connexion, DNS introuvable) provoque un rejet de la Promise. Vous devez toujours verifier `response.ok` ou `response.status`.
+Contrairement a Axios, `fetch` ne leve **pas** d'exception pour les codes 4xx ou 5xx. Seule une erreur **réseau** (pas de connexion, DNS introuvable) provoque un rejet de la Promise. Vous devez toujours vérifier `response.ok` ou `response.status`.
 :::
 
-### POST : creer une ressource
+### POST : créer une ressource
 
 ```tsx
 interface CreateUserPayload {
@@ -139,7 +139,7 @@ async function deleteUser(id: number): Promise<void> {
 
 ---
 
-## Typage complet des requetes et reponses
+## Typage complet des requêtes et réponses
 
 Un bon typage TypeScript elimine toute une categorie de bugs. Voici un pattern pour typer systematiquement vos appels API :
 
@@ -231,13 +231,13 @@ interface ApiEndpoints {
 }
 ```
 
-Ce pattern de type-map permet d'avoir un typage end-to-end entre la definition de l'endpoint et son utilisation.
+Ce pattern de type-map permet d'avoir un typage end-to-end entre la définition de l'endpoint et son utilisation.
 
 ---
 
-## AbortController : annuler des requetes
+## AbortController : annuler des requêtes
 
-`AbortController` est essentiel en React Native. Quand l'utilisateur quitte un ecran ou relance une recherche, les requetes en cours doivent etre annulees pour eviter les fuites memoire et les mises a jour de state sur des composants demontes.
+`AbortController` est essentiel en React Native. Quand l'utilisateur quitte un ecran ou relance une recherche, les requêtes en cours doivent etre annulees pour éviter les fuites mémoire et les mises a jour de state sur des composants demontes.
 
 ### Usage basique
 
@@ -311,8 +311,8 @@ function useUser(userId: number) {
 }
 ```
 
-:::tip Pourquoi verifier controller.signal.aborted dans finally ?
-Quand la requete est annulee, le `catch` s'execute avec une `AbortError`. Sans verification, `setLoading(false)` s'executerait sur un composant potentiellement demonte, provoquant un warning React.
+:::tip Pourquoi vérifier controller.signal.aborted dans finally ?
+Quand la requête est annulee, le `catch` s'exécuté avec une `AbortError`. Sans vérification, `setLoading(false)` s'executerait sur un composant potentiellement demonte, provoquant un warning React.
 :::
 
 ### Timeout avec AbortController
@@ -394,7 +394,7 @@ function useSearch<T>(searchFn: (query: string, signal: AbortSignal) => Promise<
 La plupart des APIs REST utilisent des JWT (JSON Web Tokens). Le pattern standard :
 
 1. L'utilisateur se connecte → l'API retourne un `accessToken` (courte duree) et un `refreshToken` (longue duree)
-2. Chaque requete envoie l'`accessToken` dans le header `Authorization`
+2. Chaque requête envoie l'`accessToken` dans le header `Authorization`
 3. Quand l'`accessToken` expire (HTTP 401), on utilise le `refreshToken` pour en obtenir un nouveau
 4. Si le `refreshToken` est aussi expire, on deconnecte l'utilisateur
 
@@ -463,10 +463,10 @@ const tokenManager = new TokenManager();
 ```
 
 :::tip Pourquoi dedupliquer le refresh ?
-Si 3 requetes echouent en 401 simultanement, les 3 vont tenter un refresh. Sans deduplication, le premier refresh reussit, mais le 2e et 3e utilisent un refreshToken deja consomme (one-time use) et echouent. Avec la deduplication, les 3 partagent la meme Promise.
+Si 3 requêtes echouent en 401 simultanement, les 3 vont tenter un refresh. Sans deduplication, le premier refresh reussit, mais le 2e et 3e utilisent un refreshToken déjà consomme (one-time use) et echouent. Avec la deduplication, les 3 partagent la même Promise.
 :::
 
-### Stockage securise des tokens
+### Stockage sécurisé des tokens
 
 ```tsx
 // ❌ NE JAMAIS stocker les tokens dans AsyncStorage (non chiffre)
@@ -484,7 +484,7 @@ await Keychain.setGenericPassword('auth', JSON.stringify(tokenPair));
 
 ---
 
-## Client API reutilisable
+## Client API réutilisable
 
 Un client API centralise toutes les preoccupations transversales : base URL, headers communs, authentification, retry, logging.
 
@@ -750,7 +750,7 @@ function createRefreshInterceptor(
 
 ## Retry avec backoff exponentiel
 
-Certaines erreurs sont transitoires (timeout, 503, probleme reseau). Un retry intelligent rend l'application resiliente.
+Certaines erreurs sont transitoires (timeout, 503, problème réseau). Un retry intelligent rend l'application resiliente.
 
 ```tsx
 interface RetryConfig {
@@ -813,7 +813,7 @@ async function retryWithBackoff<T>(
 }
 ```
 
-### Integrer le retry dans le client
+### Intégrer le retry dans le client
 
 ```tsx
 // Wrapper pour le client API
@@ -832,14 +832,14 @@ async function fetchWithRetry<T>(
 ```
 
 :::tip Jitter : pourquoi ajouter du bruit aleatoire ?
-Sans jitter, si 100 clients echouent au meme instant, ils retentent tous exactement en meme temps (effet "thundering herd"). Le jitter disperse les retries dans le temps, evitant de surcharger le serveur.
+Sans jitter, si 100 clients echouent au même instant, ils retentent tous exactement en même temps (effet "thundering herd"). Le jitter disperse les retries dans le temps, evitant de surcharger le serveur.
 :::
 
 ---
 
 ## Configuration d'environnement
 
-En React Native, la configuration d'environnement se gere differemment du web. Pas de `process.env` cote client — on utilise `react-native-config` ou les variables Expo.
+En React Native, la configuration d'environnement se géré differemment du web. Pas de `process.env` cote client — on utilise `react-native-config` ou les variables Expo.
 
 ### Avec Expo
 
@@ -944,11 +944,11 @@ export const env = environments[currentEnv];
 
 ---
 
-## Strategie de gestion d'erreurs
+## Stratégie de gestion d'erreurs
 
 Les erreurs en networking se repartissent en 3 categories qu'il faut traiter differemment :
 
-### 1. Erreurs reseau (pas de connexion)
+### 1. Erreurs réseau (pas de connexion)
 
 ```tsx
 async function safeFetch<T>(url: string, options?: RequestInit): Promise<T> {
@@ -1244,13 +1244,13 @@ function PostsFeed() {
 
 | Pratique | Description |
 |----------|-------------|
-| Toujours verifier `response.ok` | `fetch` ne rejette pas sur 4xx/5xx |
-| AbortController dans useEffect | Eviter les mises a jour sur composant demonte |
-| Timeout explicite | Ne jamais laisser une requete pending indefiniment |
+| Toujours vérifier `response.ok` | `fetch` ne rejette pas sur 4xx/5xx |
+| AbortController dans useEffect | Éviter les mises a jour sur composant demonte |
+| Timeout explicite | Ne jamais laisser une requête pending indefiniment |
 | Retry avec backoff | Pour les erreurs transitoires uniquement |
 | Tokens dans SecureStore | Jamais dans AsyncStorage |
-| Refresh token deduplication | Eviter les appels multiples en parallele |
-| Typage strict des payloads | Erreurs detectees a la compilation |
+| Refresh token deduplication | Éviter les appels multiples en parallele |
+| Typage strict des payloads | Erreurs detectees à la compilation |
 | Configuration par environnement | Pas de URLs en dur dans le code |
 
 ### Erreurs courantes
@@ -1296,13 +1296,13 @@ await SecureStore.setItemAsync('jwt', token);
 
 ---
 
-## Recapitulatif
+## Récapitulatif
 
-| Concept | Outil / Pattern | Points cles |
+| Concept | Outil / Pattern | Points clés |
 |---------|-----------------|-------------|
-| Requetes HTTP | `fetch` natif | Verifier `response.ok`, toujours typer |
+| Requetes HTTP | `fetch` natif | Vérifier `response.ok`, toujours typer |
 | Annulation | `AbortController` | Cleanup dans `useEffect`, timeout |
-| Authentification | Bearer + refresh | Deduplication, stockage securise |
+| Authentification | Bearer + refresh | Deduplication, stockage sécurisé |
 | Client API | Classe avec intercepteurs | Base URL, headers, auth, logging |
 | Retry | Backoff exponentiel + jitter | Seulement sur erreurs transitoires |
 | Configuration | `react-native-config` / Expo | Une config par environnement |
@@ -1326,3 +1326,13 @@ Rendez-vous au [Lab 12](../labs/lab-12-networking-api/) pour implementer un clie
 - [react-native-config](https://github.com/lukewalczak/react-native-config)
 
 </details>
+
+---
+
+<!-- parcours-recommande -->
+
+::: tip Parcours recommandé
+1. **Screencast** : [screencast 12 networking](../screencasts/screencast-12-networking.md)
+2. **Lab** : [lab-12-networking-api](../labs/lab-12-networking-api/README)
+3. **Quiz** : [quiz 12 networking](../quizzes/quiz-12-networking.html)
+:::

@@ -4,7 +4,7 @@
 |----------|--------|
 | **Difficulte** | 4/5 |
 | **Duree** | 90 min |
-| **Prerequis** | Modules 01-09, bases StyleSheet/Flexbox, hooks React |
+| **Prérequis** | Modules 01-09, bases StyleSheet/Flexbox, hooks React |
 | **Lab** | [Lab 18 — Reanimated & Gestures](/labs/lab-18-reanimated-gestures/) |
 | **Quiz** | [Quiz 18 — Reanimated](/quizzes/quiz-18-reanimated.html) |
 
@@ -12,13 +12,13 @@
 
 ## Objectifs du module
 
-- Comprendre le modele d'execution de Reanimated 3 (worklets, UI thread)
-- Maitriser les shared values et les animated styles
+- Comprendre le modèle d'exécution de Reanimated 3 (worklets, UI thread)
+- Maîtriser les shared values et les animated styles
 - Utiliser les fonctions d'animation : timing, spring, decay, repeat, sequence
 - Appliquer l'interpolation de valeurs et de couleurs
 - Decouvrir la Gesture API moderne de react-native-gesture-handler
 - Composer des gestes (simultaneous, exclusive, race)
-- Connecter gestes et animations de maniere fluide
+- Connecter gestes et animations de manière fluide
 - Implementer des layout animations (entering, exiting)
 - Construire des composants interactifs complets : swipeable cards, pinch-to-zoom
 
@@ -28,7 +28,7 @@
 
 ### 1.1 Pourquoi Reanimated ?
 
-L'API `Animated` de React Native core (module 17) fonctionne bien pour des animations simples, mais elle atteint ses limites sur les interactions complexes : les gestes connectes a des animations, les interpolations multi-proprietes, les transitions interruptibles. **Reanimated 3** resout ces limites en executant le code d'animation directement sur le **UI thread** grace aux **worklets** — de petites fonctions JavaScript compilees et envoyees sur le thread natif, garantissant 60 fps sans aucun passage par le thread JS.
+L'API `Animated` de React Native core (module 17) fonctionne bien pour des animations simples, mais elle atteint ses limites sur les interactions complexes : les gestes connectes a des animations, les interpolations multi-propriétés, les transitions interruptibles. **Reanimated 3** resout ces limites en exécutant le code d'animation directement sur le **UI thread** grace aux **worklets** — de petites fonctions JavaScript compilees et envoyees sur le thread natif, garantissant 60 fps sans aucun passage par le thread JS.
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -66,9 +66,9 @@ module.exports = function (api) {
 
 > **Important** : le plugin Babel de Reanimated doit toujours etre le **dernier** dans la liste des plugins.
 
-### 1.3 Concept cle : les worklets
+### 1.3 Concept clé : les worklets
 
-Un **worklet** est une fonction JavaScript qui peut s'executer sur le UI thread. Le plugin Babel transforme ces fonctions pour les serialiser et les envoyer au thread natif.
+Un **worklet** est une fonction JavaScript qui peut s'exécuter sur le UI thread. Le plugin Babel transforme ces fonctions pour les serialiser et les envoyer au thread natif.
 
 ```typescript
 import { runOnUI } from 'react-native-reanimated';
@@ -92,7 +92,7 @@ La directive `'worklet'` indique au plugin Babel de transformer la fonction. En 
 
 ### 2.1 useSharedValue
 
-Une **shared value** est une valeur accessible depuis le JS thread ET le UI thread. C'est le mecanisme de communication central de Reanimated.
+Une **shared value** est une valeur accessible depuis le JS thread ET le UI thread. C'est le mécanisme de communication central de Reanimated.
 
 ```tsx
 import Animated, {
@@ -119,7 +119,7 @@ function FadeBox() {
 
 **Regles fondamentales :**
 
-| Propriete | `useSharedValue` | `useState` |
+| Propriété | `useSharedValue` | `useState` |
 |-----------|-----------------|------------|
 | Thread d'acces | JS + UI | JS uniquement |
 | Re-render au changement | Non | Oui |
@@ -138,7 +138,7 @@ setOpacity(0.5);
 
 ### 2.2 useAnimatedStyle
 
-Le hook `useAnimatedStyle` cree un objet de style reactif — il se met a jour automatiquement quand les shared values utilisees changent, **sans provoquer de re-render React**.
+Le hook `useAnimatedStyle` créé un objet de style réactif — il se met a jour automatiquement quand les shared values utilisees changent, **sans provoquer de re-render React**.
 
 ```tsx
 function ScaleBox() {
@@ -167,7 +167,7 @@ function ScaleBox() {
 
 ### 2.3 useAnimatedProps
 
-Pour animer des proprietes **non-style** (comme le `text` d'un `TextInput`, le `progress` d'un SVG, etc.), utilisez `useAnimatedProps` :
+Pour animer des propriétés **non-style** (comme le `text` d'un `TextInput`, le `progress` d'un SVG, etc.), utilisez `useAnimatedProps` :
 
 ```tsx
 import Animated, {
@@ -282,7 +282,7 @@ translateX.value = withSpring(100, {
 
 ### 3.3 withDecay — animation inertielle
 
-`withDecay` simule une deceleration naturelle, comme un objet qu'on lance et qui ralentit progressivement. Ideal apres un geste de glissement.
+`withDecay` simule une deceleration naturelle, comme un objet qu'on lance et qui ralentit progressivement. Ideal après un geste de glissement.
 
 ```tsx
 import { withDecay } from 'react-native-reanimated';
@@ -297,7 +297,7 @@ translateX.value = withDecay({
 });
 ```
 
-### 3.4 withRepeat — repetition
+### 3.4 withRepeat — répétition
 
 ```tsx
 import { withRepeat, withTiming } from 'react-native-reanimated';
@@ -369,7 +369,7 @@ opacity.value = withDelay(
 
 ### 4.1 interpolate — mapper des plages de valeurs
 
-`interpolate` transforme une valeur d'une plage d'entree vers une plage de sortie. C'est essentiel pour lier plusieurs proprietes a une seule shared value.
+`interpolate` transforme une valeur d'une plage d'entree vers une plage de sortie. C'est essentiel pour lier plusieurs propriétés à une seule shared value.
 
 ```tsx
 import Animated, {
@@ -405,7 +405,7 @@ function ParallaxHeader() {
 
 | Type | Comportement hors plage |
 |------|------------------------|
-| `Extrapolation.CLAMP` | Bloque a la valeur min/max |
+| `Extrapolation.CLAMP` | Bloque à la valeur min/max |
 | `Extrapolation.EXTEND` | Continue la pente (defaut) |
 | `Extrapolation.IDENTITY` | Retourne la valeur d'entree brute |
 
@@ -526,9 +526,9 @@ function CarouselCard({
 
 ### 5.1 Pourquoi Gesture Handler ?
 
-Le systeme de gestes natif de React Native (`PanResponder`) est limite :
+Le système de gestes natif de React Native (`PanResponder`) est limite :
 - Difficile a composer (deux gestes simultanes)
-- S'execute sur le JS thread → latence
+- S'exécuté sur le JS thread → latence
 - API verbeuse et peu intuitive
 
 **react-native-gesture-handler** fournit une API declarative, composable, et executee nativement.
@@ -702,7 +702,7 @@ const longPress = Gesture.LongPress()
   });
 ```
 
-### 5.5 Proprietes d'evenement
+### 5.5 Proprietes d'événement
 
 Chaque geste fournit un objet `event` dans ses callbacks :
 
@@ -734,7 +734,7 @@ interface PinchGestureEvent {
 
 ### 6.1 Gesture.Simultaneous — gestes en parallele
 
-Permet a plusieurs gestes de s'executer **en meme temps**. Indispensable pour le pinch-to-zoom avec rotation.
+Permet a plusieurs gestes de s'exécuter **en même temps**. Indispensable pour le pinch-to-zoom avec rotation.
 
 ```tsx
 function ZoomableImage() {
@@ -801,7 +801,7 @@ function ZoomableImage() {
 }
 ```
 
-### 6.2 Gesture.Exclusive — un seul geste a la fois
+### 6.2 Gesture.Exclusive — un seul geste à la fois
 
 Le **premier geste reconnu** gagne, les autres sont annules.
 
@@ -848,7 +848,7 @@ const race = Gesture.Race(swipeRight, swipeLeft);
 
 ### 6.4 Tableau comparatif des compositions
 
-| Methode | Comportement | Cas d'usage |
+| Méthode | Comportement | Cas d'usage |
 |---------|-------------|-------------|
 | `Simultaneous` | Tous en parallele | Pinch + Rotate + Pan |
 | `Exclusive` | Premier reconnu gagne | Double tap vs Single tap |
@@ -860,7 +860,7 @@ const race = Gesture.Race(swipeRight, swipeLeft);
 
 ### 7.1 Pattern moderne : Gesture + Shared Values
 
-L'ancienne API `useAnimatedGestureHandler` est obsolete. La Gesture API integre directement les callbacks worklet :
+L'ancienne API `useAnimatedGestureHandler` est obsolete. La Gesture API intégré directement les callbacks worklet :
 
 ```tsx
 function SwipeCard() {
@@ -915,7 +915,7 @@ function SwipeCard() {
 
 ### 7.2 Gestion du contexte (position cumulee)
 
-Pour que les gestes s'accumulent (drag → relache → drag a nouveau depuis la derniere position), on utilise une shared value de contexte :
+Pour que les gestes s'accumulent (drag → relache → drag a nouveau depuis la dernière position), on utilise une shared value de contexte :
 
 ```tsx
 function PersistentDrag() {
@@ -988,7 +988,7 @@ function SwipeAction() {
 }
 ```
 
-> **Regle** : `runOnJS` est necessaire pour toute fonction qui n'est pas un worklet (setState, navigation, fetch, console.log dans certains cas).
+> **Regle** : `runOnJS` est nécessaire pour toute fonction qui n'est pas un worklet (setState, navigation, fetch, console.log dans certains cas).
 
 ---
 
@@ -1093,7 +1093,7 @@ function ReorderableList() {
 
 ### 8.5 Custom entering/exiting animations
 
-Pour des animations d'entree/sortie completement personnalisees :
+Pour des animations d'entree/sortie complètement personnalisees :
 
 ```tsx
 import { withTiming, FadeIn } from 'react-native-reanimated';
@@ -1629,7 +1629,7 @@ const styles = StyleSheet.create({
 
 ### 11.1 Concept
 
-Une liste ou chaque element peut etre deplace par drag & drop pour reordonner.
+Une liste ou chaque élément peut etre deplace par drag & drop pour reordonner.
 
 ```tsx
 import React, { useState, useCallback } from 'react';
@@ -1885,7 +1885,7 @@ function startNewAnimation() {
 
 ### 12.4 useDerivedValue — valeurs calculees
 
-Pour calculer une valeur a partir d'autres shared values :
+Pour calculer une valeur à partir d'autres shared values :
 
 ```tsx
 import { useDerivedValue } from 'react-native-reanimated';
@@ -1907,7 +1907,7 @@ function DistanceIndicator() {
 }
 ```
 
-### 12.5 useAnimatedReaction — effets de bord reactifs
+### 12.5 useAnimatedReaction — effets de bord réactifs
 
 ```tsx
 import { useAnimatedReaction, runOnJS } from 'react-native-reanimated';
@@ -1935,16 +1935,16 @@ function ThresholdAlert() {
 
 ---
 
-## 13. Resume et aide-memoire
+## 13. Résumé et aide-mémoire
 
 ### 13.1 Hooks Reanimated
 
 | Hook | Role |
 |------|------|
 | `useSharedValue(init)` | Valeur partagee JS/UI thread |
-| `useAnimatedStyle(() => {})` | Style reactif (worklet) |
-| `useAnimatedProps(() => {})` | Props reactives (non-style) |
-| `useDerivedValue(() => val)` | Valeur calculee a partir d'autres shared values |
+| `useAnimatedStyle(() => {})` | Style réactif (worklet) |
+| `useAnimatedProps(() => {})` | Props réactives (non-style) |
+| `useDerivedValue(() => val)` | Valeur calculee à partir d'autres shared values |
 | `useAnimatedReaction(prep, react)` | Effet de bord quand une valeur change |
 
 ### 13.2 Fonctions d'animation
@@ -1972,11 +1972,11 @@ function ThresholdAlert() {
 
 ### 13.4 Composition de gestes
 
-| Methode | Quand l'utiliser |
+| Méthode | Quand l'utiliser |
 |---------|-----------------|
-| `Gesture.Simultaneous(a, b)` | Les 2 gestes en meme temps |
+| `Gesture.Simultaneous(a, b)` | Les 2 gestes en même temps |
 | `Gesture.Exclusive(a, b)` | Un seul geste reconnu (priorite au premier) |
-| `Gesture.Race(a, b)` | Le premier a demarrer gagne |
+| `Gesture.Race(a, b)` | Le premier a démarrer gagne |
 
 ### 13.5 Layout Animations
 
@@ -1992,4 +1992,15 @@ function ThresholdAlert() {
 
 ## Exercices du module
 
-Rendez-vous au [Lab 18](/labs/lab-18-reanimated-gestures/) pour pratiquer les concepts vus dans ce module. Le lab simule en TypeScript pur les mecanismes internes de Reanimated et Gesture Handler : shared values, interpolation, detection de gestes, bounding, et timelines d'animation.
+Rendez-vous au [Lab 18](/labs/lab-18-reanimated-gestures/) pour pratiquer les concepts vus dans ce module. Le lab simule en TypeScript pur les mécanismes internes de Reanimated et Gesture Handler : shared values, interpolation, detection de gestes, bounding, et timelines d'animation.
+
+---
+
+<!-- parcours-recommande -->
+
+::: tip Parcours recommandé
+1. **Screencast** : [screencast 18 reanimated](../screencasts/screencast-18-reanimated.md)
+2. **Lab** : [lab-18-reanimated-gestures](../labs/lab-18-reanimated-gestures/README)
+3. **Visualisation** : [Animation Curves](../visualizations/animation-curves.html)
+4. **Quiz** : [quiz 18 reanimated](../quizzes/quiz-18-reanimated.html)
+:::

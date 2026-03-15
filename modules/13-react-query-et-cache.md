@@ -10,8 +10,8 @@ A la fin de ce module, vous serez capable de :
 
 - Configurer TanStack Query dans une application React Native
 - Utiliser `useQuery` avec un typage strict (queryKey, queryFn, staleTime, gcTime)
-- Gerer les mutations avec `useMutation` (onSuccess, onError, onSettled)
-- Invalider et refetch les queries de maniere granulaire
+- Gérer les mutations avec `useMutation` (onSuccess, onError, onSettled)
+- Invalider et refetch les queries de manière granulaire
 - Implementer des mises a jour optimistes avec rollback
 - Paginer avec `useInfiniteQuery` (cursor-based et offset-based)
 - Prefetcher les donnees pour une navigation instantanee
@@ -22,8 +22,8 @@ A la fin de ce module, vous serez capable de :
 <details>
 <summary>Rappel du module precedent</summary>
 
-- **fetch API** : GET, POST, PUT, DELETE avec verification `response.ok`
-- **AbortController** : annulation des requetes, cleanup dans useEffect
+- **fetch API** : GET, POST, PUT, DELETE avec vérification `response.ok`
+- **AbortController** : annulation des requêtes, cleanup dans useEffect
 - **Bearer token** : refresh automatique avec deduplication
 - **Client API** : intercepteurs, retry avec backoff exponentiel
 - **Gestion d'erreurs** : NetworkError, ApiError, TimeoutError
@@ -34,7 +34,7 @@ A la fin de ce module, vous serez capable de :
 
 ## Pourquoi TanStack Query ?
 
-Le module precedent a montre comment faire des appels API avec `fetch`. Mais gerer manuellement le cache, le loading, les erreurs, le refetch, la pagination et les mises a jour optimistes dans chaque composant produit du code repetitif et fragile.
+Le module précédent a montre comment faire des appels API avec `fetch`. Mais gérer manuellement le cache, le loading, les erreurs, le refetch, la pagination et les mises a jour optimistes dans chaque composant produit du code repetitif et fragile.
 
 ```tsx
 // ❌ Sans React Query : chaque composant gere tout manuellement
@@ -81,10 +81,10 @@ function PostsList() {
 
 TanStack Query (anciennement React Query) offre :
 - **Cache automatique** : les donnees sont mises en cache et partagees entre composants
-- **Deduplication** : plusieurs composants qui fetch la meme donnee = 1 seule requete
+- **Deduplication** : plusieurs composants qui fetch la même donnee = 1 seule requête
 - **Retry automatique** : 3 tentatives par defaut avec backoff exponentiel
-- **Refetch intelligent** : au focus de l'app, a la reconnexion reseau
-- **Mutations** : creation, mise a jour, suppression avec invalidation du cache
+- **Refetch intelligent** : au focus de l'app, à la reconnexion réseau
+- **Mutations** : création, mise a jour, suppression avec invalidation du cache
 - **Mises a jour optimistes** : UI instantanee avec rollback en cas d'erreur
 
 ---
@@ -129,7 +129,7 @@ export default function App() {
 
 ### Adaptateurs React Native
 
-React Native n'a pas les evenements `window.focus` et `navigator.onLine` du web. Il faut configurer les adaptateurs :
+React Native n'a pas les événements `window.focus` et `navigator.onLine` du web. Il faut configurer les adaptateurs :
 
 ```tsx
 // config/reactQuery.ts
@@ -180,7 +180,7 @@ function AppContent() {
 
 ## useQuery : lire des donnees
 
-`useQuery` est le hook principal pour lire des donnees. Il prend un objet de configuration et retourne l'etat de la requete.
+`useQuery` est le hook principal pour lire des donnees. Il prend un objet de configuration et retourne l'état de la requête.
 
 ### Anatomie
 
@@ -196,12 +196,12 @@ const result = useQuery({
 });
 ```
 
-### queryKey : la cle de cache
+### queryKey : la clé de cache
 
-La cle de cache est un tableau serialisable. React Query l'utilise pour :
+La clé de cache est un tableau serialisable. React Query l'utilise pour :
 - Identifier les donnees dans le cache
-- Dedupliquer les requetes identiques
-- Invalider les donnees de maniere granulaire
+- Dedupliquer les requêtes identiques
+- Invalider les donnees de manière granulaire
 
 ```tsx
 // Cle simple
@@ -218,13 +218,13 @@ useQuery({ queryKey: ['posts', postId, 'comments'] });
 useQuery({ queryKey: ['posts', postId, 'comments', { sort: 'recent' }] });
 ```
 
-:::warning L'ordre des elements dans la cle compte
-`['posts', { page: 1 }]` et `['posts', { page: 2 }]` sont des cles differentes. L'ordre des proprietes dans un objet n'a pas d'importance (`{ a: 1, b: 2 }` === `{ b: 2, a: 1 }`), mais l'ordre des elements du tableau compte.
+:::warning L'ordre des éléments dans la clé compte
+`['posts', { page: 1 }]` et `['posts', { page: 2 }]` sont des clés différentes. L'ordre des propriétés dans un objet n'a pas d'importance (`{ a: 1, b: 2 }` === `{ b: 2, a: 1 }`), mais l'ordre des éléments du tableau compte.
 :::
 
 ### Query Key Factory
 
-Un pattern recommande pour structurer les cles :
+Un pattern recommande pour structurer les clés :
 
 ```tsx
 // queryKeys.ts
@@ -259,7 +259,7 @@ queryClient.invalidateQueries({ queryKey: queryKeys.posts.lists() });
 
 ### staleTime vs gcTime
 
-Ces deux temps sont souvent confondus. Voici la difference :
+Ces deux temps sont souvent confondus. Voici la différence :
 
 ```
                                 staleTime (5 min)
@@ -273,7 +273,7 @@ se desabonne        ────────────────────
 ```
 
 - **staleTime** : duree pendant laquelle les donnees sont considerees "fraiches". Tant qu'elles sont fresh, React Query les sert depuis le cache sans refetch.
-- **gcTime** (anciennement `cacheTime`) : duree de conservation en cache **apres** que le dernier composant s'est desabonne. Passe ce delai, les donnees sont supprimees du cache.
+- **gcTime** (anciennement `cacheTime`) : duree de conservation en cache **après** que le dernier composant s'est desabonne. Passe ce delai, les donnees sont supprimees du cache.
 
 ```tsx
 // Donnees qui changent rarement (profil utilisateur)
@@ -368,9 +368,9 @@ function PostsScreen() {
 
 ---
 
-## useMutation : creer, modifier, supprimer
+## useMutation : créer, modifier, supprimer
 
-`useMutation` gere les operations d'ecriture. Contrairement a `useQuery`, il ne s'execute pas automatiquement — on l'appelle explicitement via `mutate()` ou `mutateAsync()`.
+`useMutation` géré les operations d'écriture. Contrairement a `useQuery`, il ne s'exécuté pas automatiquement — on l'appelle explicitement via `mutate()` ou `mutateAsync()`.
 
 ### Anatomie
 
@@ -390,7 +390,7 @@ mutation.mutate({ title: 'Mon post', body: 'Contenu...' });
 const result = await mutation.mutateAsync({ title: 'Mon post', body: 'Contenu...' });
 ```
 
-### Creer un post avec invalidation du cache
+### Créer un post avec invalidation du cache
 
 ```tsx
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -497,9 +497,9 @@ function PostActions({ postId }: { postId: number }) {
 
 ## Query invalidation
 
-L'invalidation est le mecanisme pour dire a React Query que les donnees en cache sont obsoletes et doivent etre re-fetchees.
+L'invalidation est le mécanisme pour dire a React Query que les donnees en cache sont obsoletes et doivent etre re-fetchees.
 
-### Strategies d'invalidation
+### Stratégies d'invalidation
 
 ```tsx
 const queryClient = useQueryClient();
@@ -539,12 +539,12 @@ queryClient.refetchQueries({ queryKey: ['posts'] });
 
 :::tip Quand utiliser chacun ?
 - **invalidateQueries** : 99% des cas. Marque comme stale, refetch au besoin.
-- **refetchQueries** : Quand vous avez besoin de donnees fraiches immediatement (ex: apres un pull-to-refresh force).
+- **refetchQueries** : Quand vous avez besoin de donnees fraiches immediatement (ex: après un pull-to-refresh force).
 :::
 
 ### setQueryData : mise a jour manuelle du cache
 
-Parfois, la reponse d'une mutation contient deja les donnees mises a jour. Pas besoin de refetch :
+Parfois, la réponse d'une mutation contient déjà les donnees mises a jour. Pas besoin de refetch :
 
 ```tsx
 function useUpdatePost() {
@@ -583,7 +583,7 @@ function useUpdatePost() {
 
 ## Mises a jour optimistes
 
-Une mise a jour optimiste modifie le cache **avant** que la mutation ne soit confirmee par le serveur. Si la mutation echoue, on rollback a l'etat precedent. Cela donne une impression de reactivite instantanee.
+Une mise a jour optimiste modifie le cache **avant** que la mutation ne soit confirmee par le serveur. Si la mutation echoue, on rollback a l'état précédent. Cela donne une impression de réactivité instantanee.
 
 ### Like / Unlike optimiste
 
@@ -672,7 +672,7 @@ function LikeButton({ post }: { post: Post }) {
 }
 ```
 
-### Pattern complet : ajout optimiste a une liste
+### Pattern complet : ajout optimiste à une liste
 
 ```tsx
 function useAddComment(postId: number) {
@@ -728,7 +728,7 @@ function useAddComment(postId: number) {
 
 ## useInfiniteQuery : pagination infinie
 
-`useInfiniteQuery` est concu pour le pattern de scroll infini, tres courant en mobile (feeds, listes de produits, recherches).
+`useInfiniteQuery` est concu pour le pattern de scroll infini, très courant en mobile (feeds, listes de produits, recherches).
 
 ### Pagination par offset
 
@@ -786,7 +786,7 @@ function useInfiniteFeed() {
 }
 ```
 
-### Integration avec FlatList
+### Intégration avec FlatList
 
 ```tsx
 function FeedScreen() {
@@ -855,7 +855,7 @@ function FeedScreen() {
 La valeur `0.5` signifie que `onEndReached` est declenche quand l'utilisateur atteint 50% de la fin de la liste visible. Cela lance le prefetch de la page suivante **avant** que l'utilisateur n'atteigne le bas, pour un scroll fluide et sans interruption.
 :::
 
-### Ajouter un element au debut (nouveau post)
+### Ajouter un élément au debut (nouveau post)
 
 ```tsx
 function useAddPostToFeed() {
@@ -890,7 +890,7 @@ function useAddPostToFeed() {
 
 ## Prefetching
 
-Le prefetching charge les donnees en arriere-plan **avant** que l'utilisateur n'en ait besoin. Quand il navigue vers l'ecran, les donnees sont deja en cache.
+Le prefetching charge les donnees en arriere-plan **avant** que l'utilisateur n'en ait besoin. Quand il navigue vers l'ecran, les donnees sont déjà en cache.
 
 ### Prefetch au hover / press
 
@@ -979,7 +979,7 @@ const queryClient = new QueryClient({
 
 ### Persistence du cache
 
-Pour que le cache survive a un redemarrage de l'app :
+Pour que le cache survive à un redemarrage de l'app :
 
 ```tsx
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
@@ -1068,7 +1068,7 @@ function usePostWithComments(postId: number) {
 }
 ```
 
-### Parallel queries (requetes en parallele)
+### Parallel queries (requêtes en parallele)
 
 ```tsx
 import { useQueries } from '@tanstack/react-query';
@@ -1146,13 +1146,13 @@ function usePublishedPosts() {
 
 | Pratique | Description |
 |----------|-------------|
-| Query Key Factory | Centraliser les cles dans un fichier dedie |
-| staleTime adapte | Profil (30 min), feed (1 min), temps reel (0) |
+| Query Key Factory | Centraliser les clés dans un fichier dedie |
+| staleTime adapte | Profil (30 min), feed (1 min), temps réel (0) |
 | Focus Manager RN | Configurer `AppState` pour le refetch au retour |
-| Online Manager | Configurer `NetInfo` pour detecter la connectivite |
+| Online Manager | Configurer `NetInfo` pour détecter la connectivite |
 | Optimistic updates | Like, commentaire, toggle — rollback on error |
 | Prefetch onPressIn | Charger avant le press pour navigation instantanee |
-| select pour perf | Eviter les re-renders inutiles |
+| select pour perf | Éviter les re-renders inutiles |
 | Persistance cache | AsyncStorage pour le mode offline |
 
 ### Erreurs courantes
@@ -1212,12 +1212,12 @@ onError: (_err, _vars, context) => {
 
 ---
 
-## Recapitulatif
+## Récapitulatif
 
-| Concept | Hook / API | Points cles |
+| Concept | Hook / API | Points clés |
 |---------|------------|-------------|
 | Lecture | `useQuery` | queryKey, queryFn, staleTime, gcTime, enabled |
-| Ecriture | `useMutation` | mutationFn, onSuccess invalidation |
+| Écriture | `useMutation` | mutationFn, onSuccess invalidation |
 | Pagination | `useInfiniteQuery` | getNextPageParam, fetchNextPage, flatMap pages |
 | Invalidation | `invalidateQueries` | Par prefixe, par predicat, setQueryData |
 | Optimistic | `onMutate` | Cancel, save previous, update, rollback onError |
@@ -1229,7 +1229,7 @@ onError: (_err, _vars, context) => {
 
 ## Exercice pratique
 
-Rendez-vous au [Lab 13](../labs/lab-13-react-query-cache/) pour implementer un systeme de cache avec invalidation, mises a jour optimistes et pagination.
+Rendez-vous au [Lab 13](../labs/lab-13-react-query-cache/) pour implementer un système de cache avec invalidation, mises a jour optimistes et pagination.
 
 ---
 
@@ -1244,3 +1244,13 @@ Rendez-vous au [Lab 13](../labs/lab-13-react-query-cache/) pour implementer un s
 - [Offline support](https://tanstack.com/query/latest/docs/framework/react/guides/network-mode)
 
 </details>
+
+---
+
+<!-- parcours-recommande -->
+
+::: tip Parcours recommandé
+1. **Screencast** : [screencast 13 react query](../screencasts/screencast-13-react-query.md)
+2. **Lab** : [lab-13-react-query-cache](../labs/lab-13-react-query-cache/README)
+3. **Quiz** : [quiz 13 react query](../quizzes/quiz-13-react-query.html)
+:::

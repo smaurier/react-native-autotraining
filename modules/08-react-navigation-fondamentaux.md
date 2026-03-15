@@ -7,11 +7,11 @@
 ## Objectifs
 
 - Installer et configurer React Navigation dans un projet React Native
-- Comprendre le `NavigationContainer` et le systeme de linking
-- Creer un Stack Navigator avec `createNativeStackNavigator`
+- Comprendre le `NavigationContainer` et le système de linking
+- Créer un Stack Navigator avec `createNativeStackNavigator`
 - Personnaliser les ecrans : titre, header, couleurs, boutons
-- Maitriser les actions de navigation : `navigate`, `push`, `goBack`, `replace`, `reset`
-- Passer et lire des parametres de route types
+- Maîtriser les actions de navigation : `navigate`, `push`, `goBack`, `replace`, `reset`
+- Passer et lire des paramètres de route types
 - Typer la navigation avec TypeScript (`RootStackParamList`, `NativeStackScreenProps`)
 - Personnaliser le header avec un composant custom
 - Configurer les animations de transition
@@ -22,13 +22,13 @@
 
 ### Pourquoi React Navigation ?
 
-React Navigation v7 est la bibliotheque de navigation standard pour React Native. Contrairement au web ou le navigateur gere la navigation via l'URL, une application mobile doit gerer elle-meme la pile d'ecrans, les transitions et les gestes.
+React Navigation v7 est la bibliotheque de navigation standard pour React Native. Contrairement au web ou le navigateur géré la navigation via l'URL, une application mobile doit gérer elle-même la pile d'ecrans, les transitions et les gestes.
 
 | Fonctionnalite | React Navigation v7 | React Native Navigation (Wix) |
 |----------------|---------------------|-------------------------------|
 | Installation | JS pure, facile | Natif, config complexe |
-| Performance | Tres bonne (v7) | Native, excellente |
-| Personnalisation | Tres flexible | Limitee au natif |
+| Performance | Très bonne (v7) | Native, excellente |
+| Personnalisation | Très flexible | Limitee au natif |
 | TypeScript | Support complet | Support partiel |
 | Expo | Compatible | Non compatible |
 | Communaute | La plus large | Plus petite |
@@ -43,13 +43,13 @@ NavigationContainer
         └── Stack.Screen name="Profile"
 ```
 
-La navigation React Native fonctionne comme une **pile (stack)** : chaque ecran est empile au-dessus du precedent. L'utilisateur peut revenir en arriere en depilant l'ecran courant.
+La navigation React Native fonctionne comme une **pile (stack)** : chaque ecran est empile au-dessus du précédent. L'utilisateur peut revenir en arriere en depilant l'ecran courant.
 
 ---
 
 ## Installation et setup
 
-### Packages necessaires
+### Packages nécessaires
 
 ```bash
 # Package principal
@@ -94,7 +94,7 @@ class MainActivity : ReactActivity() {
 
 ### Le conteneur racine
 
-Le `NavigationContainer` est le composant racine qui enveloppe toute la navigation. Il gere l'etat de navigation, le deep linking et l'integration avec le systeme.
+Le `NavigationContainer` est le composant racine qui enveloppe toute la navigation. Il géré l'état de navigation, le deep linking et l'intégration avec le système.
 
 ```tsx
 // App.tsx
@@ -308,7 +308,7 @@ Les options definissent l'apparence et le comportement de chaque ecran :
 
 ### Options dynamiques
 
-Les options peuvent dependre des parametres de route :
+Les options peuvent dépendre des paramètres de route :
 
 ```tsx
 <Stack.Screen
@@ -357,7 +357,7 @@ function DetailsScreen({ navigation, route }) {
 | `headerBackVisible` | `boolean` | Afficher le bouton retour |
 | `headerShadowVisible` | `boolean` | Ombre sous le header |
 | `headerLargeTitle` | `boolean` | Grand titre (iOS) |
-| `presentation` | `'card' \| 'modal' \| ...` | Mode de presentation |
+| `presentation` | `'card' \| 'modal' \| ...` | Mode de présentation |
 | `animation` | `'default' \| 'fade' \| ...` | Animation de transition |
 | `gestureEnabled` | `boolean` | Geste swipe-back (iOS) |
 | `statusBarStyle` | `'dark' \| 'light'` | Style de la barre de statut |
@@ -368,7 +368,7 @@ function DetailsScreen({ navigation, route }) {
 
 ### navigate
 
-`navigate` va vers un ecran. Si l'ecran est deja dans la pile, il revient a cette instance au lieu d'en creer une nouvelle.
+`navigate` va vers un ecran. Si l'ecran est déjà dans la pile, il revient a cette instance au lieu d'en créer une nouvelle.
 
 ```tsx
 // Naviguer vers un ecran
@@ -386,7 +386,7 @@ navigation.navigate('Settings', {
 
 ### push
 
-`push` empile toujours un nouvel ecran, meme s'il est deja dans la pile. Utile quand vous voulez plusieurs instances du meme ecran.
+`push` empile toujours un nouvel ecran, même s'il est déjà dans la pile. Utile quand vous voulez plusieurs instances du même ecran.
 
 ```tsx
 // Empiler un nouvel ecran Details (meme si un Details existe deja)
@@ -395,7 +395,7 @@ navigation.push('Details', { itemId: 44 });
 // La pile contient maintenant : Home -> Details(43) -> Details(44)
 ```
 
-### Difference entre navigate et push
+### Différence entre navigate et push
 
 ```tsx
 // Scenario : pile = Home -> Details(42)
@@ -408,7 +408,7 @@ navigation.push('Details', { itemId: 43 });
 
 ### goBack
 
-Revenir a l'ecran precedent :
+Revenir a l'ecran précédent :
 
 ```tsx
 // Revenir en arriere
@@ -422,7 +422,7 @@ if (navigation.canGoBack()) {
 
 ### replace
 
-Remplacer l'ecran courant sans ajouter a la pile :
+Remplacer l'ecran courant sans ajouter à la pile :
 
 ```tsx
 // Remplacer l'ecran courant
@@ -462,12 +462,12 @@ Revenir au premier ecran de la pile :
 navigation.popToTop();
 ```
 
-### Recapitulatif des actions
+### Récapitulatif des actions
 
 | Action | Comportement | Cas d'usage |
 |--------|-------------|-------------|
 | `navigate` | Va vers l'ecran, reutilise l'instance existante | Navigation standard |
-| `push` | Empile toujours une nouvelle instance | Meme ecran avec params differents |
+| `push` | Empile toujours une nouvelle instance | Même ecran avec params différents |
 | `goBack` | Depile l'ecran courant | Bouton retour |
 | `replace` | Remplace l'ecran courant | Post-login, post-onboarding |
 | `reset` | Reinitialise toute la pile | Logout, changement de flux |
@@ -477,7 +477,7 @@ navigation.popToTop();
 
 ## Route params
 
-### Passer des parametres
+### Passer des paramètres
 
 ```tsx
 // Depuis l'ecran source
@@ -488,7 +488,7 @@ navigation.navigate('Details', {
 });
 ```
 
-### Lire les parametres
+### Lire les paramètres
 
 ```tsx
 function DetailsScreen({ route }) {
@@ -514,14 +514,14 @@ function DetailsScreen({ route }) {
 />
 ```
 
-### Mettre a jour les parametres
+### Mettre a jour les paramètres
 
 ```tsx
 // Depuis l'ecran lui-meme
 navigation.setParams({ title: 'Nouveau titre' });
 ```
 
-### Passer des callbacks (a eviter)
+### Passer des callbacks (a éviter)
 
 ```tsx
 // Anti-pattern : passer une fonction en parametre
@@ -536,9 +536,9 @@ navigation.navigate('CreateItem', {
 
 ## TypeScript : typage de la navigation
 
-### Definir les types de parametres
+### Définir les types de paramètres
 
-La premiere etape est de definir un type qui associe chaque ecran a ses parametres :
+La première étape est de définir un type qui associe chaque ecran a ses paramètres :
 
 ```tsx
 // types/navigation.ts
@@ -643,7 +643,7 @@ function ChildComponent() {
 
 ### Type global pour useNavigation
 
-Pour eviter de typer `useNavigation` partout :
+Pour éviter de typer `useNavigation` partout :
 
 ```tsx
 // types/navigation.ts
@@ -1238,7 +1238,7 @@ const confirmStyles = StyleSheet.create({
 
 ### useNavigation
 
-Acceder a la navigation depuis n'importe quel composant :
+Acceder à la navigation depuis n'importe quel composant :
 
 ```tsx
 import { useNavigation } from '@react-navigation/native';
@@ -1259,7 +1259,7 @@ function AddToCartButton({ productId, productName, price }) {
 
 ### useRoute
 
-Acceder aux parametres de la route :
+Acceder aux paramètres de la route :
 
 ```tsx
 import { useRoute } from '@react-navigation/native';
@@ -1276,7 +1276,7 @@ function ProductPrice() {
 
 ### useFocusEffect
 
-Executer du code quand l'ecran obtient le focus :
+Exécuter du code quand l'ecran obtient le focus :
 
 ```tsx
 import { useFocusEffect } from '@react-navigation/native';
@@ -1386,22 +1386,22 @@ api.interceptors.response.use(
 
 ## Exercice guide : construire un flux de navigation complet
 
-### Etape 1 : Definir les types
+### Étape 1 : Définir les types
 
 Definissez un `RootStackParamList` pour une application de gestion de taches avec les ecrans : `TaskList`, `TaskDetails`, `CreateTask`, `EditTask`.
 
-### Etape 2 : Creer le navigateur
+### Étape 2 : Créer le navigateur
 
 Configurez le Stack Navigator avec des options de header personnalisees et des animations adaptees (modale pour `CreateTask`).
 
-### Etape 3 : Implementer les ecrans
+### Étape 3 : Implementer les ecrans
 
-Ajoutez la navigation entre les ecrans avec passage de parametres types.
+Ajoutez la navigation entre les ecrans avec passage de paramètres types.
 
-### Etape 4 : Tester la navigation
+### Étape 4 : Tester la navigation
 
 Verifiez que :
-- Les parametres sont correctement passes
+- Les paramètres sont correctement passes
 - Le bouton retour fonctionne
 - `replace` et `reset` se comportent comme attendu
 - Les animations sont fluides
@@ -1445,7 +1445,7 @@ navigation.navigate('Details', {
 // Bon : utiliser un state global ou un event
 ```
 
-### 3. Oublier de typer les parametres
+### 3. Oublier de typer les paramètres
 
 ```tsx
 // Mauvais : pas de types
@@ -1464,7 +1464,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 ---
 
-## Recapitulatif
+## Récapitulatif
 
 | Concept | Cle |
 |---------|-----|
@@ -1473,15 +1473,26 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 | `screenOptions` | Options globales ou par ecran |
 | `navigate` vs `push` | Reutilise vs empile toujours |
 | `goBack` / `replace` / `reset` | Navigation arriere, remplacement, reinitialisation |
-| `RootStackParamList` | Type des parametres par ecran |
+| `RootStackParamList` | Type des paramètres par ecran |
 | `NativeStackScreenProps` | Props typees des ecrans |
 | `useNavigation` / `useRoute` | Hooks pour naviguer et lire les params |
 | `useFocusEffect` | Effet lie au focus de l'ecran |
-| `presentation: 'modal'` | Ecran presente en modale |
+| `presentation: 'modal'` | Ecran présenté en modale |
 | `animation` | Animations de transition configurables |
 
 ---
 
-> **Static API (React Navigation v7)** : v7 introduit `createStaticNavigation()` comme approche recommandee pour les nouveaux projets. Elle offre un typage automatique des routes sans maintenir manuellement un `RootParamList`. L'API dynamique avec `NavigationContainer` (enseignee dans ce module) reste fonctionnelle et est l'approche la plus documentee. Pour les projets existants, aucune migration n'est necessaire.
+> **Static API (React Navigation v7)** : v7 introduit `createStaticNavigation()` comme approche recommandee pour les nouveaux projets. Elle offre un typage automatique des routes sans maintenir manuellement un `RootParamList`. L'API dynamique avec `NavigationContainer` (enseignee dans ce module) reste fonctionnelle et est l'approche la plus documentee. Pour les projets existants, aucune migration n'est nécessaire.
 
 **Prochain module** : [Module 09 — Navigation avancee](./09-navigation-avancee.md) (tabs, drawer, deep linking, auth flow)
+
+---
+
+<!-- parcours-recommande -->
+
+::: tip Parcours recommandé
+1. **Screencast** : [screencast 08 navigation](../screencasts/screencast-08-navigation.md)
+2. **Lab** : [lab-08-navigation-fondamentaux](../labs/lab-08-navigation-fondamentaux/README)
+3. **Visualisation** : [Navigation Flow](../visualizations/navigation-flow.html)
+4. **Quiz** : [quiz 08 navigation](../quizzes/quiz-08-navigation.html)
+:::

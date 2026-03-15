@@ -4,11 +4,11 @@
 - **Duree estimee** : 16-18 min
 - **Module** : `modules/16-capteurs-et-notifications.md`
 - **Lab associe** : Lab 16
-- **Prerequis** : Screencast 09 (navigation avancee)
+- **Prérequis** : Screencast 09 (navigation avancee)
 
 ## Setup
 - [ ] VS Code ouvert dans un projet Expo
-- [ ] Terminal integre ouvert
+- [ ] Terminal intégré ouvert
 - [ ] Appareil physique connecte (simulateur pour le debut, physique pour les capteurs)
 - [ ] Fichier `modules/16-capteurs-et-notifications.md` ouvert
 
@@ -16,7 +16,7 @@
 
 ### [00:00-02:00] Introduction — Les capteurs et la New Architecture
 
-> Les smartphones sont equipes de capteurs physiques : accelerometre, gyroscope, magnetometre, barometre, podometre. Avec expo-sensors et la New Architecture, les donnees transitent par JSI (Turbo Modules) directement de C++ vers JS, sans la latence du bridge.
+> Les smartphones sont équipes de capteurs physiques : accelerometre, gyroscope, magnetometre, barometre, podometre. Avec expo-sensors et la New Architecture, les donnees transitent par JSI (Turbo Modules) directement de C++ vers JS, sans la latence du bridge.
 
 **Action** : Montrer le schema d'architecture (module → Turbo Module → CoreMotion/SensorManager → Hardware).
 
@@ -26,11 +26,11 @@
 npx expo install expo-sensors
 ```
 
-### [02:00-05:00] Accelerometre en temps reel
+### [02:00-05:00] Accelerometre en temps réel
 
 > L'accelerometre mesure l'acceleration lineaire sur 3 axes en g. Au repos, z ≈ 1g (gravite).
 
-**Action** : Creer un composant AccelerometerScreen.
+**Action** : Créer un composant AccelerometerScreen.
 
 ```typescript
 import { Accelerometer } from 'expo-sensors';
@@ -55,9 +55,9 @@ function AccelerometerScreen() {
 }
 ```
 
-**Action** : Incliner le telephone dans differentes directions. Montrer les valeurs qui changent.
+**Action** : Incliner le telephone dans différentes directions. Montrer les valeurs qui changent.
 
-> Attention a la frequence : 100ms = 10 Hz, suffisant pour l'UI. Pour les jeux, on utiliserait 16ms (60 Hz), mais avec useRef au lieu de setState pour eviter 60 re-renders par seconde.
+> Attention à la frequence : 100ms = 10 Hz, suffisant pour l'UI. Pour les jeux, on utiliserait 16ms (60 Hz), mais avec useRef au lieu de setState pour éviter 60 re-renders par seconde.
 
 ### [05:00-08:00] Filtre passe-bas et lissage
 
@@ -77,7 +77,7 @@ function lowPassFilter(current, previous, alpha) {
 }
 ```
 
-**Action** : Comparer alpha = 0.1 (tres lisse) et alpha = 0.8 (reactif). Montrer visuellement la difference.
+**Action** : Comparer alpha = 0.1 (très lisse) et alpha = 0.8 (réactif). Montrer visuellement la différence.
 
 > alpha proche de 0 : fort lissage, lent a reagir. alpha proche de 1 : peu de lissage, bruite. Pour une boussole, alpha = 0.1. Pour un jeu, alpha = 0.5-0.8.
 
@@ -97,7 +97,7 @@ const sub = Pedometer.watchStepCount((result) => {
 
 **Action** : Marcher avec le telephone et montrer le compteur qui s'incremente.
 
-> Pour comprendre le principe, voyons comment on detecterait les pas manuellement avec l'accelerometre : on calcule la magnitude, on detecte un pic au-dessus d'un seuil, puis la descente. Un intervalle minimum de 300ms evite les faux positifs.
+> Pour comprendre le principe, voyons comment on detecterait les pas manuellement avec l'accelerometre : on calcule la magnitude, on détecté un pic au-dessus d'un seuil, puis la descente. Un intervalle minimum de 300ms evite les faux positifs.
 
 **Action** : Montrer le createStepDetector du module.
 
@@ -132,9 +132,9 @@ await Notifications.scheduleNotificationAsync({
 
 **Action** : Montrer la notification qui apparait.
 
-> Sur Android 8+, il faut creer un channel. Sans channel, la notification est silencieusement ignoree.
+> Sur Android 8+, il faut créer un channel. Sans channel, la notification est silencieusement ignoree.
 
-**Action** : Creer un channel et planifier une notification differee.
+**Action** : Créer un channel et planifier une notification differee.
 
 ```typescript
 await Notifications.setNotificationChannelAsync('reminders', {
@@ -150,9 +150,9 @@ await Notifications.scheduleNotificationAsync({
 
 ### [14:00-16:00] Taches en arriere-plan
 
-> expo-task-manager permet de definir des taches qui s'executent meme quand l'app est fermee.
+> expo-task-manager permet de définir des taches qui s'executent même quand l'app est fermee.
 
-**Action** : Montrer la definition de tache au niveau module.
+**Action** : Montrer la définition de tache au niveau module.
 
 ```typescript
 import * as TaskManager from 'expo-task-manager';
@@ -164,10 +164,10 @@ TaskManager.defineTask('step-sync', async ({ data, error }) => {
 });
 ```
 
-> Point critique : defineTask DOIT etre au niveau module, pas dans un composant. Quand le systeme relance le bundle en arriere-plan, il n'y a pas de render — seul le code au niveau module est execute.
+> Point critique : defineTask DOIT etre au niveau module, pas dans un composant. Quand le système relance le bundle en arriere-plan, il n'y a pas de render — seul le code au niveau module est exécuté.
 
-**Action** : Montrer les limitations : intervalle minimum de 15 minutes, temps d'execution limite (~30s), Doze mode sur Android.
+**Action** : Montrer les limitations : intervalle minimum de 15 minutes, temps d'exécution limite (~30s), Doze mode sur Android.
 
 ### [16:00-17:00] Recap
 
-> En resume : expo-sensors utilise les Turbo Modules pour les donnees capteur basse latence. Les donnees brutes doivent etre filtrees (passe-bas, moyenne mobile). Le Pedometer natif est preferable a la detection manuelle. Les notifications locales necessitent un channel sur Android. Les taches de fond doivent etre definies au niveau module. Passez au Lab 16 pour pratiquer le traitement de donnees capteur et la planification de notifications.
+> En résumé : expo-sensors utilise les Turbo Modules pour les donnees capteur basse latence. Les donnees brutes doivent etre filtrees (passe-bas, moyenne mobile). Le Pedometer natif est preferable à la detection manuelle. Les notifications locales necessitent un channel sur Android. Les taches de fond doivent etre definies au niveau module. Passez au Lab 16 pour pratiquer le traitement de donnees capteur et la planification de notifications.

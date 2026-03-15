@@ -1,4 +1,4 @@
-# Module 22 — Deploiement et CI/CD
+# Module 22 — Déploiement et CI/CD
 
 | Difficulte | Duree estimee | Lab | Quiz |
 |------------|---------------|-----|------|
@@ -9,17 +9,17 @@
 - Comprendre la signature d'application iOS (certificats, provisioning profiles) et Android (keystore)
 - Configurer EAS Build avec des profils de build (development, preview, production)
 - Automatiser la soumission aux stores avec EAS Submit
-- Deployer des mises a jour OTA avec EAS Update
-- Connaitre les regles de l'App Store et du Play Store
+- Déployer des mises a jour OTA avec EAS Update
+- Connaître les regles de l'App Store et du Play Store
 - Mettre en place un pipeline CI/CD avec GitHub Actions
-- Gerer le versioning (semver, build numbers, runtime version)
-- Gerer les environnements (dev, staging, production)
+- Gérer le versioning (semver, build numbers, runtime version)
+- Gérer les environnements (dev, staging, production)
 
 ---
 
 ## Signature d'application
 
-Avant de publier sur les stores, l'application doit etre **signee cryptographiquement**. Cela garantit l'identite du developpeur et l'integrite du binaire.
+Avant de publier sur les stores, l'application doit etre **signee cryptographiquement**. Cela garantit l'identite du développeur et l'integrite du binaire.
 
 ### iOS : certificats et provisioning profiles
 
@@ -47,7 +47,7 @@ Architecture de signature iOS :
               → Inclut les capabilities (push, sign-in, etc.)
 ```
 
-#### Processus manuel (a connaitre)
+#### Processus manuel (à connaître)
 
 ```bash
 # 1. Creer un Certificate Signing Request (CSR) via Keychain Access
@@ -58,7 +58,7 @@ Architecture de signature iOS :
 # 6. Configurer Xcode : Signing & Capabilities
 ```
 
-> **Bonne nouvelle** : EAS Build gere tout cela automatiquement ! Mais comprendre le processus aide au debugging.
+> **Bonne nouvelle** : EAS Build géré tout cela automatiquement ! Mais comprendre le processus aide au debugging.
 
 ### Android : keystore
 
@@ -78,7 +78,7 @@ Architecture de signature Android :
               → Google Play App Signing (active par defaut)
 ```
 
-#### Generer un keystore
+#### Générer un keystore
 
 ```bash
 # Generer un keystore pour la production
@@ -374,9 +374,9 @@ eas build --profile production --platform all --auto-submit
 
 ## EAS Update (OTA)
 
-EAS Update permet de deployer des mises a jour **over-the-air** (OTA) sans passer par les stores. Ideal pour les corrections de bugs et les petites ameliorations.
+EAS Update permet de déployer des mises a jour **over-the-air** (OTA) sans passer par les stores. Ideal pour les corrections de bugs et les petites ameliorations.
 
-### Comment ca marche
+### Comment ça marche
 
 ```
 Build natif (binaire) :
@@ -495,7 +495,7 @@ git checkout v1.2.0
 eas update --channel production --message "Rollback to v1.2.0"
 ```
 
-### Verification programmatique
+### Vérification programmatique
 
 ```typescript
 // Dans l'application, verifier les updates manuellement
@@ -850,7 +850,7 @@ jobs:
 
 ## Fastlane comme alternative
 
-[Fastlane](https://fastlane.tools/) est un outil open source pour automatiser le build et le deploiement. C'est l'alternative a EAS pour les projets **ejected** ou non-Expo.
+[Fastlane](https://fastlane.tools/) est un outil open source pour automatiser le build et le déploiement. C'est l'alternative a EAS pour les projets **ejected** ou non-Expo.
 
 ### Comparaison EAS vs Fastlane
 
@@ -913,13 +913,13 @@ platform :android do
 end
 ```
 
-> Pour un projet **Expo SDK 52+**, EAS est recommande. Fastlane est utile pour les projets **bare React Native** ou les besoins tres specifiques (screenshots automatiques, metadata management).
+> Pour un projet **Expo SDK 52+**, EAS est recommande. Fastlane est utile pour les projets **bare React Native** ou les besoins très spécifiques (screenshots automatiques, metadata management).
 
 ---
 
 ## Versioning
 
-### Strategie Semver
+### Stratégie Semver
 
 ```
 MAJOR.MINOR.PATCH
@@ -995,7 +995,7 @@ export default config;
 }
 ```
 
-Avec `appVersionSource: "remote"`, EAS gere le build number automatiquement. Plus besoin de le committer dans le code !
+Avec `appVersionSource: "remote"`, EAS géré le build number automatiquement. Plus besoin de le committer dans le code !
 
 ### Runtime version pour EAS Update
 
@@ -1209,7 +1209,7 @@ eas build:view <build-id>
 
 ---
 
-## Recapitulatif
+## Récapitulatif
 
 | Concept | Description |
 |---------|-------------|
@@ -1222,7 +1222,7 @@ eas build:view <build-id>
 | Runtime version | Compatibilite build natif / update OTA |
 | Channel | Canal de distribution des updates |
 | Semver | MAJOR.MINOR.PATCH |
-| autoIncrement | Build number gere par EAS |
+| autoIncrement | Build number géré par EAS |
 | GitHub Actions | CI/CD : lint, test, build, submit |
 | Fastlane | Alternative open source a EAS |
 | app.config.ts | Configuration dynamique par environnement |
@@ -1231,4 +1231,15 @@ eas build:view <build-id>
 
 ## Exercice pratique
 
-Rendez-vous dans le [Lab 22](../labs/lab-22-deploiement-ci-cd/) pour implementer un simulateur de pipeline CI/CD en pur TypeScript : versioning, build config, release checklist, update channels et pipeline d'integration.
+Rendez-vous dans le [Lab 22](../labs/lab-22-deploiement-ci-cd/) pour implementer un simulateur de pipeline CI/CD en pur TypeScript : versioning, build config, release checklist, update channels et pipeline d'intégration.
+
+---
+
+<!-- parcours-recommande -->
+
+::: tip Parcours recommandé
+1. **Screencast** : [screencast 22 déploiement](../screencasts/screencast-22-deploiement.md)
+2. **Lab** : [lab-22-déploiement-ci-cd](../labs/lab-22-deploiement-ci-cd/README)
+3. **Visualisation** : [Bundle Analyzer](../visualizations/bundle-analyzer.html)
+4. **Quiz** : [quiz 22 déploiement](../quizzes/quiz-22-deploiement.html)
+:::

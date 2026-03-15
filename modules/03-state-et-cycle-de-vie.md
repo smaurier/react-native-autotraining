@@ -6,17 +6,17 @@
 
 ## Objectifs
 
-- Maitriser `useState` avec des primitives, objets et tableaux
+- Maîtriser `useState` avec des primitives, objets et tableaux
 - Comprendre l'immutabilite et appliquer les patterns de mise a jour
 - Utiliser `useEffect` pour les effets de bord, le cleanup et le dependency array
 - Manipuler `useRef` pour les refs DOM et les valeurs mutables
-- Creer des hooks personnalises reutilisables
-- Decouvrir `useReducer` pour la logique d'etat complexe
-- Eviter les erreurs classiques : stale closures, boucles infinies, deps manquantes
+- Créer des hooks personnalises réutilisables
+- Decouvrir `useReducer` pour la logique d'état complexe
+- Éviter les erreurs classiques : stale closures, boucles infinies, deps manquantes
 
 ---
 
-## useState : l'etat local
+## useState : l'état local
 
 ### Primitives
 
@@ -48,7 +48,7 @@ function Counter() {
 
 ### Setter fonctionnel vs direct
 
-Quand le nouvel etat depend de l'etat precedent, **toujours utiliser la forme fonctionnelle** :
+Quand le nouvel état depend de l'état précédent, **toujours utiliser la forme fonctionnelle** :
 
 ```tsx
 function Counter() {
@@ -84,7 +84,7 @@ function Counter() {
 
 ### Initialisation paresseuse (lazy initial state)
 
-Si l'etat initial necessite un calcul couteux, passer une **fonction** :
+Si l'état initial nécessité un calcul couteux, passer une **fonction** :
 
 ```tsx
 // MAUVAIS : computeExpensiveValue() est appele a chaque render
@@ -127,7 +127,7 @@ const [status, setStatus] = useState<Status>('idle');
 
 ### Pourquoi React exige l'immutabilite
 
-React compare les references pour detecter les changements. Muter un objet **ne change pas sa reference**, donc React ne re-rend pas :
+React compare les références pour détecter les changements. Muter un objet **ne change pas sa référence**, donc React ne re-rend pas :
 
 ```tsx
 // MAUVAIS : mutation directe — React ne detecte pas le changement
@@ -241,7 +241,7 @@ const sortByDone = () => {
 };
 ```
 
-### Tableau de reference : operations immutables
+### Tableau de référence : operations immutables
 
 | Operation | Mutable (interdit) | Immutable (correct) |
 |-----------|-------------------|-------------------|
@@ -257,9 +257,9 @@ const sortByDone = () => {
 
 ## useEffect : effets de bord
 
-### Syntaxe et execution
+### Syntaxe et exécution
 
-`useEffect` execute du code **apres** le render. C'est le hook pour les effets de bord : appels API, timers, subscriptions, manipulation DOM.
+`useEffect` exécuté du code **après** le render. C'est le hook pour les effets de bord : appels API, timers, subscriptions, manipulation DOM.
 
 ```tsx
 import { useState, useEffect } from 'react';
@@ -321,8 +321,8 @@ useEffect(() => {
 
 ### Cleanup : nettoyer les effets
 
-La fonction retournee par `useEffect` est le **cleanup**. Elle s'execute :
-- Avant la re-execution de l'effet (quand les deps changent)
+La fonction retournee par `useEffect` est le **cleanup**. Elle s'exécuté :
+- Avant la re-exécution de l'effet (quand les deps changent)
 - Au demontage du composant
 
 ```tsx
@@ -407,7 +407,7 @@ function SearchResults({ query }: { query: string }) {
 }
 ```
 
-### Pattern : eviter les race conditions
+### Pattern : éviter les race conditions
 
 ```tsx
 function UserData({ userId }: { userId: string }) {
@@ -438,13 +438,13 @@ function UserData({ userId }: { userId: string }) {
 
 ---
 
-## useRef : references et valeurs mutables
+## useRef : références et valeurs mutables
 
 ### Deux usages distincts
 
-`useRef` cree une reference mutable qui persiste entre les renders **sans causer de re-render** quand elle change.
+`useRef` créé une référence mutable qui persiste entre les renders **sans causer de re-render** quand elle change.
 
-#### 1. Reference vers un element natif
+#### 1. Référence vers un élément natif
 
 ```tsx
 import { useRef } from 'react';
@@ -547,7 +547,7 @@ function StopWatch() {
 }
 ```
 
-### Pattern : valeur precedente
+### Pattern : valeur précédente
 
 ```tsx
 function usePrevious<T>(value: T): T | undefined {
@@ -592,7 +592,7 @@ function PriceDisplay({ price }: { price: number }) {
 
 ## Hooks personnalises (custom hooks)
 
-Un custom hook est une **fonction** qui commence par `use` et qui utilise d'autres hooks. C'est le mecanisme principal de reutilisation de logique.
+Un custom hook est une **fonction** qui commence par `use` et qui utilise d'autres hooks. C'est le mécanisme principal de reutilisation de logique.
 
 ### useToggle
 
@@ -766,7 +766,7 @@ function ThemeScreen() {
 }
 ```
 
-### useFetch : hook generique pour les requetes
+### useFetch : hook générique pour les requêtes
 
 ```tsx
 interface UseFetchResult<T> {
@@ -831,9 +831,9 @@ function UserList() {
 
 ---
 
-## useReducer : logique d'etat complexe
+## useReducer : logique d'état complexe
 
-Quand l'etat a plusieurs sous-valeurs interdependantes ou que la logique de mise a jour est complexe, `useReducer` est preferable a `useState` :
+Quand l'état a plusieurs sous-valeurs interdependantes ou que la logique de mise a jour est complexe, `useReducer` est preferable a `useState` :
 
 ```tsx
 import { useReducer } from 'react';
@@ -970,7 +970,7 @@ function RegistrationForm() {
 
 | Critere | useState | useReducer |
 |---------|----------|------------|
-| Etat simple (1-2 valeurs) | Oui | Non |
+| État simple (1-2 valeurs) | Oui | Non |
 | Sous-valeurs interdependantes | Difficile | Oui |
 | Logique de transition complexe | Non | Oui |
 | Testabilite du reducer | Non applicable | Facile (fonction pure) |
@@ -982,11 +982,11 @@ function RegistrationForm() {
 
 ### Mapping classes -> hooks
 
-| Phase classe | Hook equivalent | Quand |
+| Phase classe | Hook équivalent | Quand |
 |--------------|-----------------|-------|
 | `constructor` | `useState(initialValue)` | Initialisation |
-| `componentDidMount` | `useEffect(() => { ... }, [])` | Apres le premier render |
-| `componentDidUpdate` | `useEffect(() => { ... }, [deps])` | Apres chaque render ou deps changent |
+| `componentDidMount` | `useEffect(() => { ... }, [])` | Après le premier render |
+| `componentDidUpdate` | `useEffect(() => { ... }, [deps])` | Après chaque render ou deps changent |
 | `componentWillUnmount` | `useEffect(() => { return () => { ... } }, [])` | Avant demontage |
 | `shouldComponentUpdate` | `React.memo()` | Optimisation re-render |
 
@@ -1024,7 +1024,7 @@ function LifecycleDemo({ userId }: { userId: string }) {
 }
 ```
 
-### Ordre d'execution detaille
+### Ordre d'exécution détaillé
 
 ```
 Premier render :
@@ -1047,7 +1047,7 @@ Demontage :
 
 ---
 
-## Erreurs classiques et comment les eviter
+## Erreurs classiques et comment les éviter
 
 ### 1. Stale closure (fermeture perimee)
 
@@ -1218,7 +1218,7 @@ function ContactForm() {
 }
 ```
 
-### Validation en temps reel
+### Validation en temps réel
 
 ```tsx
 function EmailInput() {
@@ -1491,28 +1491,38 @@ function RegistrationForm() {
 
 ---
 
-## Resume des hooks
+## Résumé des hooks
 
 | Hook | Usage | Re-render ? |
 |------|-------|-------------|
-| `useState` | Etat local | Oui |
-| `useEffect` | Effets de bord (API, timers, subscriptions) | Non (apres render) |
+| `useState` | État local | Oui |
+| `useEffect` | Effets de bord (API, timers, subscriptions) | Non (après render) |
 | `useRef` | Refs DOM + valeurs mutables persistantes | Non |
-| `useReducer` | Etat complexe avec logique de transition | Oui |
-| `useMemo` | Calcul derive memorise | Non (optimisation) |
+| `useReducer` | État complexe avec logique de transition | Oui |
+| `useMemo` | Calcul dérivé memorise | Non (optimisation) |
 | `useCallback` | Fonction memorisee | Non (optimisation) |
 
 ---
 
-## Points cles a retenir
+## Points clés à retenir
 
-1. **Setter fonctionnel** quand le nouvel etat depend de l'ancien : `setX(prev => ...)`
-2. **Immutabilite** : toujours creer de nouveaux objets/tableaux, jamais muter
+1. **Setter fonctionnel** quand le nouvel état depend de l'ancien : `setX(prev => ...)`
+2. **Immutabilite** : toujours créer de nouveaux objets/tableaux, jamais muter
 3. **Dependency array** : lister tout ce que l'effet utilise depuis le scope du composant
 4. **Cleanup** : toujours nettoyer les timers, subscriptions, abort controllers
 5. **useRef** pour les valeurs qui ne doivent pas causer de re-render
-6. **Custom hooks** : extraire la logique reutilisable dans des fonctions `use*`
-7. **useReducer** quand l'etat a plus de 2-3 sous-valeurs interdependantes
+6. **Custom hooks** : extraire la logique réutilisable dans des fonctions `use*`
+7. **useReducer** quand l'état a plus de 2-3 sous-valeurs interdependantes
 8. **Stale closures** : le piege #1 — utiliser les setters fonctionnels dans les callbacks
 
 > **Prochain module** : Listes et donnees — FlatList, SectionList, pagination, et manipulation de donnees.
+
+---
+
+<!-- parcours-recommande -->
+
+::: tip Parcours recommandé
+1. **Screencast** : [screencast 03 state](../screencasts/screencast-03-state.md)
+2. **Lab** : [lab-03-state-cycle-de-vie](../labs/lab-03-state-cycle-de-vie/README)
+3. **Quiz** : [quiz 03 state](../quizzes/quiz-03-state.html)
+:::

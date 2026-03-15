@@ -1,24 +1,30 @@
-# Module 00 : Prerequis et introduction a React Native
+# Module 00 : Prérequis et introduction a React Native
+
+<!-- nav-cours-précédent -->
+> **Cours précédent** : [Observabilité & SRE](../../12-observability-sre/modules/19-projet-final.md). Si tu arrives ici sans avoir fait les cours précédents, consulte le [guide de démarrage](../../GUIDE-DEMARRAGE.md).
+
 
 | Metadata | Valeur |
 |----------|--------|
 | **Difficulte** | 1/5 |
 | **Duree** | 45 min |
-| **Prerequis** | JavaScript basique, un editeur de code |
-| **Lab** | [Lab 00 — Prerequis Setup](/labs/lab-00-prerequis-setup/) |
-| **Quiz** | [Quiz 00 — Prerequis](/quizzes/quiz-00-prerequis.html) |
+| **Prérequis** | Cours 08-React valide (hooks, state, routing), TypeScript (01-TypeScript modules 00-09 minimum) |
+| **Lab** | [Lab 00 — Prérequis Setup](/labs/lab-00-prerequis-setup/) |
+| **Quiz** | [Quiz 00 — Prérequis](/quizzes/quiz-00-prerequis.html) |
 
 ---
 
 ## Objectifs du module
 
-- Reviser les fondamentaux TypeScript indispensables pour React Native
+- Réviser les fondamentaux TypeScript indispensables pour React Native
 - Comprendre ce qu'est React Native et son positionnement
-- Maitriser l'architecture interne (threads, bridge, new architecture)
-- Installer l'environnement de developpement complet
-- Creer et lancer un premier projet Expo
+- Maîtriser l'architecture interne (threads, bridge, new architecture)
+- Installer l'environnement de développement complet
+- Créer et lancer un premier projet Expo
 
 ---
+
+> **Ce cours nécessité le cours 08-React comme prérequis.** Tu dois maîtriser les hooks (useState, useEffect), le state management, et idealement avoir fait le module Next.js. Le rafraichissement TypeScript ci-dessous est un rappel, pas une introduction.
 
 ## 1. Rafraichissement JavaScript/TypeScript
 
@@ -271,7 +277,7 @@ type Result2 = IsString<42>;     // false
 
 ### 2.1 Definition
 
-React Native est un framework open-source cree par Meta (Facebook) pour construire des applications mobiles natives en utilisant JavaScript et React. Le mot cle est **native** : les composants sont de vrais composants natifs iOS et Android, pas une WebView.
+React Native est un framework open-source créé par Meta (Facebook) pour construire des applications mobiles natives en utilisant JavaScript et React. Le mot clé est **native** : les composants sont de vrais composants natifs iOS et Android, pas une WebView.
 
 ```
 React Native = React (logique UI) + Native (rendu plateforme)
@@ -286,7 +292,7 @@ React Native = React (logique UI) + Native (rendu plateforme)
 | **Performance** | Proche du natif | Excellente | Maximale | Limitee |
 | **Hot Reload** | Oui (Fast Refresh) | Oui | Limité | Oui |
 | **Ecosysteme** | npm (enorme) | pub.dev (croissant) | Mature | npm |
-| **Equipe requise** | 1 equipe JS | 1 equipe Dart | 2 equipes | 1 equipe JS |
+| **Équipe requise** | 1 équipe JS | 1 équipe Dart | 2 équipes | 1 équipe JS |
 | **Partage de code web** | Possible (RN Web) | Possible (Flutter Web) | Non | Natif web |
 | **Taille app** | ~15-25 MB | ~15-25 MB | ~5-15 MB | ~10-20 MB |
 | **Adoption** | Meta, Microsoft, Shopify | Google, BMW, Alibaba | Tous | Enterprise |
@@ -294,16 +300,16 @@ React Native = React (logique UI) + Native (rendu plateforme)
 ### 2.3 Quand choisir React Native ?
 
 **Bons cas d'usage :**
-- Equipe avec experience React/JavaScript
+- Équipe avec experience React/JavaScript
 - Application cross-platform (iOS + Android)
 - Prototypage rapide
 - Application avec beaucoup de logique metier (partageable)
-- Integration avec un ecosysteme web React existant
+- Intégration avec un ecosysteme web React existant
 
-**Cas ou considerer d'autres options :**
-- Jeux 3D ou animations tres complexes → Unity, natif
+**Cas où considerer d'autres options :**
+- Jeux 3D ou animations très complexes → Unity, natif
 - Application ultra-specialisee (camera AR avancee) → natif
-- Equipe Dart existante → Flutter
+- Équipe Dart existante → Flutter
 - Application web uniquement → React + PWA
 
 ---
@@ -335,7 +341,7 @@ React Native fonctionne avec deux threads principaux qui communiquent via un "br
 └──────────────────────────────────────────────────────┘
 ```
 
-**JS Thread** : execute votre code JavaScript/TypeScript, la logique React, le state management, les appels reseau.
+**JS Thread** : exécuté votre code JavaScript/TypeScript, la logique React, le state management, les appels réseau.
 
 **Native Thread (Main/UI Thread)** : responsable du rendu des composants natifs a l'ecran, des animations natives, de la gestion des gestes.
 
@@ -369,9 +375,9 @@ Depuis React Native 0.72+, la nouvelle architecture remplace le bridge :
 
 **JSI (JavaScript Interface)** : permet au JS d'appeler directement du C++ sans serialisation. Elimine le goulot d'etranglement du bridge.
 
-**Hermes** : moteur JavaScript optimise pour mobile (bytecode precompile, faible consommation memoire).
+**Hermes** : moteur JavaScript optimise pour mobile (bytecode precompile, faible consommation mémoire).
 
-**Fabric** : nouveau systeme de rendu qui supporte le rendu concurrent de React 18.
+**Fabric** : nouveau système de rendu qui supporte le rendu concurrent de React 18.
 
 **Turbo Modules** : remplacement des Native Modules avec chargement lazy et typage fort.
 
@@ -406,7 +412,7 @@ Depuis React Native 0.72+, la nouvelle architecture remplace le bridge :
 
 ## 4. Installation de l'environnement
 
-### 4.1 Prerequisites systeme
+### 4.1 Prerequisites système
 
 ```bash
 # Verifier Node.js (>= 18 requis)
@@ -424,7 +430,7 @@ watchman --version
 
 ### 4.2 Installer Expo CLI
 
-Expo est la maniere recommandee de demarrer avec React Native. C'est un ensemble d'outils qui simplifie enormement le developpement.
+Expo est la manière recommandee de démarrer avec React Native. C'est un ensemble d'outils qui simplifie enormement le développement.
 
 ```bash
 # Expo CLI est utilise via npx (pas d'installation globale)
@@ -450,7 +456,7 @@ export PATH=$PATH:$ANDROID_HOME/emulator
 export PATH=$PATH:$ANDROID_HOME/platform-tools
 ```
 
-4. Creer un emulateur (AVD Manager → Create Virtual Device → Pixel 7 → API 34)
+4. Créer un emulateur (AVD Manager → Create Virtual Device → Pixel 7 → API 34)
 
 ### 4.4 Xcode (macOS uniquement, pour iOS)
 
@@ -475,7 +481,7 @@ sudo gem install cocoapods
 brew install cocoapods
 ```
 
-### 4.5 Verifier l'installation
+### 4.5 Vérifier l'installation
 
 ```bash
 # Expo doctor verifie tout
@@ -498,7 +504,7 @@ Expo = React Native + outils + services + configuration automatique
 ```
 
 **Avantages :**
-- Demarrage en 2 minutes
+- Démarrage en 2 minutes
 - Pas de configuration native
 - OTA updates (EAS Update)
 - Build dans le cloud (EAS Build)
@@ -520,12 +526,12 @@ npx react-native init MonApp
 
 **Avantages :**
 - Controle total sur le code natif
-- Integration de n'importe quelle librairie native
+- Intégration de n'importe quelle librairie native
 - Optimisation fine de la taille
 
 **Inconvenients :**
 - Configuration complexe
-- Maintenance des dependances natives
+- Maintenance des dépendances natives
 - Pas d'OTA updates sans configuration manuelle
 
 ### 5.3 Le meilleur des deux mondes : Expo + Dev Client
@@ -556,14 +562,14 @@ Ai-je besoin de modules natifs custom ?
 ```
 
 ::: tip Recommandation
-Pour ce cours, nous utilisons **Expo** sauf mention contraire. C'est le choix recommande par l'equipe React Native officielle depuis 2024.
+Pour ce cours, nous utilisons **Expo** sauf mention contraire. C'est le choix recommande par l'équipe React Native officielle depuis 2024.
 :::
 
 ---
 
 ## 6. Premier projet : Hello React Native
 
-### 6.1 Creation du projet
+### 6.1 Création du projet
 
 ```bash
 # Creer un nouveau projet avec le template TypeScript
@@ -610,9 +616,9 @@ const styles = StyleSheet.create({
 ```
 
 **Decomposition :**
-- `View` = equivalent de `<div>` en web → conteneur generique
+- `View` = équivalent de `<div>` en web → conteneur générique
 - `Text` = obligatoire pour afficher du texte (pas de texte nu !)
-- `StyleSheet.create` = cree un objet de styles optimise
+- `StyleSheet.create` = créé un objet de styles optimise
 - `StatusBar` = barre de statut du telephone (heure, batterie)
 
 ### 6.3 Configuration app.json
@@ -668,7 +674,7 @@ npx expo start
 
 ### 6.5 Fast Refresh
 
-React Native dispose du **Fast Refresh** : quand vous modifiez un fichier, les changements apparaissent instantanement sans perdre l'etat de l'application.
+React Native dispose du **Fast Refresh** : quand vous modifiez un fichier, les changements apparaissent instantanement sans perdre l'état de l'application.
 
 ```typescript
 // Modifiez le texte et sauvegardez :
@@ -706,7 +712,7 @@ MonApp/
 └── assets/              ← Images, fonts, etc.
 ```
 
-### 7.2 Dependances cles
+### 7.2 Dependances clés
 
 ```json
 {
@@ -726,7 +732,7 @@ MonApp/
 
 ### 7.3 Premier exercice guide : modifier App.tsx
 
-Remplacez le contenu de `App.tsx` pour creer une carte de presentation :
+Remplacez le contenu de `App.tsx` pour créer une carte de présentation :
 
 ```typescript
 import { StatusBar } from 'expo-status-bar';
@@ -833,7 +839,7 @@ console.warn('Deprecated API call');
 console.error('Network error:', error);
 ```
 
-Les logs apparaissent dans le terminal ou s'execute `npx expo start`.
+Les logs apparaissent dans le terminal ou s'exécuté `npx expo start`.
 
 ### 8.2 React DevTools
 
@@ -849,12 +855,12 @@ Permet d'inspecter l'arbre de composants, les props, le state, le contexte.
 
 ### 8.3 Expo DevTools
 
-Quand `npx expo start` est lance, appuyez sur `m` pour ouvrir le menu developpeur dans l'app :
+Quand `npx expo start` est lance, appuyez sur `m` pour ouvrir le menu développeur dans l'app :
 - **Reload** : recharge complete
-- **Toggle Inspector** : inspecteur d'elements (comme les DevTools du navigateur)
+- **Toggle Inspector** : inspecteur d'éléments (comme les DevTools du navigateur)
 - **Performance Monitor** : FPS, RAM, threads
 
-### 8.4 Erreurs courantes du debutant
+### 8.4 Erreurs courantes du débutant
 
 ```typescript
 // ❌ Erreur : texte en dehors de <Text>
@@ -898,11 +904,11 @@ Quand `npx expo start` est lance, appuyez sur `m` pour ouvrir le menu developpeu
 
 ---
 
-## 9. Concepts cles a retenir
+## 9. Concepts clés à retenir
 
 ### 9.1 Tout est composant
 
-En React Native, chaque element de l'interface est un composant :
+En React Native, chaque élément de l'interface est un composant :
 
 ```typescript
 // Composants de base fournis par React Native
@@ -927,7 +933,7 @@ React Native n'utilise pas le DOM ni le CSS. A la place :
 
 ### 9.3 Flexbox par defaut
 
-En React Native, Flexbox est le seul systeme de layout. Mais attention, les valeurs par defaut different du web :
+En React Native, Flexbox est le seul système de layout. Mais attention, les valeurs par defaut différent du web :
 
 ```typescript
 // Web : flexDirection par defaut = 'row'
@@ -949,19 +955,19 @@ En React Native, Flexbox est le seul systeme de layout. Mais attention, les vale
 
 ---
 
-## 10. Recapitulatif
+## 10. Récapitulatif
 
 | Concept | Detail |
 |---------|--------|
 | React Native | Framework mobile cross-platform (composants natifs) |
-| Expo | Outil recommande pour demarrer et developper |
-| Architecture | JS Thread + Native Thread + Bridge (ou JSI) |
+| Expo | Outil recommande pour démarrer et développer |
+| Architecture | JS Thread + Native Thread + Bridge (où JSI) |
 | Hermes | Moteur JS optimise mobile |
 | Fast Refresh | Rechargement instantane du code |
 | Yoga | Moteur de layout Flexbox |
 | View | Conteneur de base (remplace `<div>`) |
 | Text | Obligatoire pour tout texte |
-| StyleSheet | Systeme de styles (camelCase, pas de CSS) |
+| StyleSheet | Système de styles (camelCase, pas de CSS) |
 
 ---
 
@@ -980,3 +986,14 @@ Puis testez vos connaissances avec le [Quiz 00](/quizzes/quiz-00-prerequis.html)
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/)
 - [React Native New Architecture](https://reactnative.dev/docs/new-architecture-intro)
 - [Hermes Engine](https://hermesengine.dev/)
+
+---
+
+<!-- parcours-recommande -->
+
+::: tip Parcours recommandé
+1. **Screencast** : [screencast 00 prérequis](../screencasts/screencast-00-prerequis.md)
+2. **Lab** : [lab-00-prérequis-setup](../labs/lab-00-prerequis-setup/README)
+3. **Visualisation** : [Architecture React Native](../visualizations/react-native-architecture.html)
+4. **Quiz** : [quiz 00 prérequis](../quizzes/quiz-00-prerequis.html)
+:::

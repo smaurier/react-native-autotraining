@@ -6,26 +6,26 @@
 
 ## Objectifs
 
-- Comprendre le modele de permissions d'Expo et les bonnes pratiques UX
+- Comprendre le modèle de permissions d'Expo et les bonnes pratiques UX
 - Capturer des photos et scanner des codes-barres avec expo-camera
 - Selectionner et compresser des images avec expo-image-picker
 - Obtenir la position GPS en foreground et background avec expo-location
-- Gerer des fichiers (telechargement, upload, cache) avec expo-file-system
+- Gérer des fichiers (telechargement, upload, cache) avec expo-file-system
 - Partager du contenu via les share sheets natives
 - Interagir avec le presse-papier et les retours haptiques
 
 ---
 
-## Le modele de permissions Expo
+## Le modèle de permissions Expo
 
 ### Pourquoi les permissions ?
 
-Sur mobile, l'acces aux capteurs et donnees personnelles (camera, localisation, photos) est protege par le systeme d'exploitation. L'application doit **demander l'autorisation** a l'utilisateur avant d'y acceder.
+Sur mobile, l'acces aux capteurs et donnees personnelles (camera, localisation, photos) est protege par le système d'exploitation. L'application doit **demander l'autorisation** a l'utilisateur avant d'y acceder.
 
-### Les deux etapes
+### Les deux étapes
 
 1. **Declaration** : declarer les permissions dans `app.json` / `app.config.ts` (compile dans le manifeste natif)
-2. **Demande a l'execution** : afficher le dialogue systeme quand l'utilisateur declenche l'action
+2. **Demande a l'exécution** : afficher le dialogue système quand l'utilisateur declenche l'action
 
 ```json
 // app.json
@@ -55,7 +55,7 @@ Sur mobile, l'acces aux capteurs et donnees personnelles (camera, localisation, 
 }
 ```
 
-### Demander une permission a l'execution
+### Demander une permission a l'exécution
 
 ```tsx
 import * as Camera from 'expo-camera';
@@ -87,7 +87,7 @@ function ScannerScreen() {
 }
 ```
 
-### Les etats de permission
+### Les états de permission
 
 ```tsx
 import { PermissionStatus } from 'expo-modules-core';
@@ -102,7 +102,7 @@ PermissionStatus.DENIED        // Refuse (peut etre redemande sur Android)
 // - On peut utiliser Linking.openSettings() pour l'y envoyer
 ```
 
-### Pattern generique de gestion des permissions
+### Pattern générique de gestion des permissions
 
 ```tsx
 import { Alert, Linking, Platform } from 'react-native';
@@ -150,10 +150,10 @@ const granted = await ensurePermission(
 ### Bonnes pratiques UX pour les permissions
 
 1. **Demandez au moment pertinent** : pas au lancement, mais quand l'utilisateur clique sur "Scanner"
-2. **Expliquez pourquoi** : affichez un ecran explicatif avant le dialogue systeme
+2. **Expliquez pourquoi** : affichez un ecran explicatif avant le dialogue système
 3. **Proposez une alternative** : si la camera est refusee, permettez la saisie manuelle du code
 4. **Ne bloquez pas l'app** : une permission refusee ne doit pas rendre l'app inutilisable
-5. **Pre-check avant la demande** : verifiez si la permission est deja accordee pour eviter des dialogues inutiles
+5. **Pre-check avant la demandé** : verifiez si la permission est déjà accordee pour éviter des dialogues inutiles
 
 ---
 
@@ -474,7 +474,7 @@ async function getCurrentPosition(): Promise<Location.LocationObject | null> {
 }
 ```
 
-### Suivi en temps reel (foreground)
+### Suivi en temps réel (foreground)
 
 ```tsx
 function LocationTracker() {
@@ -630,7 +630,7 @@ function haversineDistance(
 
 ---
 
-## Systeme de fichiers : expo-file-system
+## Système de fichiers : expo-file-system
 
 ### Installation
 
@@ -872,7 +872,7 @@ async function shareContent() {
 }
 ```
 
-### Bouton de partage reutilisable
+### Bouton de partage réutilisable
 
 ```tsx
 function ShareButton({ title, message, url }: {
@@ -995,7 +995,7 @@ await Haptics.selectionAsync();
 | Appuyer un bouton | Impact | Light |
 | Valider un formulaire | Notification | Success |
 | Erreur de validation | Notification | Error |
-| Supprimer un element (swipe) | Impact | Medium |
+| Supprimer un élément (swipe) | Impact | Medium |
 | Pull-to-refresh | Impact | Light |
 | Toggle un switch | Selection | - |
 | Scroll d'un picker | Selection | - |
@@ -1220,7 +1220,7 @@ function GeoPhotoScreen() {
 ### Permissions
 
 1. **Jamais au lancement** : demandez les permissions quand l'utilisateur declenche l'action
-2. **Expliquez avant** : un ecran d'explication avant le dialogue systeme ameliore le taux d'acceptation de 30-50%
+2. **Expliquez avant** : un ecran d'explication avant le dialogue système ameliore le taux d'acceptation de 30-50%
 3. **Gerez le refus gracieusement** : proposez une alternative ou un lien vers les reglages
 4. **Verifiez toujours** : ne supposez jamais qu'une permission est encore accordee
 
@@ -1228,11 +1228,11 @@ function GeoPhotoScreen() {
 
 1. **Compressez systematiquement** : une photo brute fait 3-8 MB, compressez a 200-500 KB pour l'upload
 2. **Utilisez le cache** : stockez les images telecharges dans `cacheDirectory`, pas `documentDirectory`
-3. **Liberez la memoire** : les images haute resolution consomment beaucoup de RAM
+3. **Liberez la mémoire** : les images haute résolution consomment beaucoup de RAM
 
 ### Geolocalisation
 
-1. **Precision adaptee** : utilisez `Accuracy.Balanced` sauf besoin de navigation precise
+1. **Precision adaptee** : utilisez `Accuracy.Balanced` sauf besoin de navigation précisé
 2. **Background = battery drain** : le suivi GPS en arriere-plan consomme beaucoup de batterie
 3. **Informez l'utilisateur** : affichez clairement quand le GPS est actif
 
@@ -1240,17 +1240,17 @@ function GeoPhotoScreen() {
 
 1. **documentDirectory** pour les donnees utilisateur (persistent, sauvegardees)
 2. **cacheDirectory** pour les fichiers temporaires (peut etre purge par l'OS)
-3. **Nettoyez le cache** regulierement : proposez un bouton "Vider le cache" dans les parametres
+3. **Nettoyez le cache** regulierement : proposez un bouton "Vider le cache" dans les paramètres
 
 ### Haptiques
 
 1. **Subtilite** : n'abusez pas des retours haptiques, utilisez-les pour confirmer des actions
-2. **Coherence** : meme type de retour pour des actions similaires dans toute l'app
+2. **Coherence** : même type de retour pour des actions similaires dans toute l'app
 3. **Light par defaut** : reservez Heavy pour les actions destructives ou importantes
 
 ---
 
-## Recapitulatif
+## Récapitulatif
 
 | API | Package | Cas d'usage principal |
 |-----|---------|----------------------|
@@ -1266,4 +1266,14 @@ function GeoPhotoScreen() {
 
 ## Exercice pratique
 
-Rendez-vous au [Lab 15](../labs/lab-15-apis-natives/) pour implementer un gestionnaire de permissions, un gestionnaire de fichiers en memoire, un compresseur de metadonnees d'image, un tracker de position et un constructeur de share intent en pur TypeScript.
+Rendez-vous au [Lab 15](../labs/lab-15-apis-natives/) pour implementer un gestionnaire de permissions, un gestionnaire de fichiers en mémoire, un compresseur de metadonnees d'image, un tracker de position et un constructeur de share intent en pur TypeScript.
+
+---
+
+<!-- parcours-recommande -->
+
+::: tip Parcours recommandé
+1. **Screencast** : [screencast 15 apis natives](../screencasts/screencast-15-apis-natives.md)
+2. **Lab** : [lab-15-apis-natives](../labs/lab-15-apis-natives/README)
+3. **Quiz** : [quiz 15 apis natives](../quizzes/quiz-15-apis-natives.html)
+:::

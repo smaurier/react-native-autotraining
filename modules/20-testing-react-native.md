@@ -7,17 +7,17 @@
 ## Objectifs
 
 - Configurer Jest avec React Native et Hermes
-- Maitriser React Native Testing Library (RNTL) : render, screen, queries, events
+- Maîtriser React Native Testing Library (RNTL) : render, screen, queries, events
 - Tester des composants avec getByText, getByRole, getByTestId
 - Tester des hooks personnalises avec renderHook et act
 - Tester la navigation avec un NavigationContainer mocke
-- Gerer l'asynchrone avec waitFor et findBy
+- Gérer l'asynchrone avec waitFor et findBy
 - Mocker les modules natifs avec jest.mock
 - Comprendre quand les snapshots sont utiles (et quand ils nuisent)
 - Tester un store Zustand
 - Tester des hooks React Query
 - Configurer la couverture de code avec des seuils pertinents
-- Ecrire une suite de tests complete pour un flux de login
+- Écrire une suite de tests complete pour un flux de login
 
 ---
 
@@ -96,7 +96,7 @@ jest.spyOn(console, 'warn').mockImplementation(() => {});
 
 ### Hermes et Jest
 
-Hermes est le moteur JS par defaut. Jest utilise le moteur de Node.js, pas Hermes. Pour tester du code qui depend de fonctionnalites specifiques a Hermes :
+Hermes est le moteur JS par defaut. Jest utilise le moteur de Node.js, pas Hermes. Pour tester du code qui depend de fonctionnalites spécifiques a Hermes :
 
 ```ts
 // jest.setup.ts — simuler l'environnement Hermes si necessaire
@@ -150,17 +150,17 @@ describe('WelcomeScreen', () => {
 
 ---
 
-## Queries : trouver les elements
+## Queries : trouver les éléments
 
-### Hierarchie des queries (par ordre de preference)
+### Hiérarchie des queries (par ordre de préférence)
 
 | Priorite | Query | Usage |
 |----------|-------|-------|
-| 1 | `getByRole` | Accessibilite (bouton, heading, text input) |
+| 1 | `getByRole` | Accessibilité (bouton, heading, text input) |
 | 2 | `getByText` | Texte visible a l'ecran |
 | 3 | `getByPlaceholderText` | Champ de saisie |
 | 4 | `getByDisplayValue` | Valeur actuelle d'un input |
-| 5 | `getByLabelText` | Label d'accessibilite |
+| 5 | `getByLabelText` | Label d'accessibilité |
 | 6 | `getByTestId` | Dernier recours (testID prop) |
 
 ### getByRole
@@ -688,7 +688,7 @@ Les snapshots sont nuisibles quand :
 - Le composant contient des donnees dynamiques (dates, IDs)
 - Le snapshot est trop gros (>50 lignes)
 - On fait `jest -u` sans regarder les diffs
-- Le test ne verifie rien de specifique
+- Le test ne vérifié rien de spécifique
 
 ### Inline snapshots (alternative)
 
@@ -1020,9 +1020,9 @@ it('retente le chargement au clic sur Reessayer', async () => {
 
 | Type de code | Couverture recommandee | Justification |
 |-------------|----------------------|---------------|
-| Utils / helpers purs | 95%+ | Fonctions pures, faciles a tester |
+| Utils / helpers purs | 95%+ | Fonctions pures, faciles à tester |
 | Stores (Zustand) | 90%+ | Logique metier critique |
-| Hooks personnalises | 85%+ | Logique reutilisable |
+| Hooks personnalises | 85%+ | Logique réutilisable |
 | Composants ecrans | 70%+ | Beaucoup de UI, tester les interactions |
 | Composants UI de base | 60%+ | Surtout visuels, snapshots suffisent |
 | Navigation config | 50%+ | Configuration plus que logique |
@@ -1047,7 +1047,7 @@ npx jest --coverage --coverageThreshold='{"global":{"lines":80}}'
 
 ## Pratique : suite de tests pour un flux de login
 
-### Le composant a tester
+### Le composant à tester
 
 ```tsx
 // screens/LoginScreen.tsx
@@ -1321,7 +1321,7 @@ describe('LoginScreen', () => {
 
 ---
 
-## Resume
+## Résumé
 
 | Concept | A retenir |
 |---------|-----------|
@@ -1331,7 +1331,7 @@ describe('LoginScreen', () => {
 | fireEvent | `press`, `changeText`, `scroll` — simuler les interactions |
 | renderHook | Tester les hooks isoles avec `act` pour les mises a jour |
 | Navigation | Mock `useNavigation` ou render le NavigationContainer complet |
-| waitFor / findBy | Pour les resultats asynchrones |
+| waitFor / findBy | Pour les résultats asynchrones |
 | jest.mock | Mocker les modules natifs (camera, location, storage) |
 | Snapshots | Utile pour les composants stables, nuisible pour les dynamiques |
 | Zustand | `useStore.setState()` pour precharger, reset en `beforeEach` |
@@ -1347,3 +1347,13 @@ describe('LoginScreen', () => {
 - [Jest](https://jestjs.io/) — Framework de test
 - [Expo Testing](https://docs.expo.dev/develop/unit-testing/) — Guide Expo officiel
 - [Zustand Testing](https://docs.pmnd.rs/zustand/guides/testing) — Guide de test Zustand
+
+---
+
+<!-- parcours-recommande -->
+
+::: tip Parcours recommandé
+1. **Screencast** : [screencast 20 testing](../screencasts/screencast-20-testing.md)
+2. **Lab** : [lab-20-testing](../labs/lab-20-testing/README)
+3. **Quiz** : [quiz 20 testing](../quizzes/quiz-20-testing.html)
+:::

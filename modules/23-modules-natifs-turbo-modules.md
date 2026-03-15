@@ -6,18 +6,18 @@
 
 ## Objectifs
 
-- Comprendre quand et pourquoi creer un module natif
-- Maitriser l'architecture des Turbo Modules (JSI, codegen, type-safe)
-- Ecrire un fichier spec TypeScript et generer le code natif
+- Comprendre quand et pourquoi créer un module natif
+- Maîtriser l'architecture des Turbo Modules (JSI, codegen, type-safe)
+- Écrire un fichier spec TypeScript et générer le code natif
 - Implementer un Turbo Module sur iOS (Swift / Objective-C++)
 - Implementer un Turbo Module sur Android (Kotlin)
-- Connaitre l'Expo Modules API comme alternative simplifiee
+- Connaître l'Expo Modules API comme alternative simplifiee
 - Tester un module natif
 
 ---
 
 :::warning Bienvenue en phase Expert
-Les modules 23 a 26 plongent dans les couches internes de React Native : code natif, moteur JavaScript, architecture du renderer. C'est plus exigeant que tout ce qui precede — vous allez ecrire du C++, du Swift et du Kotlin. C'est aussi ce qui separe un developpeur React Native d'un **expert** React Native. Prenez votre temps, chaque module est independant.
+Les modules 23 a 26 plongent dans les couches internes de React Native : code natif, moteur JavaScript, architecture du renderer. C'est plus exigeant que tout ce qui precede — vous allez écrire du C++, du Swift et du Kotlin. C'est aussi ce qui separe un développeur React Native d'un **expert** React Native. Prenez votre temps, chaque module est independant.
 :::
 
 ## Pourquoi les modules natifs ?
@@ -28,9 +28,9 @@ React Native couvre les besoins les plus courants via ses APIs integrees et l'ec
 
 | Besoin | Exemple | Module existant ? |
 |--------|---------|-------------------|
-| Hardware specifique | Lecteur NFC industriel | Non |
+| Hardware spécifique | Lecteur NFC industriel | Non |
 | SDK proprietaire | SDK bancaire, SDK d'authentification biometrique avancee | Rarement |
-| Performance critique | Traitement d'image en temps reel, cryptographie | Parfois |
+| Performance critique | Traitement d'image en temps réel, cryptographie | Parfois |
 | API plateforme recente | API Android 15 / iOS 18 non encore wrappee | Temporairement |
 | Code C/C++ existant | Moteur de calcul, parseur binaire | Non |
 
@@ -67,10 +67,10 @@ JavaScript Thread           Bridge (JSON)           Native Thread
 ```
 
 Problemes :
-- **Asynchrone uniquement** : chaque appel traverse le bridge de maniere asynchrone
+- **Asynchrone uniquement** : chaque appel traverse le bridge de manière asynchrone
 - **Serialisation JSON** : cout de conversion pour chaque appel
-- **Pas de typage** : les erreurs ne sont detectees qu'a l'execution
-- **Initialisation eager** : tous les modules sont charges au demarrage
+- **Pas de typage** : les erreurs ne sont detectees qu'a l'exécution
+- **Initialisation eager** : tous les modules sont charges au démarrage
 
 ### Le monde actuel : JSI et Turbo Modules
 
@@ -86,11 +86,11 @@ JavaScript Thread                     Native (C++ / ObjC++ / JNI)
 
 Avantages :
 - **Synchrone possible** : les appels peuvent retourner immediatement
-- **Pas de serialisation** : les objets sont partages en memoire via C++
-- **Type-safe** : le codegen genere des interfaces typees a partir du spec
+- **Pas de serialisation** : les objets sont partages en mémoire via C++
+- **Type-safe** : le codegen généré des interfaces typees à partir du spec
 - **Lazy loading** : les modules ne sont charges qu'a leur premier usage
 
-### Schema d'architecture detaille
+### Schema d'architecture détaillé
 
 ```
 ┌─────────────────────────────────────────────────┐
@@ -119,11 +119,11 @@ Avantages :
 
 ---
 
-## Creer un Turbo Module : le workflow complet
+## Créer un Turbo Module : le workflow complet
 
-### Etape 1 : le fichier spec (TypeScript)
+### Étape 1 : le fichier spec (TypeScript)
 
-Le spec est le contrat entre JavaScript et le code natif. Il est ecrit en TypeScript et utilise les conventions de codegen.
+Le spec est le contrat entre JavaScript et le code natif. Il est écrit en TypeScript et utilise les conventions de codegen.
 
 ```typescript
 // specs/NativeBatteryModule.ts
@@ -160,7 +160,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>('BatteryModule');
 | `extends TurboModule` | Interface obligatoire |
 | `TurboModuleRegistry.getEnforcing` | Crash si le module n'existe pas (vs `get` qui retourne null) |
 | Types supportes | `boolean`, `number`, `string`, `Object`, `Array`, `Promise<T>` |
-| `getConstants()` | Methode speciale pour les constantes statiques |
+| `getConstants()` | Méthode speciale pour les constantes statiques |
 
 ### Types supportes par le codegen
 
@@ -193,9 +193,9 @@ method10(): 'charging' | 'full' | 'unplugged';
 method11(): BatteryInfo;
 ```
 
-### Etape 2 : configuration du codegen
+### Étape 2 : configuration du codegen
 
-Dans le `package.json` du module (ou du projet) :
+Dans le `package.json` du module (où du projet) :
 
 ```json
 {
@@ -210,7 +210,7 @@ Dans le `package.json` du module (ou du projet) :
 }
 ```
 
-Le codegen est execute automatiquement lors du build :
+Le codegen est exécuté automatiquement lors du build :
 
 ```bash
 # iOS — genere les fichiers dans ios/build/generated/
@@ -220,7 +220,7 @@ cd ios && pod install
 cd android && ./gradlew generateCodegenArtifactsFromSchema
 ```
 
-### Ce que genere le codegen
+### Ce que généré le codegen
 
 Pour iOS :
 ```
@@ -601,20 +601,20 @@ const styles = StyleSheet.create({
 
 ## Expo Modules API : l'alternative simplifiee
 
-Pour les cas ou la complexite d'un Turbo Module complet n'est pas justifiee, Expo propose une API unifiee :
+Pour les cas où la complexite d'un Turbo Module complet n'est pas justifiee, Expo propose une API unifiee :
 
 ### Avantages de l'Expo Modules API
 
 | Aspect | Turbo Module | Expo Modules API |
 |--------|-------------|------------------|
 | Boilerplate | Eleve (spec, codegen, package, registration) | Minimal |
-| Swift direct | Non (wrapper ObjC++ necessaire) | Oui |
+| Swift direct | Non (wrapper ObjC++ nécessaire) | Oui |
 | Kotlin direct | Oui | Oui |
 | Codegen | Manuel | Automatique |
 | Type-safe | Oui (via spec) | Oui (via annotations) |
 | Ecosysteme | React Native pur | Expo (compatible bare workflow) |
 
-### Creer un module avec expo-modules-core
+### Créer un module avec expo-modules-core
 
 ```bash
 # Creer le squelette du module
@@ -914,7 +914,7 @@ describe('useBattery', () => {
 });
 ```
 
-### Tests d'integration (sur device/simulateur)
+### Tests d'intégration (sur device/simulateur)
 
 ```typescript
 // e2e/battery.test.ts (Detox / Maestro)
@@ -962,9 +962,9 @@ class BatteryModuleTest {
 
 ## Patterns avances
 
-### Evenements natifs vers JavaScript
+### Événements natifs vers JavaScript
 
-Les Turbo Modules peuvent emettre des evenements vers JS :
+Les Turbo Modules peuvent emettre des événements vers JS :
 
 ```typescript
 // specs/NativeBatteryModule.ts (avec evenements)
@@ -1115,12 +1115,12 @@ adb logcat -s "BatteryModule"
 Flipper permet d'inspecter les appels aux modules natifs :
 
 - Plugin "Native Modules" : liste tous les modules charges
-- Plugin "Network" : appels reseau des modules natifs
-- Plugin custom : creer un plugin Flipper pour votre module
+- Plugin "Network" : appels réseau des modules natifs
+- Plugin custom : créer un plugin Flipper pour votre module
 
 ---
 
-## Checklist de creation d'un Turbo Module
+## Checklist de création d'un Turbo Module
 
 ```
 [ ] 1. Spec TypeScript (Native*.ts) avec interface et types
@@ -1141,24 +1141,24 @@ Flipper permet d'inspecter les appels aux modules natifs :
 
 | Erreur | Cause | Solution |
 |--------|-------|----------|
-| `TurboModule not found` | Module non enregistre | Verifier le package (Android) ou le `RCT_EXPORT_MODULE` (iOS) |
-| `Codegen type mismatch` | Spec et implementation desynchronisees | Relancer le codegen apres modification du spec |
-| `Cannot find module 'XxxSpec'` | Codegen pas encore execute | `pod install` (iOS) ou `./gradlew generateCodegenArtifacts` (Android) |
-| `Method not implemented` | Methode du spec manquante dans le natif | Implementer toutes les methodes du spec |
-| `Invariant Violation` | `getEnforcing` mais module absent | Utiliser `get` (nullable) ou verifier l'enregistrement |
+| `TurboModule not found` | Module non enregistre | Vérifier le package (Android) ou le `RCT_EXPORT_MODULE` (iOS) |
+| `Codegen type mismatch` | Spec et implementation desynchronisees | Relancer le codegen après modification du spec |
+| `Cannot find module 'XxxSpec'` | Codegen pas encore exécuté | `pod install` (iOS) ou `./gradlew generateCodegenArtifacts` (Android) |
+| `Method not implemented` | Méthode du spec manquante dans le natif | Implementer toutes les méthodes du spec |
+| `Invariant Violation` | `getEnforcing` mais module absent | Utiliser `get` (nullable) ou vérifier l'enregistrement |
 | `Thread violation` | Appel UI depuis le JS thread | Dispatcher sur le main thread (iOS) / UI thread (Android) |
 
 ---
 
-## Points cles a retenir
+## Points clés à retenir
 
 1. **Turbo Modules = JSI + codegen** : communication directe, typee, sans serialisation
-2. **Le spec est le contrat** : TypeScript genere les interfaces natives automatiquement
-3. **Synchrone ou asynchrone** : les methodes synchrones retournent immediatement via JSI
+2. **Le spec est le contrat** : TypeScript généré les interfaces natives automatiquement
+3. **Synchrone ou asynchrone** : les méthodes synchrones retournent immediatement via JSI
 4. **Expo Modules API** : alternative simplifiee pour les cas courants, Swift direct
 5. **Lazy loading** : les modules ne sont charges qu'au premier appel (vs Bridge : eager)
-6. **Tester a tous les niveaux** : mock JS, tests natifs, tests d'integration
-7. **N'ecrivez natif que si necessaire** : chaque module natif double la surface de maintenance
+6. **Tester a tous les niveaux** : mock JS, tests natifs, tests d'intégration
+7. **N'ecrivez natif que si nécessaire** : chaque module natif double la surface de maintenance
 
 ---
 
@@ -1169,3 +1169,13 @@ Flipper permet d'inspecter les appels aux modules natifs :
 - [React Native New Architecture — Working Group](https://github.com/reactwg/react-native-new-architecture)
 - [Codegen documentation](https://reactnative.dev/docs/codegen)
 - [CallStack — Guide to Turbo Modules](https://www.callstack.com/blog/turbo-modules-guide)
+
+---
+
+<!-- parcours-recommande -->
+
+::: tip Parcours recommandé
+1. **Screencast** : [screencast 23 modules natifs](../screencasts/screencast-23-modules-natifs.md)
+2. **Lab** : [lab-23-modules-natifs](../labs/lab-23-modules-natifs/README)
+3. **Quiz** : [quiz 23 modules natifs](../quizzes/quiz-23-modules-natifs.html)
+:::

@@ -2,7 +2,7 @@
 
 ## Objectifs
 
-Maitriser les mecanismes internes de Hermes et du mode Bridgeless en TypeScript pur : analyse bytecode, heap snapshots, profiling, suivi de startup et garbage collection.
+Maîtriser les mécanismes internes de Hermes et du mode Bridgeless en TypeScript pur : analyse bytecode, heap snapshots, profiling, suivi de startup et garbage collection.
 
 ## Exercices
 
@@ -10,13 +10,13 @@ Maitriser les mecanismes internes de Hermes et du mode Bridgeless en TypeScript 
 Analysez la taille du bytecode par module, calculez le total et suggerez des optimisations (lazy-load, tree-shake, code-split).
 
 ### Exercice 2 : createHeapSnapshot
-Creez un snapshot du heap pour detecter les fuites memoire : objets detaches et gros objets avec references circulaires.
+Creez un snapshot du heap pour détecter les fuites mémoire : objets detaches et gros objets avec références circulaires.
 
 ### Exercice 3 : createProfiler
 Implementez un profiler avec flame chart et detection des hot paths (fonctions gourmandes).
 
 ### Exercice 4 : createStartupTracker
-Suivez les phases de demarrage (native init, JS init, render, TTI) et calculez la duree totale.
+Suivez les phases de démarrage (native init, JS init, render, TTI) et calculez la duree totale.
 
 ### Exercice 5 : createGCSimulator
 Simulez un garbage collector generationnel : allocation, collecte des temporaires, promotion des survivants.

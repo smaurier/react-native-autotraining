@@ -4,7 +4,7 @@
 |----------|--------|
 | **Difficulte** | 5/5 |
 | **Duree** | 480 min (8 heures, reparties sur plusieurs sessions) |
-| **Prerequis** | Modules 00-26 (l'ensemble du parcours) |
+| **Prérequis** | Modules 00-26 (l'ensemble du parcours) |
 | **Lab** | [Lab 27 — Projet final](/labs/lab-27-projet-final/) |
 | **Quiz** | [Quiz 27 — Projet final](/quizzes/quiz-27-projet-final.html) |
 
@@ -12,12 +12,12 @@
 
 ## Objectifs du module
 
-- Integrer l'ensemble des competences acquises dans les modules 00-26
+- Intégrer l'ensemble des compétences acquises dans les modules 00-26
 - Concevoir et implementer une application mobile complete, production-ready
 - Appliquer les patterns d'architecture offline-first avec synchronisation
-- Mettre en place un systeme de collaboration en temps reel
+- Mettre en place un système de collaboration en temps réel
 - Construire une pipeline CI/CD complete avec EAS
-- Maitriser le cycle complet : conception, implementation, tests, deploiement
+- Maîtriser le cycle complet : conception, implementation, tests, déploiement
 
 ---
 
@@ -82,20 +82,20 @@ NomadNote est une application de prise de notes collaborative concu pour les uti
 | Edition de notes | Texte riche, Markdown, tags | 07, 11, 24 |
 | Photos | Capture camera, galerie, miniatures | 15 |
 | Geolocalisation | Taguer une note avec un lieu | 15 |
-| Offline-first | Lecture/ecriture sans connexion | 14 |
-| Synchronisation | Push/pull, resolution de conflits | 14 |
+| Offline-first | Lecture/écriture sans connexion | 14 |
+| Synchronisation | Push/pull, résolution de conflits | 14 |
 | Collaboration | Partage, permissions, notifications | 16 |
 | Chiffrement | E2E encryption des notes privees | 23 |
 | Animations | Transitions fluides, gestes swipe | 17, 18 |
-| Performance | Optimisation startup, listes, memoire | 19, 25 |
-| Tests | Unit, integration, E2E complets | 20, 21 |
+| Performance | Optimisation startup, listes, mémoire | 19, 25 |
+| Tests | Unit, intégration, E2E complets | 20, 21 |
 | CI/CD | Pipeline EAS, OTA updates | 22 |
 | Monorepo | Extension web optionnelle | 26 |
 
 ### 1.2 User stories prioritaires
 
 **P0 — Critique (MVP)**
-- En tant qu'utilisateur, je peux creer, editer et supprimer des notes
+- En tant qu'utilisateur, je peux créer, editer et supprimer des notes
 - En tant qu'utilisateur, je peux utiliser l'application hors ligne
 - En tant qu'utilisateur, je peux me connecter et retrouver mes notes
 
@@ -168,11 +168,11 @@ nomad-note/
 
 Le choix Zustand + React Query suit le principe de **separation des responsabilites** :
 
-- **Zustand** gere l'etat qui n'existe que cote client (UI, preferences, brouillons)
-- **React Query** gere l'etat qui vient du serveur (cache, revalidation, pagination)
-- Cette separation evite la duplication d'etat et les bugs de desynchronisation
+- **Zustand** géré l'état qui n'existe que cote client (UI, preferences, brouillons)
+- **React Query** géré l'état qui vient du serveur (cache, revalidation, pagination)
+- Cette separation evite la duplication d'état et les bugs de desynchronisation
 
-#### Offline-first — Strategie de synchronisation (module 14)
+#### Offline-first — Stratégie de synchronisation (module 14)
 
 ```
 ┌────────────────────────────────────────────────────────────────────┐
@@ -198,7 +198,7 @@ Le choix Zustand + React Query suit le principe de **separation des responsabili
 └────────────────────────────────────────────────────────────────────┘
 ```
 
-### 2.3 Modele de donnees
+### 2.3 Modèle de donnees
 
 ```typescript
 // ─── Note ────────────────────────────────────────────────────
@@ -309,7 +309,7 @@ Le projet se decompose en 12 jalons progressifs. Chaque jalon produit un increme
 
 ### Jalon 1 : Scaffolding et design system (60 min)
 
-**Modules appliques** : 05 (StyleSheet), 06 (Flexbox/responsive), 07 (composants reutilisables)
+**Modules appliques** : 05 (StyleSheet), 06 (Flexbox/responsive), 07 (composants réutilisables)
 
 #### Objectif
 
@@ -319,7 +319,7 @@ Mettre en place le socle du projet : structure de dossiers, theme, composants UI
 
 1. Initialiser le projet Expo avec le template `expo-router`
 2. Configurer TypeScript strict, ESLint, Prettier
-3. Creer le systeme de tokens/theming
+3. Créer le système de tokens/theming
 
 ```typescript
 // theme/tokens.ts
@@ -474,10 +474,10 @@ const styles = StyleSheet.create({
 
 #### Validation du jalon
 
-- [ ] Les composants UI sont isoles et reutilisables
+- [ ] Les composants UI sont isoles et réutilisables
 - [ ] Le theming fonctionne avec des tokens centralises
-- [ ] Le responsive s'adapte a differentes tailles d'ecran
-- [ ] Accessibilite : chaque composant a des `accessibilityRole` et `accessibilityLabel` corrects
+- [ ] Le responsive s'adapte a différentes tailles d'ecran
+- [ ] Accessibilité : chaque composant a des `accessibilityRole` et `accessibilityLabel` corrects
 
 ---
 
@@ -652,7 +652,7 @@ export default {
 #### Validation du jalon
 
 - [ ] Navigation tabs + stack fonctionne
-- [ ] Auth flow redirige correctement selon l'etat de connexion
+- [ ] Auth flow redirige correctement selon l'état de connexion
 - [ ] Deep link `nomadnote://note/abc123` ouvre la bonne note
 - [ ] Token persiste entre les sessions via MMKV
 
@@ -664,11 +664,11 @@ export default {
 
 #### Objectif
 
-Implementer la creation, lecture, modification et suppression de notes avec un formulaire valide et un store Zustand.
+Implementer la création, lecture, modification et suppression de notes avec un formulaire valide et un store Zustand.
 
 #### Etapes
 
-1. Creer le store Zustand pour les notes locales
+1. Créer le store Zustand pour les notes locales
 
 ```typescript
 // stores/notesStore.ts
@@ -791,7 +791,7 @@ export const useNotesStore = create<NotesState>()(
 );
 ```
 
-2. Creer le formulaire d'edition avec React Hook Form + Zod
+2. Créer le formulaire d'edition avec React Hook Form + Zod
 
 ```typescript
 // components/notes/NoteEditor.tsx
@@ -887,7 +887,7 @@ export function NoteEditor({ noteId }: { noteId?: string }) {
 
 #### Objectif
 
-Afficher les notes dans une liste performante avec recherche en temps reel et animations.
+Afficher les notes dans une liste performante avec recherche en temps réel et animations.
 
 #### Etapes
 
@@ -1050,7 +1050,7 @@ export function fullTextSearch(notes: Note[], query: string): Note[] {
 #### Validation du jalon
 
 - [ ] FlashList affiche les notes avec performances fluides
-- [ ] Recherche en temps reel avec debounce
+- [ ] Recherche en temps réel avec debounce
 - [ ] Animations de swipe pour archiver/supprimer
 - [ ] Tri par epingles en premier, puis par date de modification
 
@@ -1062,11 +1062,11 @@ export function fullTextSearch(notes: Note[], query: string): Note[] {
 
 #### Objectif
 
-Connecter l'application a une API REST avec authentification, cache et synchronisation via React Query.
+Connecter l'application à une API REST avec authentification, cache et synchronisation via React Query.
 
 #### Etapes
 
-1. Creer le client API avec intercepteurs
+1. Créer le client API avec intercepteurs
 
 ```typescript
 // services/apiClient.ts
@@ -1193,10 +1193,10 @@ export function useCreateNote() {
 
 #### Validation du jalon
 
-- [ ] L'API client gere l'authentification (token, refresh)
+- [ ] L'API client géré l'authentification (token, refresh)
 - [ ] React Query met en cache les notes et revalide correctement
 - [ ] Les mutations optimistes fonctionnent (create, update, delete)
-- [ ] Le factory pattern de cles de query permet une invalidation precise
+- [ ] Le factory pattern de clés de query permet une invalidation précisé
 
 ---
 
@@ -1440,7 +1440,7 @@ Permettre l'ajout de photos et de positions geographiques aux notes.
 
 #### Etapes
 
-1. Integrer expo-camera et expo-image-picker
+1. Intégrer expo-camera et expo-image-picker
 
 ```typescript
 // hooks/usePhotoCapture.ts
@@ -1510,7 +1510,7 @@ export function usePhotoCapture() {
 }
 ```
 
-2. Integrer expo-location
+2. Intégrer expo-location
 
 ```typescript
 // hooks/useLocation.ts
@@ -1572,11 +1572,11 @@ export function useNoteLocation() {
 
 #### Objectif
 
-Implementer le systeme de collaboration (partage de notes) et les notifications push.
+Implementer le système de collaboration (partage de notes) et les notifications push.
 
 #### Etapes
 
-1. Systeme de collaboration
+1. Système de collaboration
 
 ```typescript
 // services/collaborationManager.ts
@@ -1743,7 +1743,7 @@ export const notificationDispatcher = new NotificationDispatcher();
 
 ### Jalon 9 : Chiffrement et module natif (45 min)
 
-**Modules appliques** : 23 (Turbo Modules), securite
+**Modules appliques** : 23 (Turbo Modules), sécurité
 
 #### Objectif
 
@@ -1847,9 +1847,9 @@ export const encryptionService = new EncryptionService();
 
 #### Validation du jalon
 
-- [ ] Le Turbo Module compile et s'execute correctement
+- [ ] Le Turbo Module compile et s'exécuté correctement
 - [ ] Le chiffrement AES-256 fonctionne (encrypt/decrypt roundtrip)
-- [ ] Les notes chiffrees sont illisibles sans la cle
+- [ ] Les notes chiffrees sont illisibles sans la clé
 - [ ] Performance : chiffrement synchrone via JSI, sans latence perceptible
 
 ---
@@ -1860,7 +1860,7 @@ export const encryptionService = new EncryptionService();
 
 #### Objectif
 
-Creer un composant Fabric natif pour l'edition de texte riche (gras, italique, listes, titres).
+Créer un composant Fabric natif pour l'edition de texte riche (gras, italique, listes, titres).
 
 #### Specification du composant
 
@@ -1949,9 +1949,9 @@ export const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>
 
 #### Objectif
 
-Optimiser les performances de l'application : temps de demarrage, fluidite des listes, consommation memoire.
+Optimiser les performances de l'application : temps de démarrage, fluidite des listes, consommation mémoire.
 
-#### Strategie d'optimisation
+#### Stratégie d'optimisation
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
@@ -1981,7 +1981,7 @@ Optimiser les performances de l'application : temps de demarrage, fluidite des l
 └──────────────────────────────────────────────────────────────────┘
 ```
 
-#### Optimisations cles
+#### Optimisations clés
 
 1. **Startup** : Hermes bytecode precompile
 
@@ -2097,14 +2097,14 @@ npx hermes -dump-bytecode bundle.hbc | head -50
 
 - [ ] TTI (Time To Interactive) < 500ms sur un appareil milieu de gamme
 - [ ] Les listes scrollent a 60 fps constant (mesure via Flashlight ou Flipper)
-- [ ] La consommation memoire reste < 200MB en utilisation normale
-- [ ] Le cache LRU a un hit rate > 80% en utilisation typique
+- [ ] La consommation mémoire reste < 200MB en utilisation normale
+- [ ] Le cache LRU à un hit rate > 80% en utilisation typique
 
 ---
 
 ### Jalon 12 : Tests et CI/CD (60 min)
 
-**Modules appliques** : 20 (tests unitaires/integration), 21 (E2E Detox), 22 (CI/CD EAS)
+**Modules appliques** : 20 (tests unitaires/intégration), 21 (E2E Detox), 22 (CI/CD EAS)
 
 #### Objectif
 
@@ -2168,7 +2168,7 @@ describe('fullTextSearch', () => {
 });
 ```
 
-#### Tests d'integration (React Native Testing Library)
+#### Tests d'intégration (React Native Testing Library)
 
 ```typescript
 // __tests__/screens/NotesList.test.tsx
@@ -2306,7 +2306,7 @@ jobs:
 #### Validation du jalon
 
 - [ ] Couverture de tests unitaires > 80%
-- [ ] Tests d'integration couvrent les scenarios principaux
+- [ ] Tests d'intégration couvrent les scenarios principaux
 - [ ] Tests E2E passent sur iOS et Android
 - [ ] Pipeline CI/CD verte sur chaque PR
 
@@ -2331,19 +2331,19 @@ nomad-note/
 └── package.json
 ```
 
-Le code metier (modeles, validation, recherche, sync engine) reside dans `packages/shared` et est consomme par les deux applications. Les composants UI utilisent React Native Web pour le rendu cross-platform.
+Le code metier (modèles, validation, recherche, sync engine) reside dans `packages/shared` et est consomme par les deux applications. Les composants UI utilisent React Native Web pour le rendu cross-platform.
 
 ---
 
-## 5. Checklist de deploiement
+## 5. Checklist de déploiement
 
-### Pre-deploiement
+### Pre-déploiement
 
-- [ ] Tous les tests passent (unit, integration, E2E)
+- [ ] Tous les tests passent (unit, intégration, E2E)
 - [ ] Pas de warning TypeScript strict
 - [ ] ESLint clean (0 erreurs)
 - [ ] Les variables d'environnement de production sont configurees
-- [ ] Les cles de signature (iOS, Android) sont securisees dans EAS Secrets
+- [ ] Les clés de signature (iOS, Android) sont securisees dans EAS Secrets
 - [ ] Le Turbo Module compile sur iOS et Android
 - [ ] Le profiling Hermes ne montre pas de regression de startup
 - [ ] Les images sont optimisees (thumbnails, lazy loading)
@@ -2385,9 +2385,9 @@ Le code metier (modeles, validation, recherche, sync engine) reside dans `packag
 }
 ```
 
-### Post-deploiement
+### Post-déploiement
 
-- [ ] Verifier les crash reports (Sentry)
+- [ ] Vérifier les crash reports (Sentry)
 - [ ] Monitorer les metriques de performance (TTI, FPS)
 - [ ] Tester les deep links en production
 - [ ] Valider les notifications push en production
@@ -2412,7 +2412,7 @@ async function checkForUpdates() {
 
 ---
 
-## 6. Grille d'evaluation
+## 6. Grille d'évaluation
 
 ### Criteres et ponderation
 
@@ -2420,12 +2420,12 @@ async function checkForUpdates() {
 |---------|--------|-------------|
 | **Architecture** | /20 | Separation des responsabilites, patterns, structure |
 | **Fonctionnalites** | /25 | MVP complet, CRUD, recherche, tags |
-| **Offline-first** | /15 | Fonctionne hors ligne, sync, resolution de conflits |
+| **Offline-first** | /15 | Fonctionne hors ligne, sync, résolution de conflits |
 | **Qualite du code** | /10 | TypeScript strict, lisibilite, conventions |
 | **Tests** | /10 | Couverture, pertinence, pyramide respectee |
-| **Performance** | /10 | TTI, FPS, memoire, cache |
-| **UX/Accessibilite** | /5 | Animations fluides, a11y, responsive |
-| **CI/CD** | /5 | Pipeline fonctionnelle, deploiement automatise |
+| **Performance** | /10 | TTI, FPS, mémoire, cache |
+| **UX/Accessibilité** | /5 | Animations fluides, a11y, responsive |
+| **CI/CD** | /5 | Pipeline fonctionnelle, déploiement automatise |
 | **Total** | **/100** | |
 
 ### Niveaux de reussite
@@ -2442,11 +2442,11 @@ async function checkForUpdates() {
 - Chiffrement E2E via Turbo Module natif : +3
 - Composant Fabric pour l'editeur riche : +3
 - Extension web via monorepo : +2
-- Animation avancee (shared element transitions) : +2
+- Animation avancee (shared élément transitions) : +2
 
 ---
 
-## 7. Recapitulatif des modules integres
+## 7. Récapitulatif des modules integres
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
@@ -2508,8 +2508,8 @@ async function checkForUpdates() {
 ### Pieges courants
 
 - **Over-engineering** : Commencer simple, ajouter la complexite incrementalement
-- **Offline-first tardif** : Integrer l'offline des le debut, pas a la fin
-- **Tests oublies** : Ecrire les tests en meme temps que le code, pas apres
+- **Offline-first tardif** : Intégrer l'offline des le debut, pas à la fin
+- **Tests oublies** : Écrire les tests en même temps que le code, pas après
 - **Performance prematuree** : D'abord faire fonctionner, puis optimiser avec des mesures
 
 ### Ressources
@@ -2527,14 +2527,36 @@ async function checkForUpdates() {
 
 ## Conclusion
 
-NomadNote est un projet ambitieux qui integre l'ensemble des competences acquises au long de cette formation. Il ne s'agit pas d'un exercice academique : c'est une application que vous pourriez publier sur les stores.
+NomadNote est un projet ambitieux qui intégré l'ensemble des compétences acquises au long de cette formation. Il ne s'agit pas d'un exercice academique : c'est une application que vous pourriez publier sur les stores.
 
-La cle du succes est l'approche incrementale : chaque jalon produit un increment fonctionnel. Ne cherchez pas la perfection au premier passage. Construisez le MVP (jalons 1-6), puis enrichissez avec les fonctionnalites avancees (jalons 7-12).
+La clé du succes est l'approche incrementale : chaque jalon produit un increment fonctionnel. Ne cherchez pas la perfection au premier passage. Construisez le MVP (jalons 1-6), puis enrichissez avec les fonctionnalites avancees (jalons 7-12).
 
 A la fin de ce projet, vous aurez :
 - Une application complete dans votre portfolio
 - Une experience concrete de la New Architecture (Turbo Modules, Fabric)
-- Une maitrise des patterns offline-first et de synchronisation
+- Une maîtrise des patterns offline-first et de synchronisation
 - Une pipeline CI/CD operationnelle
 
 **Bon courage et bonne construction !**
+
+---
+
+<!-- parcours-recommande -->
+
+::: tip Parcours recommandé
+1. **Screencast** : [screencast 27 projet final](../screencasts/screencast-27-projet-final.md)
+2. **Lab** : [lab-27-projet-final](../labs/lab-27-projet-final/README)
+3. **Quiz** : [quiz 27 projet final](../quizzes/quiz-27-projet-final.html)
+:::
+
+---
+
+<!-- navigation-inter-cours -->
+
+::: info Cours suivant
+Bravo, tu as termine le cours **React Native** ! 
+> Ce cours est optionnel (Palier 5 — bonus). Tu peux aussi passer directement au cours suivant.
+Le prochain cours du curriculum est **WebGPU & 3D**.
+
+[Commencer WebGPU & 3D →](../../14-webgpu-3d/modules/00-prerequis-et-introduction.md)
+:::

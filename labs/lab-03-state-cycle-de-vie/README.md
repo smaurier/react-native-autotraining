@@ -2,12 +2,12 @@
 
 ## Objectif
 
-Pratiquer les concepts de gestion d'etat et de cycle de vie en simulant les mecanismes de React en TypeScript pur : store reactif, reducer, debouncer, mises a jour immutables, et suivi du cycle de vie.
+Pratiquer les concepts de gestion d'état et de cycle de vie en simulant les mécanismes de React en TypeScript pur : store réactif, reducer, debouncer, mises a jour immutables, et suivi du cycle de vie.
 
-## Prerequis
+## Prérequis
 
 - Module 03 : State et cycle de vie
-- TypeScript : generiques, closures, callbacks
+- TypeScript : génériques, closures, callbacks
 
 ## Lancer les tests
 
@@ -21,11 +21,11 @@ npx tsx labs/lab-03-state-cycle-de-vie/solution.ts
 
 ## Exercices
 
-### 1. `createStore(initialState)` — Store reactif
+### 1. `createStore(initialState)` — Store réactif
 
 Implementez un store type Zustand simplifie :
-- `getState()` retourne l'etat courant
-- `setState(partial)` fusionne un objet partiel (ou une fonction) et notifie les subscribers
+- `getState()` retourne l'état courant
+- `setState(partial)` fusionne un objet partiel (où une fonction) et notifie les subscribers
 - `subscribe(listener)` enregistre un listener et retourne une fonction `unsubscribe`
 - `getSubscriberCount()` retourne le nombre de subscribers actifs
 
@@ -38,23 +38,23 @@ Implementez un store base sur le pattern reducer :
 ### 3. `createDebouncer(fn, delay)` — Debouncer
 
 Implementez un debouncer avec :
-- `call(...args)` : planifie l'execution apres `delay` ms
-- `cancel()` : annule l'execution en attente
-- `flush()` : execute immediatement si en attente
+- `call(...args)` : planifie l'exécution après `delay` ms
+- `cancel()` : annule l'exécution en attente
+- `flush()` : exécuté immediatement si en attente
 - `getCallCount()` : nombre d'executions reelles
-- `getPendingCount()` : 1 ou 0 selon l'etat
+- `getPendingCount()` : 1 ou 0 selon l'état
 
 ### 4. `immutableUpdate(obj, path, value)` — Mise a jour immutable
 
 Met a jour une valeur dans un objet/tableau imbrique sans muter l'original.
-Le chemin est un tableau de cles `(string | number)[]`.
+Le chemin est un tableau de clés `(string | number)[]`.
 
 ### 5. `createLifecycleTracker()` — Suivi du cycle de vie
 
-Enregistre les evenements mount/update/unmount avec validation :
-- `mount()` ne peut etre appele que si pas deja monte
-- `update()` necessite un mount prealable
-- `unmount()` necessite un mount prealable
+Enregistre les événements mount/update/unmount avec validation :
+- `mount()` ne peut etre appele que si pas déjà monte
+- `update()` nécessité un mount prealable
+- `unmount()` nécessité un mount prealable
 
 ## Nombre de tests : 18
 
