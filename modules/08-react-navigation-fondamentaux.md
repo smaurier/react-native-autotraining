@@ -1482,4 +1482,6 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 ---
 
+> **Static API (React Navigation v7)** : v7 introduit `createStaticNavigation()` comme approche recommandee pour les nouveaux projets. Elle offre un typage automatique des routes sans maintenir manuellement un `RootParamList`. L'API dynamique avec `NavigationContainer` (enseignee dans ce module) reste fonctionnelle et est l'approche la plus documentee. Pour les projets existants, aucune migration n'est necessaire.
+
 **Prochain module** : [Module 09 — Navigation avancee](./09-navigation-avancee.md) (tabs, drawer, deep linking, auth flow)
