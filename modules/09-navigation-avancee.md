@@ -12,7 +12,8 @@
 - Configurer le deep linking (URL scheme, universal links)
 - Implementer un flux d'authentification avec ecrans conditionnels
 - Persister l'etat de navigation
-- Decouvrir les shared element transitions (React Navigation 7)
+- Decouvrir les shared element transitions (React Navigation v7)
+- Comprendre Expo Router comme alternative moderne (file-based routing)
 
 ---
 
@@ -966,9 +967,9 @@ onStateChange={(state) => {
 
 ## Shared element transitions
 
-### React Navigation 7 (experimental)
+### React Navigation v7 (experimental)
 
-React Navigation 7 introduit les shared element transitions pour creer des animations fluides entre ecrans.
+React Navigation v7 introduit les shared element transitions pour creer des animations fluides entre ecrans.
 
 ```tsx
 import { SharedTransition, SharedElement } from '@react-navigation/native-stack';
@@ -1346,6 +1347,74 @@ type HomeListProps = CompositeScreenProps<
 
 ---
 
+## Expo Router (file-based routing)
+
+Expo Router (v4+) apporte le **file-based routing** a React Native, inspire de Next.js :
+
+### Structure de fichiers
+
+```
+app/
+  _layout.tsx        // Layout racine (Stack, Tabs, Drawer)
+  index.tsx          // Route /
+  about.tsx          // Route /about
+  (tabs)/
+    _layout.tsx      // Tab layout
+    home.tsx         // Tab "home"
+    profile.tsx      // Tab "profile"
+  users/
+    [id].tsx         // Route dynamique /users/:id
+    [...rest].tsx    // Catch-all /users/*
+```
+
+### Layout racine
+
+```tsx
+// app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function RootLayout() {
+  return (
+    <Stack screenOptions={{ headerShown: true }}>
+      <Stack.Screen name="index" options={{ title: 'Accueil' }} />
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+    </Stack>
+  );
+}
+```
+
+### Navigation typee
+
+```tsx
+import { Link, useRouter, useLocalSearchParams } from 'expo-router';
+
+// Declaratif
+<Link href="/users/42">Voir profil</Link>
+
+// Imperatif
+const router = useRouter();
+router.push('/users/42');
+router.replace('/login');
+router.back();
+
+// Params types
+const { id } = useLocalSearchParams<{ id: string }>();
+```
+
+### Quand choisir Expo Router vs React Navigation ?
+
+| Critere | Expo Router | React Navigation v7 |
+|---------|-------------|---------------------|
+| Setup | Zero config (convention) | Configuration manuelle |
+| Deep linking | Automatique | Manuel |
+| Web support | Natif (SSR possible) | Partiel |
+| Flexibilite | Conventions strictes | Totale liberte |
+| Projet existant | Migration necessaire | Deja en place |
+
+> **Recommandation** : Pour tout nouveau projet Expo (2025+), privilegiez Expo Router. Pour un projet existant avec React Navigation, la migration n'est pas urgente mais planifiable.
+
+---
+
 ## Recapitulatif
 
 | Concept | Cle |
@@ -1358,6 +1427,7 @@ type HomeListProps = CompositeScreenProps<
 | Persistence | `initialState` + `onStateChange` avec AsyncStorage |
 | Shared transitions | `SharedElement` avec id commun entre ecrans |
 | Types imbriques | `NavigatorScreenParams`, `CompositeScreenProps` |
+| Expo Router | File-based routing, `Link`, `useRouter`, `useLocalSearchParams` |
 
 ---
 

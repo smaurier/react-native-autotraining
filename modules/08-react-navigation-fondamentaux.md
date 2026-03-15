@@ -1,4 +1,4 @@
-# Module 08 — React Navigation : fondamentaux
+# Module 08 — React Navigation v7 : fondamentaux
 
 | Difficulte | Duree estimee | Lab | Quiz |
 |------------|---------------|-----|------|
@@ -22,10 +22,10 @@
 
 ### Pourquoi React Navigation ?
 
-React Navigation est la bibliotheque de navigation standard pour React Native. Contrairement au web ou le navigateur gere la navigation via l'URL, une application mobile doit gerer elle-meme la pile d'ecrans, les transitions et les gestes.
+React Navigation v7 est la bibliotheque de navigation standard pour React Native. Contrairement au web ou le navigateur gere la navigation via l'URL, une application mobile doit gerer elle-meme la pile d'ecrans, les transitions et les gestes.
 
-| Fonctionnalite | React Navigation | React Native Navigation (Wix) |
-|----------------|-----------------|-------------------------------|
+| Fonctionnalite | React Navigation v7 | React Native Navigation (Wix) |
+|----------------|---------------------|-------------------------------|
 | Installation | JS pure, facile | Natif, config complexe |
 | Performance | Tres bonne (v7) | Native, excellente |
 | Personnalisation | Tres flexible | Limitee au natif |
