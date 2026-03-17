@@ -1382,6 +1382,14 @@ Rendez-vous dans le [Lab 21](../labs/lab-21-detox-e2e/) pour implementer un simu
 
 ---
 
+## Navigation
+
+| Précédent | Suivant |
+|:---------:|:-------:|
+| [Module 20 — Testing React Native](./20-testing-react-native.md) | [Module 22 — Déploiement et CI/CD](./22-deploiement-et-ci-cd.md) |
+
+---
+
 <!-- parcours-recommande -->
 
 ::: tip Parcours recommandé

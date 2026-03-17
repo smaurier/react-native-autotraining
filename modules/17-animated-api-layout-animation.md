@@ -1425,6 +1425,14 @@ Puis testez vos connaissances avec le [Quiz 17](../quizzes/quiz-17-animated.html
 
 ---
 
+## Navigation
+
+| Précédent | Suivant |
+|:---------:|:-------:|
+| [Module 16 — Capteurs et notifications](./16-capteurs-et-notifications.md) | [Module 18 — Reanimated et Gesture Handler](./18-reanimated-et-gesture-handler.md) |
+
+---
+
 <!-- parcours-recommande -->
 
 ::: tip Parcours recommandé

@@ -1488,6 +1488,14 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 ---
 
+## Navigation
+
+| Précédent | Suivant |
+|:---------:|:-------:|
+| [Module 07 — Composants UI avances](./07-composants-ui-avances.md) | [Module 09 — Navigation avancee](./09-navigation-avancee.md) |
+
+---
+
 <!-- parcours-recommande -->
 
 ::: tip Parcours recommandé

@@ -1190,6 +1190,14 @@ function ProductListScreen() {
 
 ---
 
+## Navigation
+
+| Précédent | Suivant |
+|:---------:|:-------:|
+| [Module 18 — Reanimated et Gesture Handler](./18-reanimated-et-gesture-handler.md) | [Module 20 — Testing React Native](./20-testing-react-native.md) |
+
+---
+
 <!-- parcours-recommande -->
 
 ::: tip Parcours recommandé

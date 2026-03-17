@@ -22,6 +22,8 @@
 - Implementer des layout animations (entering, exiting)
 - Construire des composants interactifs complets : swipeable cards, pinch-to-zoom
 
+> **Analogie** : Reanimated, c'est comme avoir un chorégraphe dédié sur scène (UI thread) au lieu d'envoyer les instructions depuis les coulisses (JS thread). Les worklets sont des mini-scripts que le chorégraphe exécute directement — pas besoin de traverser le rideau à chaque mouvement. C'est pour ça que les animations sont fluides à 60fps.
+
 ---
 
 ## 1. Introduction a react-native-reanimated 3
@@ -1993,6 +1995,14 @@ function ThresholdAlert() {
 ## Exercices du module
 
 Rendez-vous au [Lab 18](/labs/lab-18-reanimated-gestures/) pour pratiquer les concepts vus dans ce module. Le lab simule en TypeScript pur les mécanismes internes de Reanimated et Gesture Handler : shared values, interpolation, detection de gestes, bounding, et timelines d'animation.
+
+---
+
+## Navigation
+
+| Précédent | Suivant |
+|:---------:|:-------:|
+| [Module 17 — Animated API et LayoutAnimation](./17-animated-api-layout-animation.md) | [Module 19 — Performance et optimisation](./19-performance-et-optimisation.md) |
 
 ---
 

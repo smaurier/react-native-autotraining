@@ -381,6 +381,8 @@ Depuis React Native 0.72+, la nouvelle architecture remplace le bridge :
 
 **Turbo Modules** : remplacement des Native Modules avec chargement lazy et typage fort.
 
+> **Analogie** : React Native, c'est comme avoir un traducteur simultané. Tu parles JavaScript (ta langue), le traducteur (le bridge/JSI) convertit en temps réel vers le langage natif (Swift/Kotlin). Le New Architecture (JSI), c'est passer d'un traducteur qui prend des notes et les transmet (bridge asynchrone) à un traducteur qui parle les deux langues couramment (appels synchrones).
+
 ### 3.3 Comment le rendu fonctionne
 
 ```typescript

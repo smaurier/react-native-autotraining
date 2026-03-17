@@ -1435,6 +1435,14 @@ const { id } = useLocalSearchParams<{ id: string }>();
 
 ---
 
+## Navigation
+
+| Précédent | Suivant |
+|:---------:|:-------:|
+| [Module 08 — React Navigation fondamentaux](./08-react-navigation-fondamentaux.md) | [Module 10 — Gestion de l'état](./10-gestion-detat-context-zustand.md) |
+
+---
+
 <!-- parcours-recommande -->
 
 ::: tip Parcours recommandé

@@ -1350,6 +1350,14 @@ describe('LoginScreen', () => {
 
 ---
 
+## Navigation
+
+| Précédent | Suivant |
+|:---------:|:-------:|
+| [Module 19 — Performance et optimisation](./19-performance-et-optimisation.md) | [Module 21 — Tests E2E avec Detox](./21-tests-e2e-detox.md) |
+
+---
+
 <!-- parcours-recommande -->
 
 ::: tip Parcours recommandé

@@ -1640,6 +1640,14 @@ Rendez-vous au [Lab 26](/labs/lab-26-patterns-monorepo/) pour pratiquer les conc
 
 ---
 
+## Navigation
+
+| Précédent | Suivant |
+|:---------:|:-------:|
+| [Module 25 — Hermes et mode Bridgeless](./25-hermes-internals-bridgeless.md) | [Module 27 — Projet final](./27-projet-final.md) |
+
+---
+
 <!-- parcours-recommande -->
 
 ::: tip Parcours recommandé

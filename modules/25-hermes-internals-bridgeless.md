@@ -1190,6 +1190,14 @@ Rendez-vous au [Lab 25](/labs/lab-25-hermes-bridgeless/) pour pratiquer les conc
 
 ---
 
+## Navigation
+
+| Précédent | Suivant |
+|:---------:|:-------:|
+| [Module 24 — New Architecture : Fabric et JSI](./24-new-architecture-fabric-jsi.md) | [Module 26 — Patterns avances et Monorepo](./26-patterns-avances-monorepo.md) |
+
+---
+
 <!-- parcours-recommande -->
 
 ::: tip Parcours recommandé

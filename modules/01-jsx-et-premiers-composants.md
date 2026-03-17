@@ -1990,6 +1990,14 @@ Puis testez vos connaissances avec le [Quiz 01](/quizzes/quiz-01-jsx-composants.
 
 ---
 
+## Navigation
+
+| Précédent | Suivant |
+|:---------:|:-------:|
+| [Module 00 — Prérequis et introduction](./00-prerequis-et-introduction.md) | [Module 02 — Props et communication](./02-props-et-communication.md) |
+
+---
+
 <!-- parcours-recommande -->
 
 ::: tip Parcours recommandé

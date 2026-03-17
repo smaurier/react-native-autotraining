@@ -954,6 +954,14 @@ Passez au [Lab 06](../labs/lab-06-responsive-plateformes/) pour implementer un s
 
 ---
 
+## Navigation
+
+| Précédent | Suivant |
+|:---------:|:-------:|
+| [Module 05 — StyleSheet et Flexbox](./05-stylesheet-et-flexbox.md) | [Module 07 — Composants UI avances](./07-composants-ui-avances.md) |
+
+---
+
 <!-- parcours-recommande -->
 
 ::: tip Parcours recommandé

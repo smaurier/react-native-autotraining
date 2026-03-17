@@ -13,6 +13,8 @@
 - Comparer Context, Zustand, Redux et Jotai pour choisir l'outil adapte
 - Implementer un auth store, un cart store et un preferences store
 
+> **Analogie** : Le state management, c'est comme l'organisation d'un entrepôt. Context, c'est un tableau d'affichage dans chaque pièce — tout le monde voit les changements mais si tu changes l'affiche, toute la pièce est "re-peinte". Zustand, c'est un système d'inventaire central avec des étiquettes : chaque employé ne reçoit que les notifications qui le concernent (selectors).
+
 ---
 
 ## React Context + useReducer : quand ça suffit
@@ -1573,6 +1575,14 @@ describe('useAuthStore', () => {
 - MMKV : https://github.com/mrousavy/react-native-mmkv
 - Jotai : https://jotai.org/
 - Redux Toolkit : https://redux-toolkit.js.org/
+
+---
+
+## Navigation
+
+| Précédent | Suivant |
+|:---------:|:-------:|
+| [Module 09 — Navigation avancee](./09-navigation-avancee.md) | [Module 11 — Formulaires et validation](./11-formulaires-et-validation.md) |
 
 ---
 

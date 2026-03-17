@@ -1270,6 +1270,14 @@ Rendez-vous au [Lab 15](../labs/lab-15-apis-natives/) pour implementer un gestio
 
 ---
 
+## Navigation
+
+| Précédent | Suivant |
+|:---------:|:-------:|
+| [Module 14 — Stockage local et offline-first](./14-stockage-local-offline-first.md) | [Module 16 — Capteurs et notifications](./16-capteurs-et-notifications.md) |
+
+---
+
 <!-- parcours-recommande -->
 
 ::: tip Parcours recommandé

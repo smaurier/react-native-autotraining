@@ -1294,6 +1294,14 @@ interface CustomButtonProps extends ComponentProps<typeof TouchableOpacity> {
 
 ---
 
+## Navigation
+
+| Précédent | Suivant |
+|:---------:|:-------:|
+| [Module 01 — JSX et premiers composants](./01-jsx-et-premiers-composants.md) | [Module 03 — State et cycle de vie](./03-state-et-cycle-de-vie.md) |
+
+---
+
 <!-- parcours-recommande -->
 
 ::: tip Parcours recommandé

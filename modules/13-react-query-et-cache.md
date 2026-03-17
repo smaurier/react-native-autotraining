@@ -1247,6 +1247,14 @@ Rendez-vous au [Lab 13](../labs/lab-13-react-query-cache/) pour implementer un s
 
 ---
 
+## Navigation
+
+| Précédent | Suivant |
+|:---------:|:-------:|
+| [Module 12 — Networking et API](./12-networking-et-api.md) | [Module 14 — Stockage local et offline-first](./14-stockage-local-offline-first.md) |
+
+---
+
 <!-- parcours-recommande -->
 
 ::: tip Parcours recommandé

@@ -1362,6 +1362,14 @@ Puis testez vos connaissances avec le [Quiz 16](../quizzes/quiz-16-capteurs.html
 
 ---
 
+## Navigation
+
+| Précédent | Suivant |
+|:---------:|:-------:|
+| [Module 15 — APIs natives essentielles](./15-apis-natives-essentielles.md) | [Module 17 — Animated API et LayoutAnimation](./17-animated-api-layout-animation.md) |
+
+---
+
 <!-- parcours-recommande -->
 
 ::: tip Parcours recommandé

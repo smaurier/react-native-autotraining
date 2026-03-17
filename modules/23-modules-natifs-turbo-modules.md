@@ -1172,6 +1172,14 @@ Flipper permet d'inspecter les appels aux modules natifs :
 
 ---
 
+## Navigation
+
+| Précédent | Suivant |
+|:---------:|:-------:|
+| [Module 22 — Déploiement et CI/CD](./22-deploiement-et-ci-cd.md) | [Module 24 — New Architecture : Fabric et JSI](./24-new-architecture-fabric-jsi.md) |
+
+---
+
 <!-- parcours-recommande -->
 
 ::: tip Parcours recommandé

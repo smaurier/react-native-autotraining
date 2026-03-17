@@ -1519,6 +1519,14 @@ function RegistrationForm() {
 
 ---
 
+## Navigation
+
+| Précédent | Suivant |
+|:---------:|:-------:|
+| [Module 02 — Props et communication](./02-props-et-communication.md) | [Module 04 — Listes et donnees](./04-listes-et-donnees.md) |
+
+---
+
 <!-- parcours-recommande -->
 
 ::: tip Parcours recommandé

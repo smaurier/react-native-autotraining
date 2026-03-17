@@ -1467,6 +1467,14 @@ npx tsx exercise.ts
 
 ---
 
+## Navigation
+
+| Précédent | Suivant |
+|:---------:|:-------:|
+| [Module 04 — Listes et donnees](./04-listes-et-donnees.md) | [Module 06 — Responsive et plateformes](./06-responsive-et-plateformes.md) |
+
+---
+
 <!-- parcours-recommande -->
 
 ::: tip Parcours recommandé

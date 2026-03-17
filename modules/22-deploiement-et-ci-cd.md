@@ -1235,6 +1235,14 @@ Rendez-vous dans le [Lab 22](../labs/lab-22-deploiement-ci-cd/) pour implementer
 
 ---
 
+## Navigation
+
+| Précédent | Suivant |
+|:---------:|:-------:|
+| [Module 21 — Tests E2E avec Detox](./21-tests-e2e-detox.md) | [Module 23 — Modules natifs et Turbo Modules](./23-modules-natifs-turbo-modules.md) |
+
+---
+
 <!-- parcours-recommande -->
 
 ::: tip Parcours recommandé

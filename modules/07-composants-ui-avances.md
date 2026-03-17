@@ -1442,6 +1442,14 @@ Passez au [Lab 07](../labs/lab-07-composants-ui-avances/) pour implementer un sy
 
 ---
 
+## Navigation
+
+| Précédent | Suivant |
+|:---------:|:-------:|
+| [Module 06 — Responsive et plateformes](./06-responsive-et-plateformes.md) | [Module 08 — React Navigation fondamentaux](./08-react-navigation-fondamentaux.md) |
+
+---
+
 <!-- parcours-recommande -->
 
 ::: tip Parcours recommandé

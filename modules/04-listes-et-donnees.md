@@ -1612,6 +1612,14 @@ npx tsx exercise.ts
 
 ---
 
+## Navigation
+
+| Précédent | Suivant |
+|:---------:|:-------:|
+| [Module 03 — State et cycle de vie](./03-state-et-cycle-de-vie.md) | [Module 05 — StyleSheet et Flexbox](./05-stylesheet-et-flexbox.md) |
+
+---
+
 <!-- parcours-recommande -->
 
 ::: tip Parcours recommandé

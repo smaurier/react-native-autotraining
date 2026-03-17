@@ -1329,6 +1329,14 @@ Rendez-vous au [Lab 12](../labs/lab-12-networking-api/) pour implementer un clie
 
 ---
 
+## Navigation
+
+| Précédent | Suivant |
+|:---------:|:-------:|
+| [Module 11 — Formulaires et validation](./11-formulaires-et-validation.md) | [Module 13 — React Query et cache](./13-react-query-et-cache.md) |
+
+---
+
 <!-- parcours-recommande -->
 
 ::: tip Parcours recommandé

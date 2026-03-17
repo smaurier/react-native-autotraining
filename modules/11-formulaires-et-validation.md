@@ -1492,6 +1492,14 @@ Ne pas dupliquer le pattern Controller + TextInput + erreur dans chaque formulai
 
 ---
 
+## Navigation
+
+| Précédent | Suivant |
+|:---------:|:-------:|
+| [Module 10 — Gestion de l'état](./10-gestion-detat-context-zustand.md) | [Module 12 — Networking et API](./12-networking-et-api.md) |
+
+---
+
 <!-- parcours-recommande -->
 
 ::: tip Parcours recommandé

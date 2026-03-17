@@ -1266,6 +1266,14 @@ const dist = global.NativeMath.fastDistance(0, 0, 3, 4); // 5
 
 ---
 
+## Navigation
+
+| Précédent | Suivant |
+|:---------:|:-------:|
+| [Module 23 — Modules natifs et Turbo Modules](./23-modules-natifs-turbo-modules.md) | [Module 25 — Hermes et mode Bridgeless](./25-hermes-internals-bridgeless.md) |
+
+---
+
 <!-- parcours-recommande -->
 
 ::: tip Parcours recommandé

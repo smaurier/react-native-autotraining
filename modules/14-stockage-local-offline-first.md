@@ -1563,6 +1563,14 @@ Rendez-vous au [Lab 14](../labs/lab-14-stockage-offline/) pour implementer une q
 
 ---
 
+## Navigation
+
+| Précédent | Suivant |
+|:---------:|:-------:|
+| [Module 13 — React Query et cache](./13-react-query-et-cache.md) | [Module 15 — APIs natives essentielles](./15-apis-natives-essentielles.md) |
+
+---
+
 <!-- parcours-recommande -->
 
 ::: tip Parcours recommandé
