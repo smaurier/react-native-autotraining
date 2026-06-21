@@ -30,7 +30,7 @@
 
 Hermes est un moteur JavaScript open-source développé par Meta, optimise specifiquement pour React Native. Contrairement aux moteurs traditionnels (V8, JavaScriptCore), Hermes a ete concu des le depart pour les contraintes mobiles : démarrage rapide, faible consommation mémoire, et taille binaire reduite.
 
-> **Depuis React Native 0.70+**, Hermes est le moteur par defaut. Avec la New Architecture (0.74+), Hermes est indissociable du mode Bridgeless et de JSI (JavaScript Interface).
+> **Depuis React Native 0.70+**, Hermes est le moteur par defaut. Avec la New Architecture (0.74+), Hermes est indissociable du mode Bridgeless et de JSI (JavaScript Interface). **Depuis RN 0.76 (octobre 2024)**, la New Architecture est activée par défaut pour tous les nouveaux projets.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -65,7 +65,7 @@ Les moteurs JavaScript classiques (V8, JSC) sont optimises pour les navigateurs 
 
 ### 1.3 Activation de Hermes
 
-Depuis React Native 0.74+ et Expo SDK 51+, Hermes est active par defaut. Pour vérifier :
+Depuis React Native 0.74+ et Expo SDK 52+, Hermes est active par defaut. Pour vérifier :
 
 ```typescript
 // Verifier a l'execution
