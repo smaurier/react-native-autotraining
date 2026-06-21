@@ -1,12 +1,12 @@
 # Module 27 : Projet final — NomadNote
 
-| Metadata | Valeur |
-|----------|--------|
-| **Difficulte** | 5/5 |
-| **Duree** | 480 min (8 heures, reparties sur plusieurs sessions) |
-| **Prérequis** | Modules 00-26 (l'ensemble du parcours) |
-| **Lab** | [Lab 27 — Projet final](/labs/lab-27-projet-final/) |
-| **Quiz** | [Quiz 27 — Projet final](/quizzes/quiz-27-projet-final.html) |
+| Metadata       | Valeur                                                       |
+| -------------- | ------------------------------------------------------------ |
+| **Difficulte** | 5/5                                                          |
+| **Duree**      | 480 min (8 heures, reparties sur plusieurs sessions)         |
+| **Prérequis**  | Modules 00-26 (l'ensemble du parcours)                       |
+| **Lab**        | [Lab 27 — Projet final](/labs/lab-27-projet-final/)          |
+| **Quiz**       | [Quiz 27 — Projet final](/quizzes/quiz-27-projet-final.html) |
 
 ---
 
@@ -75,37 +75,40 @@ NomadNote est une application de prise de notes collaborative concu pour les uti
 
 ### 1.1 Fonctionnalites principales
 
-| Fonctionnalite | Description | Module(s) |
-|----------------|-------------|-----------|
+| Fonctionnalite   | Description                           | Module(s)  |
+| ---------------- | ------------------------------------- | ---------- |
 | Authentification | Inscription, connexion, token refresh | 08, 09, 12 |
-| Liste de notes | Affichage, tri, filtrage, recherche | 01-04 |
-| Edition de notes | Texte riche, Markdown, tags | 07, 11, 24 |
-| Photos | Capture camera, galerie, miniatures | 15 |
-| Geolocalisation | Taguer une note avec un lieu | 15 |
-| Offline-first | Lecture/écriture sans connexion | 14 |
-| Synchronisation | Push/pull, résolution de conflits | 14 |
-| Collaboration | Partage, permissions, notifications | 16 |
-| Chiffrement | E2E encryption des notes privees | 23 |
-| Animations | Transitions fluides, gestes swipe | 17, 18 |
-| Performance | Optimisation startup, listes, mémoire | 19, 25 |
-| Tests | Unit, intégration, E2E complets | 20, 21 |
-| CI/CD | Pipeline EAS, OTA updates | 22 |
-| Monorepo | Extension web optionnelle | 26 |
+| Liste de notes   | Affichage, tri, filtrage, recherche   | 01-04      |
+| Edition de notes | Texte riche, Markdown, tags           | 07, 11, 24 |
+| Photos           | Capture camera, galerie, miniatures   | 15         |
+| Geolocalisation  | Taguer une note avec un lieu          | 15         |
+| Offline-first    | Lecture/écriture sans connexion       | 14         |
+| Synchronisation  | Push/pull, résolution de conflits     | 14         |
+| Collaboration    | Partage, permissions, notifications   | 16         |
+| Chiffrement      | E2E encryption des notes privees      | 23         |
+| Animations       | Transitions fluides, gestes swipe     | 17, 18     |
+| Performance      | Optimisation startup, listes, mémoire | 19, 25     |
+| Tests            | Unit, intégration, E2E complets       | 20, 21     |
+| CI/CD            | Pipeline EAS, OTA updates             | 22         |
+| Monorepo         | Extension web optionnelle             | 26         |
 
 ### 1.2 User stories prioritaires
 
 **P0 — Critique (MVP)**
+
 - En tant qu'utilisateur, je peux créer, editer et supprimer des notes
 - En tant qu'utilisateur, je peux utiliser l'application hors ligne
 - En tant qu'utilisateur, je peux me connecter et retrouver mes notes
 
 **P1 — Important**
+
 - En tant qu'utilisateur, je peux organiser mes notes avec des tags
 - En tant qu'utilisateur, je peux rechercher dans mes notes
 - En tant qu'utilisateur, je peux ajouter des photos a mes notes
 - En tant qu'utilisateur, je peux partager une note avec un collaborateur
 
 **P2 — Nice to have**
+
 - En tant qu'utilisateur, je recois des notifications quand une note partagee est modifiee
 - En tant qu'utilisateur, je peux chiffrer mes notes sensibles
 - En tant qu'utilisateur, je peux taguer mes notes avec ma position
@@ -203,9 +206,9 @@ Le choix Zustand + React Query suit le principe de **separation des responsabili
 ```typescript
 // ─── Note ────────────────────────────────────────────────────
 interface Note {
-  id: string;                    // UUID v4
+  id: string; // UUID v4
   title: string;
-  content: string;               // Markdown ou texte riche
+  content: string; // Markdown ou texte riche
   tags: string[];
   authorId: string;
   collaborators: Collaborator[];
@@ -214,10 +217,10 @@ interface Note {
   isEncrypted: boolean;
   isArchived: boolean;
   isPinned: boolean;
-  createdAt: number;             // Timestamp ms
+  createdAt: number; // Timestamp ms
   updatedAt: number;
-  syncVersion: number;           // Pour resolution de conflits
-  deletedAt?: number;            // Soft delete
+  syncVersion: number; // Pour resolution de conflits
+  deletedAt?: number; // Soft delete
 }
 
 // ─── Types secondaires ───────────────────────────────────────
@@ -229,7 +232,7 @@ interface GeoLocation {
 
 interface Attachment {
   id: string;
-  type: 'image' | 'file';
+  type: "image" | "file";
   uri: string;
   thumbnailUri?: string;
   size: number;
@@ -239,7 +242,7 @@ interface Attachment {
 interface Collaborator {
   userId: string;
   email: string;
-  permission: 'read' | 'write' | 'admin';
+  permission: "read" | "write" | "admin";
   addedAt: number;
 }
 ```
@@ -247,7 +250,7 @@ interface Collaborator {
 ### 2.4 Schema de validation Zod (module 11)
 
 ```typescript
-import { z } from 'zod';
+import { z } from "zod";
 
 const GeoLocationSchema = z.object({
   latitude: z.number().min(-90).max(90),
@@ -257,7 +260,7 @@ const GeoLocationSchema = z.object({
 
 const AttachmentSchema = z.object({
   id: z.string().uuid(),
-  type: z.enum(['image', 'file']),
+  type: z.enum(["image", "file"]),
   uri: z.string().url(),
   thumbnailUri: z.string().url().optional(),
   size: z.number().positive(),
@@ -267,7 +270,7 @@ const AttachmentSchema = z.object({
 const CollaboratorSchema = z.object({
   userId: z.string().uuid(),
   email: z.string().email(),
-  permission: z.enum(['read', 'write', 'admin']),
+  permission: z.enum(["read", "write", "admin"]),
   addedAt: z.number().positive(),
 });
 
@@ -327,31 +330,31 @@ export const tokens = {
   colors: {
     // Palette principale
     primary: {
-      50: '#eff6ff',
-      100: '#dbeafe',
-      500: '#3b82f6',
-      600: '#2563eb',
-      700: '#1d4ed8',
+      50: "#eff6ff",
+      100: "#dbeafe",
+      500: "#3b82f6",
+      600: "#2563eb",
+      700: "#1d4ed8",
     },
     // Surfaces
     surface: {
-      background: '#ffffff',
-      card: '#f8fafc',
-      elevated: '#ffffff',
+      background: "#ffffff",
+      card: "#f8fafc",
+      elevated: "#ffffff",
     },
     // Semantique
     semantic: {
-      success: '#22c55e',
-      warning: '#f59e0b',
-      error: '#ef4444',
-      info: '#3b82f6',
+      success: "#22c55e",
+      warning: "#f59e0b",
+      error: "#ef4444",
+      info: "#3b82f6",
     },
     // Texte
     text: {
-      primary: '#0f172a',
-      secondary: '#475569',
-      disabled: '#94a3b8',
-      inverse: '#ffffff',
+      primary: "#0f172a",
+      secondary: "#475569",
+      disabled: "#94a3b8",
+      inverse: "#ffffff",
     },
   },
   spacing: {
@@ -360,7 +363,7 @@ export const tokens = {
     md: 16,
     lg: 24,
     xl: 32,
-    '2xl': 48,
+    "2xl": 48,
   },
   borderRadius: {
     sm: 4,
@@ -370,11 +373,11 @@ export const tokens = {
     full: 9999,
   },
   typography: {
-    h1: { fontSize: 32, fontWeight: '700' as const, lineHeight: 40 },
-    h2: { fontSize: 24, fontWeight: '600' as const, lineHeight: 32 },
-    h3: { fontSize: 20, fontWeight: '600' as const, lineHeight: 28 },
-    body: { fontSize: 16, fontWeight: '400' as const, lineHeight: 24 },
-    caption: { fontSize: 12, fontWeight: '400' as const, lineHeight: 16 },
+    h1: { fontSize: 32, fontWeight: "700" as const, lineHeight: 40 },
+    h2: { fontSize: 24, fontWeight: "600" as const, lineHeight: 32 },
+    h3: { fontSize: 20, fontWeight: "600" as const, lineHeight: 28 },
+    body: { fontSize: 16, fontWeight: "400" as const, lineHeight: 24 },
+    caption: { fontSize: 12, fontWeight: "400" as const, lineHeight: 16 },
   },
 } as const;
 ```
@@ -568,9 +571,9 @@ export default function TabsLayout() {
 
 ```typescript
 // stores/authStore.ts
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import { mmkvStorage } from '@/utils/storage';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import { mmkvStorage } from "@/utils/storage";
 
 interface AuthState {
   token: string | null;
@@ -591,7 +594,7 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
 
       login: async (email, password) => {
-        const response = await apiClient.post('/auth/login', {
+        const response = await apiClient.post("/auth/login", {
           email,
           password,
         });
@@ -615,7 +618,7 @@ export const useAuthStore = create<AuthState>()(
       refreshAuth: async () => {
         const { refreshToken } = get();
         if (!refreshToken) return;
-        const response = await apiClient.post('/auth/refresh', {
+        const response = await apiClient.post("/auth/refresh", {
           refreshToken,
         });
         set({
@@ -625,10 +628,10 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: 'auth-storage',
+      name: "auth-storage",
       storage: createJSONStorage(() => mmkvStorage),
-    }
-  )
+    },
+  ),
 );
 ```
 
@@ -637,12 +640,12 @@ export const useAuthStore = create<AuthState>()(
 ```typescript
 // app.config.ts (extrait)
 export default {
-  scheme: 'nomadnote',
+  scheme: "nomadnote",
   plugins: [
     [
-      'expo-linking',
+      "expo-linking",
       {
-        prefixes: ['nomadnote://', 'https://nomadnote.app'],
+        prefixes: ["nomadnote://", "https://nomadnote.app"],
       },
     ],
   ],
@@ -672,9 +675,9 @@ Implementer la création, lecture, modification et suppression de notes avec un 
 
 ```typescript
 // stores/notesStore.ts
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import { immer } from 'zustand/middleware/immer';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import { immer } from "zustand/middleware/immer";
 
 interface NotesState {
   notes: Map<string, Note>;
@@ -784,10 +787,10 @@ export const useNotesStore = create<NotesState>()(
           .sort((a, b) => b.updatedAt - a.updatedAt),
     })),
     {
-      name: 'notes-storage',
+      name: "notes-storage",
       storage: createJSONStorage(() => mmkvStorage),
-    }
-  )
+    },
+  ),
 );
 ```
 
@@ -1029,12 +1032,15 @@ export function fullTextSearch(notes: Note[], query: string): Note[] {
         note.title,
         note.content,
         ...note.tags,
-        note.location?.label ?? '',
-      ].join(' ').toLowerCase();
+        note.location?.label ?? "",
+      ]
+        .join(" ")
+        .toLowerCase();
 
       const score = terms.reduce((acc, term) => {
         if (note.title.toLowerCase().includes(term)) return acc + 3;
-        if (note.tags.some((t) => t.toLowerCase().includes(term))) return acc + 2;
+        if (note.tags.some((t) => t.toLowerCase().includes(term)))
+          return acc + 2;
         if (searchable.includes(term)) return acc + 1;
         return acc;
       }, 0);
@@ -1070,12 +1076,12 @@ Connecter l'application à une API REST avec authentification, cache et synchron
 
 ```typescript
 // services/apiClient.ts
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from "@/stores/authStore";
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'https://api.nomadnote.app';
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? "https://api.nomadnote.app";
 
 interface RequestConfig {
-  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   path: string;
   body?: unknown;
   headers?: Record<string, string>;
@@ -1092,12 +1098,12 @@ class ApiClient {
     const { token } = useAuthStore.getState();
 
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...config.headers,
     };
 
     if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
+      headers["Authorization"] = `Bearer ${token}`;
     }
 
     const response = await fetch(`${this.baseUrl}${config.path}`, {
@@ -1120,10 +1126,18 @@ class ApiClient {
     return response.json();
   }
 
-  get<T>(path: string) { return this.request<T>({ method: 'GET', path }); }
-  post<T>(path: string, body: unknown) { return this.request<T>({ method: 'POST', path, body }); }
-  put<T>(path: string, body: unknown) { return this.request<T>({ method: 'PUT', path, body }); }
-  delete<T>(path: string) { return this.request<T>({ method: 'DELETE', path }); }
+  get<T>(path: string) {
+    return this.request<T>({ method: "GET", path });
+  }
+  post<T>(path: string, body: unknown) {
+    return this.request<T>({ method: "POST", path, body });
+  }
+  put<T>(path: string, body: unknown) {
+    return this.request<T>({ method: "PUT", path, body });
+  }
+  delete<T>(path: string) {
+    return this.request<T>({ method: "DELETE", path });
+  }
 }
 
 export const apiClient = new ApiClient(BASE_URL);
@@ -1133,22 +1147,22 @@ export const apiClient = new ApiClient(BASE_URL);
 
 ```typescript
 // hooks/useNotes.ts
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const noteKeys = {
-  all: ['notes'] as const,
-  lists: () => [...noteKeys.all, 'list'] as const,
+  all: ["notes"] as const,
+  lists: () => [...noteKeys.all, "list"] as const,
   list: (filters: NoteFilters) => [...noteKeys.lists(), filters] as const,
-  details: () => [...noteKeys.all, 'detail'] as const,
+  details: () => [...noteKeys.all, "detail"] as const,
   detail: (id: string) => [...noteKeys.details(), id] as const,
 };
 
 export function useNotes(filters?: NoteFilters) {
   return useQuery({
     queryKey: noteKeys.list(filters ?? {}),
-    queryFn: () => apiClient.get<Note[]>('/notes', { params: filters }),
+    queryFn: () => apiClient.get<Note[]>("/notes", { params: filters }),
     staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 30 * 60 * 1000,   // 30 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes
   });
 }
 
@@ -1164,8 +1178,7 @@ export function useCreateNote() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: CreateNoteInput) =>
-      apiClient.post<Note>('/notes', data),
+    mutationFn: (data: CreateNoteInput) => apiClient.post<Note>("/notes", data),
 
     // Optimistic update
     onMutate: async (newNote) => {
@@ -1173,7 +1186,7 @@ export function useCreateNote() {
       const previous = queryClient.getQueryData(noteKeys.lists());
 
       queryClient.setQueryData(noteKeys.lists(), (old: Note[] = []) => [
-        { ...newNote, id: 'temp-' + Date.now(), createdAt: Date.now() },
+        { ...newNote, id: "temp-" + Date.now(), createdAt: Date.now() },
         ...old,
       ]);
 
@@ -1250,12 +1263,12 @@ Permettre une utilisation complete hors ligne et synchroniser automatiquement le
 
 ```typescript
 // services/syncEngine.ts
-import NetInfo from '@react-native-community/netinfo';
+import NetInfo from "@react-native-community/netinfo";
 
 interface SyncOperation {
   id: string;
-  type: 'create' | 'update' | 'delete';
-  entityType: 'note';
+  type: "create" | "update" | "delete";
+  entityType: "note";
   entityId: string;
   payload: unknown;
   timestamp: number;
@@ -1295,7 +1308,7 @@ class SyncEngine {
     });
   }
 
-  enqueue(operation: Omit<SyncOperation, 'id' | 'timestamp' | 'retryCount'>) {
+  enqueue(operation: Omit<SyncOperation, "id" | "timestamp" | "retryCount">) {
     const op: SyncOperation = {
       ...operation,
       id: generateUUID(),
@@ -1330,7 +1343,7 @@ class SyncEngine {
       this.status.errors = [];
     } catch (error) {
       this.status.errors.push({
-        message: error instanceof Error ? error.message : 'Erreur de sync',
+        message: error instanceof Error ? error.message : "Erreur de sync",
         timestamp: Date.now(),
       });
     } finally {
@@ -1365,7 +1378,7 @@ class SyncEngine {
   private async pull(): Promise<void> {
     const lastSync = this.status.lastSyncAt ?? 0;
     const remoteChanges = await apiClient.get<Note[]>(
-      `/notes/changes?since=${lastSync}`
+      `/notes/changes?since=${lastSync}`,
     );
 
     for (const remoteNote of remoteChanges) {
@@ -1392,7 +1405,8 @@ class SyncEngine {
     return {
       ...local,
       title: remote.updatedAt > local.updatedAt ? remote.title : local.title,
-      content: remote.updatedAt > local.updatedAt ? remote.content : local.content,
+      content:
+        remote.updatedAt > local.updatedAt ? remote.content : local.content,
       tags: remote.updatedAt > local.updatedAt ? remote.tags : local.tags,
       syncVersion: Math.max(local.syncVersion, remote.syncVersion) + 1,
       updatedAt: Date.now(),
@@ -1410,7 +1424,7 @@ class SyncEngine {
 
   private persist() {
     // Sauvegarder la queue dans MMKV
-    storage.set('sync-queue', JSON.stringify(this.queue));
+    storage.set("sync-queue", JSON.stringify(this.queue));
   }
 
   getStatus(): SyncStatus {
@@ -1444,14 +1458,14 @@ Permettre l'ajout de photos et de positions geographiques aux notes.
 
 ```typescript
 // hooks/usePhotoCapture.ts
-import * as ImagePicker from 'expo-image-picker';
-import * as FileSystem from 'expo-file-system';
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
 
 export function usePhotoCapture() {
   const requestPermission = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
-    if (status !== 'granted') {
-      throw new Error('Permission camera refusee');
+    if (status !== "granted") {
+      throw new Error("Permission camera refusee");
     }
   };
 
@@ -1465,7 +1479,7 @@ export function usePhotoCapture() {
       aspect: [4, 3],
     });
 
-    if (result.canceled) throw new Error('Capture annulee');
+    if (result.canceled) throw new Error("Capture annulee");
 
     const asset = result.assets[0];
     const localUri = `${FileSystem.documentDirectory}photos/${generateUUID()}.jpg`;
@@ -1479,7 +1493,7 @@ export function usePhotoCapture() {
 
     return {
       id: generateUUID(),
-      type: 'image',
+      type: "image",
       uri: localUri,
       thumbnailUri: localUri, // Simplification
       size: info.exists ? info.size : 0,
@@ -1494,12 +1508,12 @@ export function usePhotoCapture() {
       allowsMultipleSelection: false,
     });
 
-    if (result.canceled) throw new Error('Selection annulee');
+    if (result.canceled) throw new Error("Selection annulee");
 
     const asset = result.assets[0];
     return {
       id: generateUUID(),
-      type: 'image',
+      type: "image",
       uri: asset.uri,
       size: asset.fileSize ?? 0,
       createdAt: Date.now(),
@@ -1514,7 +1528,7 @@ export function usePhotoCapture() {
 
 ```typescript
 // hooks/useLocation.ts
-import * as Location from 'expo-location';
+import * as Location from "expo-location";
 
 export function useNoteLocation() {
   const [location, setLocation] = useState<GeoLocation | null>(null);
@@ -1524,8 +1538,8 @@ export function useNoteLocation() {
     setLoading(true);
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        throw new Error('Permission localisation refusee');
+      if (status !== "granted") {
+        throw new Error("Permission localisation refusee");
       }
 
       const position = await Location.getCurrentPositionAsync({
@@ -1542,7 +1556,7 @@ export function useNoteLocation() {
         latitude: position.coords.latitude,
         longitude: position.coords.longitude,
         label: address
-          ? `${address.street ?? ''}, ${address.city ?? ''}`
+          ? `${address.street ?? ""}, ${address.city ?? ""}`
           : undefined,
       };
 
@@ -1583,23 +1597,27 @@ Implementer le système de collaboration (partage de notes) et les notifications
 interface CollaborationInvite {
   noteId: string;
   invitedEmail: string;
-  permission: 'read' | 'write' | 'admin';
+  permission: "read" | "write" | "admin";
 }
 
 class CollaborationManager {
-  async invite(noteId: string, email: string, permission: Permission): Promise<void> {
+  async invite(
+    noteId: string,
+    email: string,
+    permission: Permission,
+  ): Promise<void> {
     // Verifier que l'utilisateur est proprietaire ou admin
     const note = useNotesStore.getState().getNoteById(noteId);
-    if (!note) throw new Error('Note introuvable');
+    if (!note) throw new Error("Note introuvable");
 
     const currentUser = useAuthStore.getState().user!;
     const isOwner = note.authorId === currentUser.id;
     const isAdmin = note.collaborators.some(
-      (c) => c.userId === currentUser.id && c.permission === 'admin'
+      (c) => c.userId === currentUser.id && c.permission === "admin",
     );
 
     if (!isOwner && !isAdmin) {
-      throw new Error('Permission insuffisante');
+      throw new Error("Permission insuffisante");
     }
 
     // Envoyer l'invitation via l'API
@@ -1613,7 +1631,7 @@ class CollaborationManager {
       collaborators: [
         ...note.collaborators,
         {
-          userId: '', // Sera rempli par le serveur
+          userId: "", // Sera rempli par le serveur
           email,
           permission,
           addedAt: Date.now(),
@@ -1623,9 +1641,7 @@ class CollaborationManager {
   }
 
   async acceptInvite(inviteId: string): Promise<void> {
-    const response = await apiClient.post<Note>(
-      `/invites/${inviteId}/accept`
-    );
+    const response = await apiClient.post<Note>(`/invites/${inviteId}/accept`);
     // Ajouter la note partagee au store local
     useNotesStore.getState().createNote(response);
   }
@@ -1636,9 +1652,7 @@ class CollaborationManager {
     const note = useNotesStore.getState().getNoteById(noteId);
     if (note) {
       useNotesStore.getState().updateNote(noteId, {
-        collaborators: note.collaborators.filter(
-          (c) => c.userId !== userId
-        ),
+        collaborators: note.collaborators.filter((c) => c.userId !== userId),
       });
     }
   }
@@ -1646,7 +1660,7 @@ class CollaborationManager {
   getPermissions(noteId: string, userId: string): Permission | null {
     const note = useNotesStore.getState().getNoteById(noteId);
     if (!note) return null;
-    if (note.authorId === userId) return 'admin';
+    if (note.authorId === userId) return "admin";
     const collab = note.collaborators.find((c) => c.userId === userId);
     return collab?.permission ?? null;
   }
@@ -1659,7 +1673,7 @@ export const collaborationManager = new CollaborationManager();
 
 ```typescript
 // services/notificationDispatcher.ts
-import * as Notifications from 'expo-notifications';
+import * as Notifications from "expo-notifications";
 
 // Configuration des notifications
 Notifications.setNotificationHandler({
@@ -1676,11 +1690,11 @@ class NotificationDispatcher {
 
   async registerForPushNotifications(): Promise<string | null> {
     const { status } = await Notifications.requestPermissionsAsync();
-    if (status !== 'granted') return null;
+    if (status !== "granted") return null;
 
     const token = await Notifications.getExpoPushTokenAsync();
     // Enregistrer le token sur le serveur
-    await apiClient.post('/push-tokens', { token: token.data });
+    await apiClient.post("/push-tokens", { token: token.data });
     return token.data;
   }
 
@@ -1688,7 +1702,7 @@ class NotificationDispatcher {
     title: string,
     body: string,
     data: Record<string, unknown>,
-    trigger?: Notifications.NotificationTriggerInput
+    trigger?: Notifications.NotificationTriggerInput,
   ): Promise<string> {
     const id = await Notifications.scheduleNotificationAsync({
       content: { title, body, data },
@@ -1702,8 +1716,8 @@ class NotificationDispatcher {
     const appNotification: AppNotification = {
       id: notification.request.identifier,
       type: data.type as string,
-      title: notification.request.content.title ?? '',
-      body: notification.request.content.body ?? '',
+      title: notification.request.content.title ?? "",
+      body: notification.request.content.body ?? "",
       data,
       receivedAt: Date.now(),
       isRead: false,
@@ -1717,7 +1731,7 @@ class NotificationDispatcher {
 
   markAsRead(notificationId: string): void {
     const notification = this.unreadNotifications.find(
-      (n) => n.id === notificationId
+      (n) => n.id === notificationId,
     );
     if (notification) {
       notification.isRead = true;
@@ -1725,7 +1739,9 @@ class NotificationDispatcher {
   }
 
   markAllAsRead(): void {
-    this.unreadNotifications.forEach((n) => { n.isRead = true; });
+    this.unreadNotifications.forEach((n) => {
+      n.isRead = true;
+    });
   }
 }
 
@@ -1781,8 +1797,8 @@ Implementer le chiffrement end-to-end des notes sensibles via un Turbo Module na
 
 ```typescript
 // packages/turbo-encryption/src/NomadCrypto.ts
-import type { TurboModule } from 'react-native';
-import { TurboModuleRegistry } from 'react-native';
+import type { TurboModule } from "react-native";
+import { TurboModuleRegistry } from "react-native";
 
 export interface Spec extends TurboModule {
   encrypt(plaintext: string, key: string): string;
@@ -1792,14 +1808,14 @@ export interface Spec extends TurboModule {
   generateSalt(): string;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('NomadCrypto');
+export default TurboModuleRegistry.getEnforcing<Spec>("NomadCrypto");
 ```
 
 #### Utilisation dans l'application
 
 ```typescript
 // services/encryptionService.ts
-import NomadCrypto from 'turbo-encryption';
+import NomadCrypto from "turbo-encryption";
 
 class EncryptionService {
   private userKey: string | null = null;
@@ -1810,7 +1826,7 @@ class EncryptionService {
   }
 
   encryptNote(note: Note): Note {
-    if (!this.userKey) throw new Error('Encryption non initialisee');
+    if (!this.userKey) throw new Error("Encryption non initialisee");
 
     return {
       ...note,
@@ -1821,7 +1837,7 @@ class EncryptionService {
   }
 
   decryptNote(note: Note): Note {
-    if (!this.userKey) throw new Error('Encryption non initialisee');
+    if (!this.userKey) throw new Error("Encryption non initialisee");
     if (!note.isEncrypted) return note;
 
     return {
@@ -1833,10 +1849,10 @@ class EncryptionService {
   }
 
   private async getSalt(): Promise<string> {
-    let salt = await storage.getString('crypto-salt');
+    let salt = await storage.getString("crypto-salt");
     if (!salt) {
       salt = NomadCrypto.generateSalt();
-      storage.set('crypto-salt', salt);
+      storage.set("crypto-salt", salt);
     }
     return salt;
   }
@@ -1866,12 +1882,12 @@ Créer un composant Fabric natif pour l'edition de texte riche (gras, italique, 
 
 ```typescript
 // packages/rich-text-editor/src/RichTextEditorNativeComponent.ts
-import type { ViewProps } from 'react-native';
+import type { ViewProps } from "react-native";
 import type {
   DirectEventHandler,
   WithDefault,
-} from 'react-native/Libraries/Types/CodegenTypes';
-import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
+} from "react-native/Libraries/Types/CodegenTypes";
+import codegenNativeComponent from "react-native/Libraries/Utilities/codegenNativeComponent";
 
 interface NativeProps extends ViewProps {
   value?: string;
@@ -1884,7 +1900,7 @@ interface NativeProps extends ViewProps {
   }>;
 }
 
-export default codegenNativeComponent<NativeProps>('RichTextEditor');
+export default codegenNativeComponent<NativeProps>("RichTextEditor");
 ```
 
 #### Wrapper React
@@ -1991,10 +2007,13 @@ Optimiser les performances de l'application : temps de démarrage, fluidite des 
   "expo": {
     "jsEngine": "hermes",
     "plugins": [
-      ["expo-build-properties", {
-        "android": { "enableHermes": true },
-        "ios": { "enableHermes": true }
-      }]
+      [
+        "expo-build-properties",
+        {
+          "android": { "enableHermes": true },
+          "ios": { "enableHermes": true }
+        }
+      ]
     ]
   }
 }
@@ -2139,31 +2158,43 @@ Mettre en place une suite de tests complete et une pipeline CI/CD.
 
 ```typescript
 // __tests__/utils/search.test.ts
-import { describe, it, expect } from 'vitest';
-import { fullTextSearch, searchByDate, searchByLocation } from '@/utils/search';
+import { describe, it, expect } from "vitest";
+import { fullTextSearch, searchByDate, searchByLocation } from "@/utils/search";
 
-describe('fullTextSearch', () => {
+describe("fullTextSearch", () => {
   const notes: Note[] = [
-    createNote({ title: 'React Native', content: 'Guide complet', tags: ['dev'] }),
-    createNote({ title: 'Recettes', content: 'Poulet roti', tags: ['cuisine'] }),
-    createNote({ title: 'Meeting', content: 'React team sync', tags: ['work'] }),
+    createNote({
+      title: "React Native",
+      content: "Guide complet",
+      tags: ["dev"],
+    }),
+    createNote({
+      title: "Recettes",
+      content: "Poulet roti",
+      tags: ["cuisine"],
+    }),
+    createNote({
+      title: "Meeting",
+      content: "React team sync",
+      tags: ["work"],
+    }),
   ];
 
-  it('recherche dans le titre', () => {
-    const results = fullTextSearch(notes, 'react');
+  it("recherche dans le titre", () => {
+    const results = fullTextSearch(notes, "react");
     expect(results).toHaveLength(2);
     // 'React Native' devrait etre premier (match titre = score plus eleve)
-    expect(results[0].title).toBe('React Native');
+    expect(results[0].title).toBe("React Native");
   });
 
-  it('recherche dans les tags', () => {
-    const results = fullTextSearch(notes, 'cuisine');
+  it("recherche dans les tags", () => {
+    const results = fullTextSearch(notes, "cuisine");
     expect(results).toHaveLength(1);
-    expect(results[0].title).toBe('Recettes');
+    expect(results[0].title).toBe("Recettes");
   });
 
-  it('retourne vide pour une requete sans correspondance', () => {
-    expect(fullTextSearch(notes, 'xyz')).toHaveLength(0);
+  it("retourne vide pour une requete sans correspondance", () => {
+    expect(fullTextSearch(notes, "xyz")).toHaveLength(0);
   });
 });
 ```
@@ -2205,33 +2236,33 @@ describe('NotesListScreen', () => {
 
 ```typescript
 // e2e/noteFlow.test.ts
-describe('Note Flow', () => {
+describe("Note Flow", () => {
   beforeAll(async () => {
     await device.launchApp({ newInstance: true });
     // Login
-    await element(by.id('email-input')).typeText('test@example.com');
-    await element(by.id('password-input')).typeText('Password123!');
-    await element(by.id('login-button')).tap();
+    await element(by.id("email-input")).typeText("test@example.com");
+    await element(by.id("password-input")).typeText("Password123!");
+    await element(by.id("login-button")).tap();
   });
 
-  it('cree une nouvelle note', async () => {
-    await element(by.id('fab-create-note')).tap();
-    await element(by.id('note-title-input')).typeText('Ma note Detox');
-    await element(by.id('note-content-input')).typeText('Contenu de test E2E');
-    await element(by.id('save-button')).tap();
+  it("cree une nouvelle note", async () => {
+    await element(by.id("fab-create-note")).tap();
+    await element(by.id("note-title-input")).typeText("Ma note Detox");
+    await element(by.id("note-content-input")).typeText("Contenu de test E2E");
+    await element(by.id("save-button")).tap();
 
-    await expect(element(by.text('Ma note Detox'))).toBeVisible();
+    await expect(element(by.text("Ma note Detox"))).toBeVisible();
   });
 
-  it('recherche une note', async () => {
-    await element(by.id('search-input')).typeText('Detox');
-    await expect(element(by.text('Ma note Detox'))).toBeVisible();
+  it("recherche une note", async () => {
+    await element(by.id("search-input")).typeText("Detox");
+    await expect(element(by.text("Ma note Detox"))).toBeVisible();
   });
 
-  it('supprime une note par swipe', async () => {
-    await element(by.text('Ma note Detox')).swipe('left');
-    await element(by.id('confirm-delete')).tap();
-    await expect(element(by.text('Ma note Detox'))).not.toBeVisible();
+  it("supprime une note par swipe", async () => {
+    await element(by.text("Ma note Detox")).swipe("left");
+    await element(by.id("confirm-delete")).tap();
+    await expect(element(by.text("Ma note Detox"))).not.toBeVisible();
   });
 });
 ```
@@ -2395,7 +2426,7 @@ Le code metier (modèles, validation, recherche, sync engine) reside dans `packa
 
 ```typescript
 // Verification OTA
-import * as Updates from 'expo-updates';
+import * as Updates from "expo-updates";
 
 async function checkForUpdates() {
   try {
@@ -2405,7 +2436,7 @@ async function checkForUpdates() {
       await Updates.reloadAsync();
     }
   } catch (error) {
-    console.error('Erreur lors de la verification des mises a jour:', error);
+    console.error("Erreur lors de la verification des mises a jour:", error);
   }
 }
 ```
@@ -2416,26 +2447,26 @@ async function checkForUpdates() {
 
 ### Criteres et ponderation
 
-| Critere | Points | Description |
-|---------|--------|-------------|
-| **Architecture** | /20 | Separation des responsabilites, patterns, structure |
-| **Fonctionnalites** | /25 | MVP complet, CRUD, recherche, tags |
-| **Offline-first** | /15 | Fonctionne hors ligne, sync, résolution de conflits |
-| **Qualite du code** | /10 | TypeScript strict, lisibilite, conventions |
-| **Tests** | /10 | Couverture, pertinence, pyramide respectee |
-| **Performance** | /10 | TTI, FPS, mémoire, cache |
-| **UX/Accessibilité** | /5 | Animations fluides, a11y, responsive |
-| **CI/CD** | /5 | Pipeline fonctionnelle, déploiement automatise |
-| **Total** | **/100** | |
+| Critere              | Points   | Description                                         |
+| -------------------- | -------- | --------------------------------------------------- |
+| **Architecture**     | /20      | Separation des responsabilites, patterns, structure |
+| **Fonctionnalites**  | /25      | MVP complet, CRUD, recherche, tags                  |
+| **Offline-first**    | /15      | Fonctionne hors ligne, sync, résolution de conflits |
+| **Qualite du code**  | /10      | TypeScript strict, lisibilite, conventions          |
+| **Tests**            | /10      | Couverture, pertinence, pyramide respectee          |
+| **Performance**      | /10      | TTI, FPS, mémoire, cache                            |
+| **UX/Accessibilité** | /5       | Animations fluides, a11y, responsive                |
+| **CI/CD**            | /5       | Pipeline fonctionnelle, déploiement automatise      |
+| **Total**            | **/100** |                                                     |
 
 ### Niveaux de reussite
 
-| Note | Niveau | Description |
-|------|--------|-------------|
-| 90-100 | Excellent | Toutes les fonctionnalites implementees, tests complets, performance optimale |
-| 75-89 | Bien | MVP complet avec offline-first, bonne couverture de tests |
-| 60-74 | Satisfaisant | CRUD et navigation fonctionnels, quelques tests |
-| < 60 | Insuffisant | Fonctionnalites incompletes, pas de tests |
+| Note   | Niveau       | Description                                                                   |
+| ------ | ------------ | ----------------------------------------------------------------------------- |
+| 90-100 | Excellent    | Toutes les fonctionnalites implementees, tests complets, performance optimale |
+| 75-89  | Bien         | MVP complet avec offline-first, bonne couverture de tests                     |
+| 60-74  | Satisfaisant | CRUD et navigation fonctionnels, quelques tests                               |
+| < 60   | Insuffisant  | Fonctionnalites incompletes, pas de tests                                     |
 
 ### Bonus (jusqu'a +10 points)
 
@@ -2532,6 +2563,7 @@ NomadNote est un projet ambitieux qui intégré l'ensemble des compétences acqu
 La clé du succes est l'approche incrementale : chaque jalon produit un increment fonctionnel. Ne cherchez pas la perfection au premier passage. Construisez le MVP (jalons 1-6), puis enrichissez avec les fonctionnalites avancees (jalons 7-12).
 
 A la fin de ce projet, vous aurez :
+
 - Une application complete dans votre portfolio
 - Une experience concrete de la New Architecture (Turbo Modules, Fabric)
 - Une maîtrise des patterns offline-first et de synchronisation
@@ -2544,19 +2576,21 @@ A la fin de ce projet, vous aurez :
 <!-- parcours-recommande -->
 
 ::: tip Parcours recommandé
+
 1. **Screencast** : [screencast 27 projet final](../screencasts/screencast-27-projet-final.md)
 2. **Lab** : [lab-27-projet-final](../labs/lab-27-projet-final/README)
 3. **Quiz** : [quiz 27 projet final](../quizzes/quiz-27-projet-final.html)
-:::
+   :::
 
 ---
 
 <!-- navigation-inter-cours -->
 
 ::: info Cours suivant
-Bravo, tu as termine le cours **React Native** ! 
-> Ce cours est optionnel (Palier 5 — bonus). Tu peux aussi passer directement au cours suivant.
-Le prochain cours du curriculum est **WebGPU & 3D**.
+Bravo, tu as termine le cours **React Native** !
 
-[Commencer WebGPU & 3D →](../../14-webgpu-3d/modules/00-prerequis-et-introduction.md)
+> Ce cours est optionnel (Palier 5 — bonus). Tu peux aussi passer directement au cours suivant.
+> Le prochain cours du curriculum est **WebGPU & 3D**.
+
+[Commencer WebGPU & 3D →](../../20-webgpu-3d/modules/00-prerequis-et-introduction.md)
 :::
