@@ -18,6 +18,13 @@
 
 ---
 
+> **Note 2026 — Expo Router vs React Navigation**
+> En 2026, pour un nouveau projet Expo, **Expo Router est le choix par défaut** (file-based routing, similaire à Next.js Pages Router). Il est construit sur React Navigation v7.
+> Ce module couvre React Navigation directement — essentiel pour comprendre ce qu'Expo Router abstrait. Le module 09 couvre Expo Router comme couche supérieure.
+> Règle pratique : nouveau projet Expo → Expo Router. Projet bare RN ou migration → React Navigation directement.
+
+---
+
 ## Introduction a React Navigation
 
 ### Pourquoi React Navigation ?
